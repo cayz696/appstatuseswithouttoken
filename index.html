@@ -399,7 +399,7 @@ function chkPw(){
   <div class="sb"><div class="sb-l">⏳ Сірих на модерації</div><div class="sb-v" style="color:var(--Y)" id="s2">0</div></div>
   <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
   <div class="sb"><div class="sb-l">💀 Dead всього</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
-  <div class="sb"><div class="sb-l">📊 Всього (з 01.03)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
+  <div class="sb"><div class="sb-l">📊 Всього (тиждень)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
 </div>
 
 <!-- ACTIVE NOW -->
@@ -721,7 +721,7 @@ function dayDiff(a,b){return Math.round((b-a)/864e5);}
 
 function pVers(raw){
   var s=(raw||'').trim();
-  if(!s||s==='-')return{t:'dr',lbl:'—',n:0};
+  if(!s||s==='-'||s==='')return{t:'dr',lbl:'не залито',n:0};
   var mod=s.endsWith('?'),n=parseFloat(s.replace(/\?/g,''));
   if(isNaN(n))return{t:'dr',lbl:s,n:0};
   if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
@@ -795,20 +795,23 @@ function merge(){
     var comments=(s2['Comments']||'').trim();
 
     // ── СТАТУС ──
-    // Пріоритет: дані з S2 (дати + lifetime) більш надійні ніж FDs текст
-    // Dead: є App dead дата АБО є Lifetime (days) заповнений
-    // Alive: є App live + немає App dead + немає Lifetime
+    // Draft (vers порожній / '-') → не залито, ігноруємо дати
     var fds=(r['FDs']||r['App status (FDs)']||r['App status']||'').trim().toLowerCase();
     var appStatus;
-    // Спочатку дивимось на дати — це найнадійніше
-    if(deadDate || lifetimeRaw!==''){
+    if(vers.t==='dr'){
+      // Ще не залитий — draft, не враховуємо як live/dead
+      appStatus='draft';
+      isAlive=false;
+    } else if(deadDate || lifetimeRaw!==''){
+      // Dead: є дата смерті або записаний lifetime → точно помер
       appStatus='dead';
       isAlive=false;
     } else if(liveDate){
+      // Live: є дата заливу, немає смерті
       appStatus='live';
       // isAlive вже встановлено вище правильно
     } else {
-      // Немає дат — fallback на FDs
+      // Немає дат — fallback на FDs текст
       if(fds.includes('dead')||fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend'))
         appStatus='dead';
       else if(fds.includes('live'))
@@ -925,12 +928,14 @@ function rKPI(wk){
 // STATS
 function rStats(wk){
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
+  // Якщо вибрано конкретний тиждень — фільтруємо по reviewWk
+  var wkApps = (wk==='all') ? ALL : ALL.filter(function(r){return r.reviewWk===wk;});
   Q('s0',ka.length);
-  Q('s1',ALL.filter(function(r){return r.isAlive;}).length);
-  Q('s2',ALL.filter(function(r){return r.vers.t==='gm';}).length);
-  Q('s3',ALL.filter(function(r){return r.vers.t==='wp';}).length);
-  Q('s4',ALL.filter(function(r){return r.appStatus==='dead';}).length);
-  Q('s5',ALL.length);
+  Q('s1',ALL.filter(function(r){return r.isAlive;}).length);  // живих зараз — завжди всі
+  Q('s2',wkApps.filter(function(r){return r.vers.t==='gm';}).length);
+  Q('s3',wkApps.filter(function(r){return r.vers.t==='wp';}).length);
+  Q('s4',ALL.filter(function(r){return r.appStatus==='dead';}).length); // dead — завжди всі
+  Q('s5',wkApps.length);
 }
 
 // ════════════════════════════════════════
@@ -1004,7 +1009,7 @@ function getVis(wk){
 
 var VT={
   gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},
-  wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:''}
+  wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'}
 };
 
 function rTable(wk){
@@ -1016,7 +1021,7 @@ function rTable(wk){
     var vt=VT[r.vers.t]||VT.dr;
     var kpi=isKPI(r,wk);
     var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
-    var st=r.appStatus==='live'?'<span class="st st-l"><span class="dot dg"></span>LIVE</span>':r.appStatus==='dead'?'<span class="st st-d"><span class="dot dr_"></span>DEAD</span>':'<span class="st st-u">—</span>';
+    var st=r.appStatus==='live'?'<span class="st st-l"><span class="dot dg"></span>LIVE</span>':r.appStatus==='dead'?'<span class="st st-d"><span class="dot dr_"></span>DEAD</span>':r.appStatus==='draft'?'<span class="st st-u">📝 draft</span>':'<span class="st st-u">—</span>';
     var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
     var lhd=r.computedLife>0?('<span class="lf '+lfc+'">'+r.computedLife+(r.isAlive?' дн. ↑':' дн.')+'</span>'):'<span style="color:var(--t3)">—</span>';
     return'<tr class="'+(r.appStatus==='dead'?'td':'')+'"><td style="color:var(--t3);font-size:12px">'+(i+1)+'</td>'
@@ -1160,7 +1165,7 @@ function rDead(){
   document.getElementById('bdd').textContent=dead.length;
   var body=document.getElementById('deadTb');
   if(!dead.length){body.innerHTML='<tr><td colspan="10"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr>';return;}
-  var VT2={gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:''}};
+  var VT2={gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'}};
   body.innerHTML=dead.map(function(r){
     var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
     var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
