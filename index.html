@@ -572,6 +572,11 @@ var autoT=null, setupOpen=true;
   if(u1)document.getElementById('u1').value=u1;
   if(u2)document.getElementById('u2').value=u2;
   setAuto();
+  // Автозавантаження якщо URL вже збережений
+  if(u1){
+    document.getElementById('lst').innerHTML='<span class="spin"></span>Автозавантаження...';
+    setTimeout(function(){ loadData(true); }, 300);
+  }
 })();
 
 function pad(n){return String(n).padStart(2,'0');}
