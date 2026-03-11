@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AppTrack_V_5_3</title>
+<title>AppTrack</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -725,12 +725,15 @@ function dayDiff(a,b){return Math.round((b-a)/864e5);}
 
 function pVers(raw){
   var s=(raw||'').trim();
-  if(!s||s==='-'||s==='')return{t:'dr',lbl:'не залито',n:0};
+  // ТІЛЬКИ реально порожня клітинка = ще не залитий
+  if(s==='')return{t:'dr',lbl:'не залито',n:0};
+  // '-' або будь-яке інше значення — парсимо нормально
+  if(s==='-')return{t:'dash',lbl:'-',n:0}; // прочерк = невідома версія (може бути dead)
   var mod=s.endsWith('?'),n=parseFloat(s.replace(/\?/g,''));
-  if(isNaN(n))return{t:'dr',lbl:s,n:0};
+  if(isNaN(n))return{t:'dash',lbl:s,n:0};
   if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
   if(n>=1)return mod?{t:'wm',lbl:s,n:n}:{t:'wp',lbl:s,n:n};
-  return{t:'dr',lbl:s,n:0};
+  return{t:'dash',lbl:s,n:0};
 }
 function getMgr(acc){
   if(!acc)return'other';
@@ -803,8 +806,12 @@ function merge(){
     var fds=(r['FDs']||r['App status (FDs)']||r['App status']||'').trim().toLowerCase();
     var appStatus;
     if(vers.t==='dr'){
-      // Ще не залитий — draft, не враховуємо як live/dead
+      // Реально порожня версія — ще не залитий = draft
       appStatus='draft';
+      isAlive=false;
+    } else if(vers.t==='dash'&&(deadDate||lifetimeRaw!=='')){
+      // Прочерк у версії + є dead дата або lifetime → dead
+      appStatus='dead';
       isAlive=false;
     } else if(deadDate || lifetimeRaw!==''){
       // Dead: є дата смерті або записаний lifetime → точно помер
@@ -1013,7 +1020,9 @@ function getVis(wk){
 
 var VT={
   gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},
-  wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'}
+  wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},
+  dr:{cls:'vdr',ic:'📝'},  // не залито (порожня клітинка)
+  dash:{cls:'vdr',ic:''}   // прочерк '-' або нечислова версія
 };
 
 function rTable(wk){
@@ -1169,7 +1178,7 @@ function rDead(){
   document.getElementById('bdd').textContent=dead.length;
   var body=document.getElementById('deadTb');
   if(!dead.length){body.innerHTML='<tr><td colspan="10"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr>';return;}
-  var VT2={gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'}};
+  var VT2={gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'},dash:{cls:'vdr',ic:''}};
   body.innerHTML=dead.map(function(r){
     var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
     var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
