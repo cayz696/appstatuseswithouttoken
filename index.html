@@ -588,19 +588,23 @@ function isoWk(d){
 // Week key = Sunday-based: Sun DD.MM - Sat DD.MM
 // We use Sun as start of reporting week
 function wkKey(d){
-  var s=new Date(d); s.setDate(d.getDate()-d.getDay()); s.setHours(0,0,0,0);
+  // Повертає YYYY-MM-DD неділі тижня (в локальному часі)
+  var s=new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  s.setDate(s.getDate()-s.getDay()); // відматати до неділі
   return s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
 }
 
 function wkLabel(key){
-  var sun=new Date(key);
+  // key = 'YYYY-MM-DD' неділі — парсимо в локальному часі!
+  var p=key.split('-');
+  var sun=new Date(+p[0],+p[1]-1,+p[2]); // локальний час, без UTC зсуву
   var sat=new Date(sun); sat.setDate(sun.getDate()+6);
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
   return f(sun)+' – '+f(sat);
 }
 
-function wkStart(key){return new Date(key);}
-function wkEnd(key){var d=new Date(key); d.setDate(d.getDate()+6); d.setHours(23,59,59,999); return d;}
+function wkStart(key){var p=key.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function wkEnd(key){var p=key.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+6);d.setHours(23,59,59,999);return d;}
 
 // Get monday of current week
 function thisMonday(){
@@ -882,11 +886,11 @@ function renderPills(){
 }
 function selW(wk){
   selWk=wk;
-  // Sync week picker if specific week
   if(wk!=='all'){
-    // find ISO week from Sunday date
-    var sun=new Date(wk);
-    var mon=new Date(sun); mon.setDate(sun.getDate()+1);
+    // key = YYYY-MM-DD неділі → пікер потребує понеділок того ж тижня
+    var p=wk.split('-');
+    var sun=new Date(+p[0],+p[1]-1,+p[2]);
+    var mon=new Date(sun); mon.setDate(sun.getDate()+1); // пн = нд + 1
     document.getElementById('wkPick').value=mon.getFullYear()+'-W'+pad(isoWk(mon));
     upWR();
   }
@@ -1157,7 +1161,7 @@ function rDead(){
   var dead=ALL.filter(function(r){return r.appStatus==='dead';})
     .sort(function(a,b){
       // Сортуємо: спочатку dead цього тижня, потім по даті dead (новіші вгорі)
-      var aw=(wk!=='all'&&r.deadWk===wk)||(!r.deadWk&&wk!=='all'&&r.reviewWk===wk);
+      var aw=(wk!=='all'&&a.deadWk===wk)||(!a.deadWk&&wk!=='all'&&a.reviewWk===wk);
       var bw=(wk!=='all'&&b.deadWk===wk)||(!b.deadWk&&wk!=='all'&&b.reviewWk===wk);
       if(aw&&!bw)return -1; if(bw&&!aw)return 1;
       return (b.deadDate||b.reviewDate||0)-(a.deadDate||a.reviewDate||0);
