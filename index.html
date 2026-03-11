@@ -701,7 +701,9 @@ async function loadData(silent){
     var now=new Date();
     document.getElementById('lupd').textContent='Оновлено '+now.toLocaleTimeString('uk-UA');
     document.getElementById('rdot').className='ldot on';
-    document.getElementById('lst').innerHTML='✅ <b>'+ALL.length+'</b> записів від 01.03.2026';
+    var skipped=S1.length-ALL.length;
+    document.getElementById('lst').innerHTML='✅ <b>'+ALL.length+'</b> записів від 01.03.2026'
+      +(skipped?' <span style="color:var(--t3)">· відсіяно: '+skipped+'</span>':'');
     sl('u1',u1v);if(u2v)sl('u2',u2v);
     if(setupOpen)toggleSetup();
   }catch(ex){
@@ -749,15 +751,22 @@ function merge(){
   var m2={};
   S2.forEach(function(r){
     var k=(r['App name']||r['Name']||'').trim().toLowerCase();
-    if(k)m2[k]=r;
+    if(!k)return;
+    // Якщо є дублікат — зберігаємо той що має більше даних (App review або App live)
+    if(m2[k]){
+      var old=m2[k];
+      var oldScore=(old['App review']?2:0)+(old['App live']?1:0);
+      var newScore=(r['App review']?2:0)+(r['App live']?1:0);
+      if(newScore>oldScore) m2[k]=r; // новий має більше даних
+    } else {
+      m2[k]=r;
+    }
   });
 
   ALL=[];
   S1.forEach(function(r){
     var name=(r['Name']||'').trim(); if(!name)return;
-    var s2=m2[name.toLowerCase()];
-    // Якщо немає запису в S2 — пропускаємо (немає дат = не можемо фільтрувати)
-    if(!s2)return;
+    var s2=m2[name.toLowerCase()]||{}; // якщо немає в S2 — порожній об'єкт, дати будуть null
 
     var acc=(r['Account']||'').trim();
     var vers=pVers(r['Vers']||'');
@@ -838,7 +847,7 @@ function merge(){
     // 3. Прожила >= 1 день:
     //    - isAlive → живий, точно >= 1 день якщо liveDate є
     //    - computedLife >= 1
-    var isGrey=(vers.n>=3);
+    var isGrey=(vers.t==='gp'); // тільки gp = опублікований сірий (без ?). gm = модерація, не КПІ
     var survived1day = isAlive ? (liveDate&&computedLife>=1) : (computedLife>=1);
 
     ALL.push({
