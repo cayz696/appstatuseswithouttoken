@@ -3,268 +3,299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AppTrack Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<title>AppTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0f1117;--card:#181c27;--card2:#1e2235;--border:#2a2f45;--border2:#363d5a;
-  --text:#e8eaf6;--text2:#8b92b8;--text3:#4a5280;
-  --green:#22c55e;--green-bg:rgba(34,197,94,.12);--green-border:rgba(34,197,94,.25);
-  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,.12);--yellow-border:rgba(245,158,11,.25);
-  --red:#ef4444;--red-bg:rgba(239,68,68,.12);--red-border:rgba(239,68,68,.25);
-  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.12);--blue-border:rgba(59,130,246,.25);
-  --orange:#f97316;--orange-bg:rgba(249,115,22,.12);
-  --vlad:#f97316;--vlad-bg:rgba(249,115,22,.1);
-  --sanya:#3b82f6;--sanya-bg:rgba(59,130,246,.1);
-  --purple:#a855f7;--purple-bg:rgba(168,85,247,.1);
+  --bg:#0f1117;--c1:#181c27;--c2:#1e2338;--c3:#252a3d;--b1:#2a2f45;--b2:#3a4060;
+  --t1:#eef0f8;--t2:#8892b8;--t3:#4a5280;
+  --G:#22c55e;--Gb:rgba(34,197,94,.13);--Gbo:rgba(34,197,94,.28);
+  --Y:#f59e0b;--Yb:rgba(245,158,11,.13);--Ybo:rgba(245,158,11,.28);
+  --R:#ef4444;--Rb:rgba(239,68,68,.13);--Rbo:rgba(239,68,68,.28);
+  --B:#3b82f6;--Bb:rgba(59,130,246,.13);--Bbo:rgba(59,130,246,.28);
+  --O:#f97316;--Ob:rgba(249,115,22,.13);
+  --P:#a855f7;--Pb:rgba(168,85,247,.13);
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;}
 
-/* LOGIN */
-#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
-.lbox{background:var(--card);border:1px solid var(--green-border);border-radius:20px;padding:48px;width:380px;text-align:center;box-shadow:0 0 60px rgba(34,197,94,.08);}
-.llogo{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);}
-.llogo em{color:var(--green);font-style:normal;}
-.lsub{font-size:12px;color:var(--text3);letter-spacing:2px;margin-bottom:36px;}
-.linput{width:100%;background:var(--card2);border:1.5px solid var(--border2);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;letter-spacing:3px;transition:border-color .2s;margin-bottom:14px;}
-.linput:focus{border-color:var(--green);}
-.lbtn{width:100%;background:var(--green);color:#000;border:none;border-radius:10px;padding:14px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+/* ── LOGIN ── */
+#ls{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
+.lb{background:var(--c1);border:1.5px solid var(--Gbo);border-radius:20px;padding:48px 44px;width:360px;text-align:center;box-shadow:0 0 80px rgba(34,197,94,.07);}
+.ll{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:4px;}
+.ll em{color:var(--G);font-style:normal;}
+.ls2{font-size:11px;color:var(--t3);letter-spacing:2px;margin-bottom:32px;}
+.li{width:100%;background:var(--c3);border:1.5px solid var(--b2);border-radius:10px;padding:13px 16px;color:var(--t1);font-size:16px;outline:none;letter-spacing:3px;transition:border-color .2s;margin-bottom:12px;font-family:'Inter',sans-serif;}
+.li:focus{border-color:var(--G);}
+.lbtn{width:100%;background:var(--G);color:#000;border:none;border-radius:10px;padding:13px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
 .lbtn:hover{background:#16a34a;color:#fff;}
-.lerr{color:var(--red);font-size:12px;margin-top:10px;min-height:18px;}
+.lerr{color:var(--R);font-size:12px;margin-top:10px;min-height:16px;}
+.lhint{font-size:11px;color:var(--t3);margin-top:16px;}
 
-/* LAYOUT */
-.wrap{max-width:1600px;margin:0 auto;padding:24px;}
+/* ── LAYOUT ── */
+.wrap{max-width:1640px;margin:0 auto;padding:22px 24px;}
 
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:12px;flex-wrap:wrap;}
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
 .logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;}
-.logo em{color:var(--green);font-style:normal;}
-.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;}
-.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.rdot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);}
-.rdot-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);}
-.rdot-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.sel{background:var(--card2);border:1.5px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:pointer;}
-.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--text2);border-radius:8px;padding:7px 14px;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
-.btn-outline:hover{border-color:var(--green);color:var(--green);}
-.btn-primary{background:var(--green);color:#000;border:none;border-radius:8px;padding:8px 18px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
-.btn-primary:hover{background:#16a34a;color:#fff;}
-.btn-primary.loading{background:var(--card2);color:var(--text3);cursor:not-allowed;}
+.logo em{color:var(--G);font-style:normal;}
+.logo-sub{font-size:11px;color:var(--t3);margin-top:1px;}
+.top-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.live-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);}
+.ldot{width:8px;height:8px;border-radius:50%;background:var(--t3);}
+.ldot.on{background:var(--G);box-shadow:0 0 8px var(--G);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);border-radius:8px;padding:6px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;}
+.btn-o{background:transparent;border:1.5px solid var(--b1);color:var(--t2);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;}
+.btn-o:hover{border-color:var(--G);color:var(--G);}
+.btn-green{background:var(--G);color:#000;border:none;border-radius:8px;padding:9px 20px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;}
+.btn-green:hover{background:#16a34a;color:#fff;}
+.btn-green.ld{background:var(--c3);color:var(--t3);cursor:not-allowed;}
 
-/* SETUP CARD */
-.setup-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;}
-.setup-card h2{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--green);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
-.inputs-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-@media(max-width:700px){.inputs-row{grid-template-columns:1fr;}}
-.input-group label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;}
-.text-input{width:100%;background:var(--card2);border:1.5px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
-.text-input:focus{border-color:var(--green);}
-.text-input::placeholder{color:var(--text3);}
-.hint{font-size:11px;color:var(--text3);margin-top:5px;}
-.steps-mini{background:var(--card2);border-radius:10px;padding:16px;margin-top:4px;}
-.steps-mini h3{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.8px;}
-.steps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-@media(max-width:800px){.steps-grid{grid-template-columns:repeat(2,1fr);}}
-.step{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2);line-height:1.5;}
-.snum{min-width:22px;height:22px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0;}
-.load-row{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
-.load-status{font-size:12px;color:var(--text3);}
-.err-bar{background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;}
-
-/* FILTER BAR */
-.filter-bar{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-.filter-section{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.filter-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
-.ftag{padding:7px 16px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--text2);background:transparent;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;}
-.ftag:hover{border-color:var(--border2);color:var(--text);}
-.ftag.on{font-weight:600;}
-.ftag.f-all.on{border-color:var(--text);color:var(--text);background:var(--card2);}
-.ftag.f-gp.on{border-color:var(--green);color:var(--green);background:var(--green-bg);}
-.ftag.f-gm.on{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-bg);}
-.ftag.f-wp.on{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
-.ftag.f-wm.on{border-color:var(--orange);color:var(--orange);background:var(--orange-bg);}
-.ftag.f-dead.on{border-color:var(--red);color:var(--red);background:var(--red-bg);}
-.ftag.f-vlad.on{border-color:var(--vlad);color:var(--vlad);background:var(--vlad-bg);}
-.ftag.f-sanya.on{border-color:var(--sanya);color:var(--sanya);background:var(--sanya-bg);}
-.ftag.f-kpi.on{border-color:var(--purple);color:var(--purple);background:var(--purple-bg);}
-.search-wrap{margin-left:auto;}
-.search-inp{background:var(--card2);border:1.5px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;width:220px;transition:border-color .2s;}
-.search-inp:focus{border-color:var(--green);}
-.search-inp::placeholder{color:var(--text3);}
-
-/* WEEK BAR */
-.week-bar{display:flex;align-items:center;gap:16px;background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px 20px;margin-bottom:24px;flex-wrap:wrap;}
-.week-label{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;}
-.week-inp{background:var(--card2);border:1.5px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;}
-.week-inp:focus{border-color:var(--green);}
-.week-range{font-size:13px;color:var(--text3);}
-.kpi-set{display:flex;align-items:center;gap:8px;margin-left:auto;}
-.kpi-set label{font-size:12px;color:var(--text2);}
-.kpi-num{background:var(--card2);border:1.5px solid var(--green);border-radius:8px;padding:6px 12px;color:var(--green);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;outline:none;width:64px;text-align:center;}
-.week-pills-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;}
-.week-pills-wrap .week-label{margin-right:2px;}
-.wpill{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--text2);background:transparent;font-family:'Inter',sans-serif;transition:all .15s;}
-.wpill:hover{border-color:var(--border2);color:var(--text);}
-.wpill.on{border-color:var(--green);color:var(--green);background:var(--green-bg);font-weight:600;}
-
-/* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
-@media(max-width:700px){.kpi-grid{grid-template-columns:1fr;}}
-.kpi-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden;}
-.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
-.kpi-card.kt::after{background:linear-gradient(90deg,var(--green),transparent);}
-.kpi-card.kv::after{background:linear-gradient(90deg,var(--vlad),transparent);}
-.kpi-card.ks::after{background:linear-gradient(90deg,var(--sanya),transparent);}
-.kpi-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
-.kpi-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:10px;}
-.kpi-num{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:700;line-height:1;}
-.kpi-card.kt .kpi-num{color:var(--green);}
-.kpi-card.kv .kpi-num{color:var(--vlad);}
-.kpi-card.ks .kpi-num{color:var(--sanya);}
-.kpi-of{font-size:16px;color:var(--text3);padding-bottom:8px;}
-.prog-track{height:6px;background:var(--card2);border-radius:99px;overflow:hidden;margin-bottom:8px;}
-.prog-fill{height:100%;border-radius:99px;transition:width .8s ease;}
-.kpi-card.kt .prog-fill{background:var(--green);}
-.kpi-card.kv .prog-fill{background:var(--vlad);}
-.kpi-card.ks .prog-fill{background:var(--sanya);}
-.kpi-meta{font-size:12px;color:var(--text3);}
-.kpi-meta strong{color:var(--text2);}
-
-/* STAT ROW */
-.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px;}
-@media(max-width:1100px){.stat-row{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:600px){.stat-row{grid-template-columns:repeat(2,1fr);}}
-.stat-box{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;}
-.stat-lbl{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:8px;}
-.stat-val{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;line-height:1;}
-
-/* SECTION CARD */
-.section{background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px;}
-.section-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1.5px solid var(--border);gap:10px;flex-wrap:wrap;}
-.section-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--text);}
-.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;}
-
-/* TABLE */
-.tbl-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;}
-thead th{padding:13px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--text2);background:var(--card2);border-bottom:2px solid var(--border2);white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:.3px;text-transform:uppercase;}
-thead th:hover{color:var(--text2);}
-thead th.asc::after{content:' ↑';}
-thead th.desc::after{content:' ↓';}
-tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}tbody tr:nth-child(even){background:rgba(255,255,255,.016);}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(59,130,246,.07)!important;}
-tbody td{padding:14px 16px;font-size:14px;vertical-align:middle;line-height:1.4;}
-tr.tr-dead td{color:var(--text3);}
-tr.tr-dead:hover td{color:var(--text2);}
-tr.tr-kpi{background:rgba(34,197,94,.03);}
-
-/* CELL COMPONENTS */
-.app-name{font-weight:600;font-size:14px;color:var(--text);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.account-cell{font-size:13px;color:var(--text2);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-/* VERSION BADGE */
-.vbadge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:600;white-space:nowrap;}
-.v-gp{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
-.v-gm{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border);}
-.v-wp{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
-.v-wm{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(249,115,22,.25);}
-.v-dr{background:var(--card2);color:var(--text3);border:1px solid var(--border);}
-
-/* MGR BADGE */
-.mgr{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:600;}
-.mgr-v{background:var(--vlad-bg);color:var(--vlad);border:1px solid rgba(249,115,22,.2);}
-.mgr-s{background:var(--sanya-bg);color:var(--sanya);border:1px solid rgba(59,130,246,.2);}
-.mgr-o{background:var(--card2);color:var(--text3);border:1px solid var(--border);}
-
-/* STATUS */
-.status{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:600;}
-.st-live{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
-.st-dead{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
-.st-unk{background:var(--card2);color:var(--text3);border:1px solid var(--border);}
-.dot{width:6px;height:6px;border-radius:50%;}
-.dot-g{background:var(--green);box-shadow:0 0 5px var(--green);}
-.dot-r{background:var(--red);}
-
-/* KPI TICK */
-.kpi-tick{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:5px;font-size:12px;color:var(--green);}
-
-/* LIFETIME */
-.life{display:inline-flex;padding:4px 11px;border-radius:99px;font-size:13px;font-weight:600;}
-.l-s{background:var(--green-bg);color:var(--green);}
-.l-m{background:var(--yellow-bg);color:var(--yellow);}
-.l-l{background:var(--red-bg);color:var(--red);}
-
-/* DATE */
-.date-cell{font-size:13px;font-weight:500;white-space:nowrap;}
-
-/* COMMENT TAG */
-.ctag{display:inline-block;background:var(--red-bg);border:1px solid var(--red-border);color:#fca5a5;font-size:12px;padding:3px 10px;border-radius:5px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;font-weight:500;}
-
-/* 2 COL */
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
-@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
-
-/* ANALYSIS */
-.anal-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
-.anal-row:last-child{border-bottom:none;}
-.anal-name{min-width:150px;font-size:13px;color:var(--text);font-weight:500;}
-.anal-bar{flex:1;height:6px;background:var(--card2);border-radius:99px;overflow:hidden;}
-.anal-fill{height:100%;border-radius:99px;}
-.anal-cnt{font-size:13px;font-weight:700;min-width:24px;text-align:right;}
-
-/* FIN ROW */
-.fin-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);}
-.fin-row:last-child{border-bottom:none;}
-.fin-lbl{font-size:13px;color:var(--text2);}
-.fin-val{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;}
-
-/* WEEKLY TABLE */
-.week-cur td{background:rgba(34,197,94,.04);}
-
-/* EMPTY */
-.empty{padding:48px 24px;text-align:center;color:var(--text3);}
-.empty-ico{font-size:36px;margin-bottom:12px;}
-.empty-txt{font-size:14px;}
-
-/* SPINNER */
-.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:6px;}
+/* ── SETUP ── */
+.setup{background:var(--c1);border:1.5px solid var(--b1);border-radius:16px;padding:22px 24px;margin-bottom:22px;}
+.setup h2{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--G);margin-bottom:18px;}
+.inp2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:680px){.inp2{grid-template-columns:1fr;}}
+.ig label{display:block;font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.ti{width:100%;background:var(--c3);border:1.5px solid var(--b2);border-radius:8px;padding:10px 14px;color:var(--t1);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.ti:focus{border-color:var(--G);}
+.ti::placeholder{color:var(--t3);}
+.hint{font-size:11px;color:var(--t3);margin-top:4px;}
+.steps{background:var(--c3);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+.steps h3{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+@media(max-width:750px){.sg{grid-template-columns:repeat(2,1fr);}}
+.si{display:flex;gap:8px;font-size:12px;color:var(--t2);line-height:1.5;}
+.sn{min-width:20px;height:20px;background:var(--Gb);border:1px solid var(--Gbo);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--G);flex-shrink:0;margin-top:2px;}
+.load-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.lstat{font-size:12px;color:var(--t3);}
+.err{background:var(--Rb);border:1.5px solid var(--Rbo);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--R);margin-bottom:16px;display:none;}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--b1);border-top-color:var(--G);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px;}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+/* ── WEEK BAR ── */
+.wbar{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:14px 20px;margin-bottom:22px;}
+.wbar-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.wlbl{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;}
+.wi{background:var(--c3);border:1.5px solid var(--b2);border-radius:8px;padding:7px 12px;color:var(--t1);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.wi:focus{border-color:var(--G);}
+.wrange{font-size:13px;color:var(--t3);}
+.kpi-set{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.kpi-set label{font-size:12px;color:var(--t2);}
+.kpi-in{background:var(--c3);border:1.5px solid var(--G);border-radius:8px;padding:6px 12px;color:var(--G);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;outline:none;width:62px;text-align:center;}
+.wpills{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--b1);}
+.wpill{padding:5px 13px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--b1);color:var(--t2);background:transparent;font-family:'Inter',sans-serif;transition:all .14s;white-space:nowrap;}
+.wpill:hover{border-color:var(--b2);color:var(--t1);}
+.wpill.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
+
+/* ── KPI CARDS ── */
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:650px){.kg{grid-template-columns:1fr;}}
+.kc{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
+.kc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
+.kc.kt::after{background:linear-gradient(90deg,var(--G) 0%,transparent 70%);}
+.kc.kv::after{background:linear-gradient(90deg,var(--O) 0%,transparent 70%);}
+.kc.ks::after{background:linear-gradient(90deg,var(--B) 0%,transparent 70%);}
+.kc-lbl{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;}
+.kc-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;}
+.kc-n{font-family:'Space Grotesk',sans-serif;font-size:54px;font-weight:700;line-height:1;}
+.kc.kt .kc-n{color:var(--G);}
+.kc.kv .kc-n{color:var(--O);}
+.kc.ks .kc-n{color:var(--B);}
+.kc-of{font-size:15px;color:var(--t3);padding-bottom:8px;}
+.pt{height:6px;background:var(--c3);border-radius:99px;overflow:hidden;margin-bottom:8px;}
+.pf{height:100%;border-radius:99px;transition:width .75s ease;}
+.kc.kt .pf{background:var(--G);}
+.kc.kv .pf{background:var(--O);}
+.kc.ks .pf{background:var(--B);}
+.kc-m{font-size:12px;color:var(--t3);}
+.kc-m b{color:var(--t2);}
+
+/* ── STAT ROW ── */
+.sr{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+@media(max-width:1100px){.sr{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:550px){.sr{grid-template-columns:repeat(2,1fr);}}
+.sb{background:var(--c1);border:1.5px solid var(--b1);border-radius:12px;padding:16px 18px;}
+.sb-l{font-size:11px;color:var(--t3);margin-bottom:7px;}
+.sb-v{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;line-height:1;}
+
+/* ── ACTIVE NOW CARDS ── */
+.active-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:900px){.active-grid{grid-template-columns:1fr;}}
+.ac{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;overflow:hidden;}
+.ac-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--b1);background:var(--c2);}
+.ac-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;}
+.ac-badge{font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
+.ac-row{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid var(--b1);transition:background .12s;}
+.ac-row:last-child{border-bottom:none;}
+.ac-row:hover{background:var(--c2);}
+.ac-name{flex:1;font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ac-days{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap;}
+
+/* ── FILTER BAR ── */
+.fbar{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.fsec{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.flbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;}
+.fdiv{width:1px;height:24px;background:var(--b1);}
+.chip{padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--b1);color:var(--t2);background:transparent;font-family:'Inter',sans-serif;transition:all .14s;white-space:nowrap;}
+.chip:hover{border-color:var(--b2);color:var(--t1);}
+.chip.on{font-weight:600;}
+.chip.all.on{border-color:var(--t1);color:var(--t1);background:var(--c3);}
+.chip.gp.on{border-color:var(--G);color:var(--G);background:var(--Gb);}
+.chip.gm.on{border-color:var(--Y);color:var(--Y);background:var(--Yb);}
+.chip.wp.on{border-color:var(--B);color:var(--B);background:var(--Bb);}
+.chip.wm.on{border-color:var(--O);color:var(--O);background:var(--Ob);}
+.chip.dead.on{border-color:var(--R);color:var(--R);background:var(--Rb);}
+.chip.alive.on{border-color:var(--G);color:var(--G);background:var(--Gb);}
+.chip.vlad.on{border-color:var(--O);color:var(--O);background:var(--Ob);}
+.chip.sanya.on{border-color:var(--B);color:var(--B);background:var(--Bb);}
+.chip.kpi.on{border-color:var(--P);color:var(--P);background:var(--Pb);}
+.chip.reset{color:var(--t3);font-size:12px;border-color:transparent;}
+.chip.reset:hover{color:var(--R);border-color:var(--R);}
+.srch-inp{background:var(--c3);border:1.5px solid var(--b1);border-radius:8px;padding:8px 16px;color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:220px;transition:border-color .2s;margin-left:auto;}
+.srch-inp:focus{border-color:var(--G);}
+.srch-inp::placeholder{color:var(--t3);}
+
+/* ── SECTION CARD ── */
+.sec{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:22px;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--b1);background:var(--c2);flex-wrap:wrap;gap:8px;}
+.sec-t{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;}
+.bdg{display:inline-flex;align-items:center;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--t2);background:var(--c2);border-bottom:2px solid var(--b2);white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:.3px;}
+thead th:hover{color:var(--t1);}
+thead th.asc::after{content:' ↑';}
+thead th.desc::after{content:' ↓';}
+tbody tr{border-bottom:1px solid var(--b1);transition:background .1s;}
+tbody tr:nth-child(even){background:rgba(255,255,255,.018);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(59,130,246,.06)!important;}
+tbody td{padding:13px 16px;font-size:14px;vertical-align:middle;line-height:1.4;}
+tr.td{opacity:.7;}tr.td:hover{opacity:1;}
+
+/* ── CELL WIDGETS ── */
+.aname{font-weight:600;font-size:14px;color:var(--t1);max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.acnt{font-size:13px;color:var(--t2);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Version */
+.vb{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:7px;font-size:13px;font-weight:600;white-space:nowrap;}
+.vgp{background:var(--Gb);color:var(--G);border:1px solid var(--Gbo);}
+.vgm{background:var(--Yb);color:var(--Y);border:1px solid var(--Ybo);}
+.vwp{background:var(--Bb);color:var(--B);border:1px solid var(--Bbo);}
+.vwm{background:var(--Ob);color:var(--O);border:1px solid rgba(249,115,22,.28);}
+.vdr{background:var(--c3);color:var(--t3);border:1px solid var(--b1);}
+/* Manager */
+.mg{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:7px;font-size:13px;font-weight:600;}
+.mv{background:var(--Ob);color:var(--O);border:1px solid rgba(249,115,22,.25);}
+.ms{background:var(--Bb);color:var(--B);border:1px solid rgba(59,130,246,.25);}
+.mo{background:var(--c3);color:var(--t3);border:1px solid var(--b1);}
+/* Status */
+.st{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:13px;font-weight:600;}
+.st-l{background:var(--Gb);color:var(--G);border:1px solid var(--Gbo);}
+.st-d{background:var(--Rb);color:var(--R);border:1px solid var(--Rbo);}
+.st-u{background:var(--c3);color:var(--t3);border:1px solid var(--b1);}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dg{background:var(--G);box-shadow:0 0 5px var(--G);}
+.dr_{background:var(--R);}
+/* Lifetime */
+.lf{display:inline-flex;padding:4px 11px;border-radius:99px;font-size:13px;font-weight:600;}
+.ls_{background:var(--Gb);color:var(--G);}
+.lm{background:var(--Yb);color:var(--Y);}
+.ll{background:var(--Rb);color:var(--R);}
+/* KPI tick */
+.ktick{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--Gb);border:1.5px solid var(--Gbo);border-radius:6px;font-size:13px;color:var(--G);}
+/* Date */
+.dc{font-size:13px;font-weight:500;white-space:nowrap;}
+/* Comment */
+.ctag{display:inline-block;background:var(--Rb);border:1px solid var(--Rbo);color:#fca5a5;font-size:12px;font-weight:500;padding:3px 10px;border-radius:5px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
+
+/* ── 2COL ── */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+@media(max-width:850px){.two{grid-template-columns:1fr;}}
+/* Analysis */
+.ar{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--b1);}
+.ar:last-child{border-bottom:none;}
+.an{min-width:140px;font-size:13px;color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ab{flex:1;height:7px;background:var(--c3);border-radius:99px;overflow:hidden;}
+.af{height:100%;border-radius:99px;background:var(--R);}
+.ac_{font-size:13px;font-weight:700;color:var(--R);min-width:22px;text-align:right;}
+/* Finance */
+.fr{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--b1);}
+.fr:last-child{border-bottom:none;}
+.fl{font-size:13px;color:var(--t2);}
+.fv{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;}
+/* Empty */
+.empty{padding:48px 24px;text-align:center;color:var(--t3);}
+.ei{font-size:40px;margin-bottom:12px;}
+.et{font-size:14px;}
+
 ::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:var(--card);}
-::-webkit-scrollbar-thumb{background:var(--card2);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:var(--border2);}
+::-webkit-scrollbar-track{background:var(--c1);}
+::-webkit-scrollbar-thumb{background:var(--c3);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--b2);}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
-  <div class="lbox">
-    <div class="llogo">APP<em>TRACK</em></div>
-    <div class="lsub">WEEKLY DASHBOARD</div>
-    <input class="linput" type="password" id="pwInput" placeholder="Пароль" onkeydown="if(event.key==='Enter')checkPw()">
-    <button class="lbtn" onclick="checkPw()">Увійти</button>
-    <div class="lerr" id="pwErr"></div>
+<div id="ls">
+  <div class="lb">
+    <div class="ll">APP<em>TRACK</em></div>
+    <div class="ls2">WEEKLY KPI DASHBOARD</div>
+    <input class="li" type="password" id="pwi" placeholder="Пароль" onkeydown="if(event.key==='Enter')chkPw()">
+    <button class="lbtn" onclick="chkPw()">Увійти →</button>
+    <div class="lerr" id="pwe"></div>
+    <div class="lhint">Пароль зберігається в браузері</div>
   </div>
 </div>
 
 <script>
-var PW='apptrack2026'; // ← змінити пароль тут
-function checkPw(){
-  if(document.getElementById('pwInput').value===PW){
-    document.getElementById('loginScreen').style.display='none';
-    try{sessionStorage.setItem('at_ok','1');}catch(e){}
+// Пароль зберігається в sessionStorage після першого входу
+// Щоб змінити — відкрий консоль браузера і виконай: setPW('новий_пароль')
+var _PW = null;
+function getPW(){
+  try{ return sessionStorage.getItem('_atpw') || localStorage.getItem('_atpwh'); }
+  catch(e){ return null; }
+}
+function setPW(p){
+  try{ localStorage.setItem('_atpwh', p); alert('Пароль збережено!'); }
+  catch(e){}
+}
+function chkPw(){
+  var stored = getPW();
+  var entered = document.getElementById('pwi').value;
+  if(!stored){
+    // Перший вхід — встановлюємо пароль
+    if(entered.length >= 4){
+      setPW(entered);
+      try{ sessionStorage.setItem('_atpw', entered); }catch(e){}
+      document.getElementById('ls').style.display='none';
+    } else {
+      document.getElementById('pwe').textContent='Мін. 4 символи для встановлення пароля';
+    }
+    return;
+  }
+  if(entered === stored){
+    try{ sessionStorage.setItem('_atpw', entered); }catch(e){}
+    document.getElementById('ls').style.display='none';
   } else {
-    document.getElementById('pwErr').textContent='Невірний пароль';
-    document.getElementById('pwInput').value='';
-    setTimeout(function(){document.getElementById('pwErr').textContent='';},2500);
+    document.getElementById('pwe').textContent='Невірний пароль';
+    document.getElementById('pwi').value='';
+    setTimeout(function(){document.getElementById('pwe').textContent='';},2500);
   }
 }
-(function(){try{if(sessionStorage.getItem('at_ok')==='1')document.getElementById('loginScreen').style.display='none';}catch(e){}})();
+(function(){
+  var stored=getPW();
+  if(!stored){
+    document.getElementById('pwe').textContent='';
+    document.querySelector('.ls2').textContent='ВСТАНОВИ ПАРОЛЬ (перший вхід)';
+  } else {
+    try{ if(sessionStorage.getItem('_atpw')===stored) document.getElementById('ls').style.display='none'; }catch(e){}
+  }
+})();
 </script>
 
 <div class="wrap">
@@ -273,258 +304,241 @@ function checkPw(){
 <div class="topbar">
   <div>
     <div class="logo">APP<em>TRACK</em></div>
-    <div class="logo-sub">Weekly KPI Dashboard · від 01.03.2026</div>
+    <div class="logo-sub">Weekly KPI · від 01.03.2026</div>
   </div>
-  <div class="top-actions">
-    <div class="rdot">
-      <div class="rdot-dot" id="rdot"></div>
-      <span id="lupd">не завантажено</span>
-    </div>
-    <label style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px;">
-      Авто:
-      <select class="sel" id="autoRef" onchange="setAuto()">
+  <div class="top-r">
+    <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
+    <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
+      Авто: <select class="sel" id="aref" onchange="setAuto()">
         <option value="0">вимк.</option>
         <option value="5" selected>5 хв</option>
         <option value="10">10 хв</option>
         <option value="30">30 хв</option>
       </select>
     </label>
-    <button class="btn-outline" onclick="toggleSetup()" id="stoggle">⚙ Налаштування</button>
+    <button class="btn-o" onclick="toggleSetup()" id="stgl">⚙ Налаштування</button>
   </div>
 </div>
 
 <!-- SETUP -->
-<div id="setupEl" class="setup-card">
+<div id="setupEl" class="setup">
   <h2>⚙ Підключення Google Sheets</h2>
-  <div class="inputs-row">
-    <div class="input-group">
-      <label>Лист "23 Apps" — CSV URL</label>
-      <input class="text-input" id="u1" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=0&output=csv">
-      <div class="hint">Основний список: Name, Account, Vers, Brand, FDs...</div>
+  <div class="inp2">
+    <div class="ig">
+      <label>📋 "23 Apps" — CSV URL</label>
+      <input class="ti" id="u1" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=0&output=csv">
+      <div class="hint">Name, Account, Vers, Brand, FDs...</div>
     </div>
-    <div class="input-group">
-      <label>Лист "9 Rental" — CSV URL</label>
-      <input class="text-input" id="u2" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=ЧИСЛО&output=csv">
-      <div class="hint">Аналітика: App review, App live, App dead, Expenses, Lifetime...</div>
+    <div class="ig">
+      <label>💰 "9 Rental" — CSV URL</label>
+      <input class="ti" id="u2" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=ЧИСЛО&output=csv">
+      <div class="hint">App review, App live, App dead, Expenses, Lifetime (days)...</div>
     </div>
   </div>
-  <div class="steps-mini">
-    <h3>Як підключити (один раз)</h3>
-    <div class="steps-grid">
-      <div class="step"><div class="snum">1</div><div>Відкрий таблицю → лист <strong>"23 Apps"</strong></div></div>
-      <div class="step"><div class="snum">2</div><div><strong>Файл → Поділитися → Опублікувати в інтернеті</strong></div></div>
-      <div class="step"><div class="snum">3</div><div>Вибери лист → формат <strong style="color:var(--green)">CSV</strong> → Опублікувати</div></div>
-      <div class="step"><div class="snum">4</div><div>Скопіюй URL. Повтори для <strong>"9 Rental"</strong></div></div>
-      <div class="step"><div class="snum">5</div><div>Встав URLs вище → <strong style="color:var(--green)">Завантажити</strong></div></div>
+  <div class="steps">
+    <h3>Як підключити (1 раз)</h3>
+    <div class="sg">
+      <div class="si"><div class="sn">1</div><div>Відкрий таблицю → лист <b style="color:var(--t1)">"23 Apps"</b></div></div>
+      <div class="si"><div class="sn">2</div><div><b style="color:var(--t1)">Файл → Поділитися → Опублікувати в інтернеті</b></div></div>
+      <div class="si"><div class="sn">3</div><div>Вибери лист → <b style="color:var(--G)">CSV</b> → Опублікувати → скопіюй URL</div></div>
+      <div class="si"><div class="sn">4</div><div>Повтори для <b style="color:var(--t1)">"9 Rental"</b></div></div>
+      <div class="si"><div class="sn">5</div><div>Встав URLs → <b style="color:var(--G)">Завантажити</b> 🚀</div></div>
     </div>
   </div>
   <div class="load-row">
-    <button class="btn-primary" id="lbtn" onclick="loadData()">▶ Завантажити</button>
-    <span class="load-status" id="lst">—</span>
+    <button class="btn-green" id="lbtn" onclick="loadData()">▶ Завантажити</button>
+    <span class="lstat" id="lst">—</span>
   </div>
 </div>
-<div class="err-bar" id="errEl"></div>
-
-<!-- FILTER BAR -->
-<div class="filter-bar">
-  <div class="filter-section">
-    <span class="filter-label">Версія:</span>
-    <button class="ftag f-all on" onclick="setF('all',this)">Всі</button>
-    <button class="ftag f-gp" onclick="setF('gp',this)">✅ Сіра LIVE</button>
-    <button class="ftag f-gm" onclick="setF('gm',this)">⏳ Сіра MOD</button>
-    <button class="ftag f-wp" onclick="setF('wp',this)">🟦 Біла LIVE</button>
-    <button class="ftag f-wm" onclick="setF('wm',this)">🔶 Біла MOD</button>
-    <button class="ftag f-dead" onclick="setF('dead',this)">💀 Dead</button>
-  </div>
-  <div class="filter-section">
-    <span class="filter-label">Менеджер:</span>
-    <button class="ftag f-vlad" onclick="setF('vlad',this)">🔥 Влад</button>
-    <button class="ftag f-sanya" onclick="setF('sanya',this)">💎 Саня</button>
-  </div>
-  <div class="filter-section">
-    <button class="ftag f-kpi" onclick="setF('kpi',this)">⭐ КПІ тижня</button>
-  </div>
-  <div class="filter-section" style="gap:6px;">
-    <span class="filter-label">Дата від:</span>
-    <input type="date" class="week-inp" id="dateFrom" style="font-size:12px;padding:5px 10px;" onchange="rTable()">
-    <span class="filter-label">до:</span>
-    <input type="date" class="week-inp" id="dateTo" style="font-size:12px;padding:5px 10px;" onchange="rTable()">
-  </div>
-  <div class="search-wrap">
-    <input class="search-inp" placeholder="🔍 Пошук за назвою, акаунтом..." id="srch" oninput="doSearch()">
-  </div>
-</div>
+<div class="err" id="errEl"></div>
 
 <!-- WEEK BAR -->
-<div class="week-bar">
-  <span class="week-label">Тиждень:</span>
-  <input type="week" class="week-inp" id="weekPick">
-  <span class="week-range" id="wrange">—</span>
-  <div class="kpi-set">
-    <label>КПІ ціль:</label>
-    <input type="number" class="kpi-num" id="kpiT" value="15" min="1" oninput="rAll()">
-    <span style="font-size:12px;color:var(--text3);">сірих / тиждень</span>
+<div class="wbar">
+  <div class="wbar-top">
+    <span class="wlbl">Тиждень звіту:</span>
+    <input type="week" class="wi" id="wkPick">
+    <span class="wrange" id="wr">—</span>
+    <div class="kpi-set">
+      <label>КПІ ціль:</label>
+      <input type="number" class="kpi-in" id="kpiT" value="15" min="1" oninput="rAll()">
+      <span style="font-size:12px;color:var(--t3)">сірих / тиждень</span>
+    </div>
   </div>
-  <div class="week-pills-wrap" id="weekPills" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
-    <span class="week-label">Швидкий вибір:</span>
-    <span style="font-size:12px;color:var(--text3);">завантаж дані</span>
+  <div class="wpills" id="wpills">
+    <span class="wlbl">Тижні:</span>
+    <span style="font-size:12px;color:var(--t3)">завантаж дані</span>
   </div>
 </div>
 
 <!-- KPI CARDS -->
-<div class="kpi-grid">
-  <div class="kpi-card kt">
-    <div class="kpi-label">📦 Загальний КПІ тижня</div>
-    <div class="kpi-row">
-      <div class="kpi-num" id="kn0">0</div>
-      <div class="kpi-of" id="ko0">/ 15</div>
-    </div>
-    <div class="prog-track"><div class="prog-fill" id="kb0" style="width:0%"></div></div>
-    <div class="kpi-meta" id="km0">0% від цілі · Вибери тиждень</div>
+<div class="kg">
+  <div class="kc kt">
+    <div class="kc-lbl">📦 КПІ тижня (сірих ≥ 1 день)</div>
+    <div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div>
+    <div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div>
+    <div class="kc-m" id="km0">0% від цілі</div>
   </div>
-  <div class="kpi-card kv">
-    <div class="kpi-label">🔥 Влад — сірих ≥ 1 день</div>
-    <div class="kpi-row">
-      <div class="kpi-num" id="kn1">0</div>
-      <div class="kpi-of" id="ko1">/ ~8</div>
-    </div>
-    <div class="prog-track"><div class="prog-fill" id="kb1" style="width:0%"></div></div>
-    <div class="kpi-meta" id="km1">сірих опублікованих</div>
+  <div class="kc kv">
+    <div class="kc-lbl">🔥 Влад (V...)</div>
+    <div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div>
+    <div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div>
+    <div class="kc-m" id="km1">сірих ≥ 1 день</div>
   </div>
-  <div class="kpi-card ks">
-    <div class="kpi-label">💎 Саня — сірих ≥ 1 день</div>
-    <div class="kpi-row">
-      <div class="kpi-num" id="kn2">0</div>
-      <div class="kpi-of" id="ko2">/ ~7</div>
-    </div>
-    <div class="prog-track"><div class="prog-fill" id="kb2" style="width:0%"></div></div>
-    <div class="kpi-meta" id="km2">сірих опублікованих</div>
+  <div class="kc ks">
+    <div class="kc-lbl">💎 Саня (решта)</div>
+    <div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div>
+    <div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div>
+    <div class="kc-m" id="km2">сірих ≥ 1 день</div>
   </div>
 </div>
 
 <!-- STAT ROW -->
-<div class="stat-row">
-  <div class="stat-box"><div class="stat-lbl">⭐ КПІ (сірих ≥1д)</div><div class="stat-val" style="color:var(--green)" id="ss0">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">⏳ Сірих MOD</div><div class="stat-val" style="color:var(--yellow)" id="ss1">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">🟦 Білих LIVE</div><div class="stat-val" style="color:var(--blue)" id="ss2">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">💀 Dead всього</div><div class="stat-val" style="color:var(--red)" id="ss3">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">🔥 Влад КПІ</div><div class="stat-val" style="color:var(--vlad)" id="ss4">0</div></div>
-  <div class="stat-box"><div class="stat-lbl">💎 Саня КПІ</div><div class="stat-val" style="color:var(--sanya)" id="ss5">0</div></div>
+<div class="sr">
+  <div class="sb"><div class="sb-l">⭐ КПІ (сірих ≥1д)</div><div class="sb-v" style="color:var(--G)" id="s0">0</div></div>
+  <div class="sb"><div class="sb-l">🟢 Живих зараз</div><div class="sb-v" style="color:var(--G)" id="s1">0</div></div>
+  <div class="sb"><div class="sb-l">⏳ Сірих на модерації</div><div class="sb-v" style="color:var(--Y)" id="s2">0</div></div>
+  <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
+  <div class="sb"><div class="sb-l">💀 Dead всього</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
+  <div class="sb"><div class="sb-l">📊 Всього (з 01.03)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
+</div>
+
+<!-- ACTIVE NOW -->
+<div class="active-grid">
+  <div class="ac">
+    <div class="ac-head">
+      <span class="ac-title">🟢 Живуть прямо зараз</span>
+      <span class="ac-badge" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)" id="ac1cnt">0</span>
+    </div>
+    <div id="ac1list"><div class="empty"><div class="ei">🌱</div><div class="et">Завантаж дані</div></div></div>
+  </div>
+  <div class="ac">
+    <div class="ac-head">
+      <span class="ac-title">📅 Залиті цього тижня (Пн–Сьогодні)</span>
+      <span class="ac-badge" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="ac2cnt">0</span>
+    </div>
+    <div id="ac2list"><div class="empty"><div class="ei">📱</div><div class="et">Завантаж дані</div></div></div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="fbar">
+  <div class="fsec">
+    <span class="flbl">Версія:</span>
+    <button class="chip all on" onclick="setF('all',this)">Всі</button>
+    <button class="chip gp" onclick="setF('gp',this)">✅ Сіра LIVE</button>
+    <button class="chip gm" onclick="setF('gm',this)">⏳ Сіра MOD</button>
+    <button class="chip wp" onclick="setF('wp',this)">🟦 Біла LIVE</button>
+    <button class="chip wm" onclick="setF('wm',this)">🔶 Біла MOD</button>
+    <button class="chip dead" onclick="setF('dead',this)">💀 Dead</button>
+    <button class="chip alive" onclick="setF('alive',this)">🟢 Живі</button>
+  </div>
+  <div class="fdiv"></div>
+  <div class="fsec">
+    <span class="flbl">Хто:</span>
+    <button class="chip vlad" onclick="setF('vlad',this)">🔥 Влад</button>
+    <button class="chip sanya" onclick="setF('sanya',this)">💎 Саня</button>
+  </div>
+  <div class="fdiv"></div>
+  <div class="fsec">
+    <button class="chip kpi" onclick="setF('kpi',this)">⭐ КПІ тижня</button>
+    <button class="chip reset" onclick="resetF()">✕ Скинути</button>
+  </div>
+  <input class="srch-inp" placeholder="🔍 Пошук..." id="srch" oninput="doSearch()">
 </div>
 
 <!-- MAIN TABLE -->
-<div class="section">
-  <div class="section-head">
-    <span class="section-title">📱 Всі додатки</span>
-    <span class="badge" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)" id="bcnt">0 записів</span>
+<div class="sec">
+  <div class="sec-h">
+    <span class="sec-t">📱 Всі додатки (від 01.03.2026)</span>
+    <span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)" id="bcnt">0 записів</span>
   </div>
-  <div class="tbl-wrap">
+  <div class="tw">
     <table>
       <thead><tr>
-        <th style="width:40px">#</th>
+        <th style="width:38px">#</th>
         <th onclick="srt('name')">Назва</th>
-        <th style="width:60px">КПІ</th>
-        <th onclick="srt('vnum')">Версія</th>
+        <th onclick="srt('vnum')" style="width:120px">Версія</th>
+        <th style="width:65px">КПІ?</th>
         <th onclick="srt('manager')">Менеджер</th>
-        <th onclick="srt('account')">Акаунт</th>
-        <th onclick="srt('brand')">Brand</th>
+        <th onclick="srt('acc')">Акаунт</th>
         <th onclick="srt('reviewRaw')">App Review</th>
         <th onclick="srt('liveRaw')">App Live</th>
         <th onclick="srt('deadRaw')">App Dead</th>
-        <th onclick="srt('lifetime')">Lifetime</th>
+        <th onclick="srt('computedLife')">Lifetime</th>
         <th onclick="srt('expenses')">Expenses</th>
         <th>Comments</th>
       </tr></thead>
-      <tbody id="mainBody">
-        <tr><td colspan="13"><div class="empty"><div class="empty-ico">📊</div><div class="empty-txt">Підключи Google Sheets і завантаж дані</div></div></td></tr>
+      <tbody id="mainTb">
+        <tr><td colspan="12"><div class="empty"><div class="ei">📊</div><div class="et">Підключи таблиці і завантаж дані</div></div></td></tr>
       </tbody>
     </table>
   </div>
 </div>
 
 <!-- WEEKLY REPORT -->
-<div class="section">
-  <div class="section-head">
-    <span class="section-title">📅 Тижневі звіти</span>
-    <span class="badge" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)" id="bwks">0 тижнів</span>
+<div class="sec">
+  <div class="sec-h">
+    <span class="sec-t">📅 Тижневі звіти (авто)</span>
+    <span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="bwks">0 тижнів</span>
   </div>
-  <div class="tbl-wrap">
+  <div class="tw">
     <table>
       <thead><tr>
-        <th>Тиждень</th>
-        <th>КПІ ✅</th>
-        <th>Влад 🔥</th>
-        <th>Саня 💎</th>
-        <th>Dead 💀</th>
-        <th>Expenses</th>
-        <th>Бан-рейт</th>
-        <th>% виконання</th>
+        <th>Тиждень</th><th>КПІ ✅</th><th>Влад</th><th>Саня</th>
+        <th>Dead цього тижня</th><th>Expenses</th><th>Бан-рейт</th><th>% цілі</th>
       </tr></thead>
-      <tbody id="wkBody">
-        <tr><td colspan="8"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr>
-      </tbody>
+      <tbody id="wkTb"><tr><td colspan="8"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr></tbody>
     </table>
   </div>
 </div>
 
 <!-- ANALYSIS + FINANCE -->
-<div class="two-col">
-  <div class="section" style="margin-bottom:0">
-    <div class="section-head">
-      <span class="section-title">🚫 Причини смерті</span>
-      <span class="badge" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)" id="bdead">0 dead</span>
-    </div>
-    <div id="banDiv"><div class="empty"><div class="empty-ico">💀</div><div class="empty-txt">Немає dead або не завантажено</div></div></div>
+<div class="two">
+  <div class="sec" style="margin:0">
+    <div class="sec-h"><span class="sec-t">🚫 Причини бану</span><span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bban">0</span></div>
+    <div id="banDiv"><div class="empty"><div class="ei">✅</div><div class="et">Немає даних</div></div></div>
   </div>
-  <div class="section" style="margin-bottom:0">
-    <div class="section-head">
-      <span class="section-title">💰 Фінанси (вибраний тиждень)</span>
-      <span class="badge" style="background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)" id="bfin">$0</span>
-    </div>
-    <div class="fin-row"><span class="fin-lbl">Витрати тижня</span><span class="fin-val" style="color:var(--red)" id="f0">$0</span></div>
-    <div class="fin-row"><span class="fin-lbl">Влад витрати</span><span class="fin-val" style="color:var(--vlad)" id="f1">$0</span></div>
-    <div class="fin-row"><span class="fin-lbl">Саня витрати</span><span class="fin-val" style="color:var(--sanya)" id="f2">$0</span></div>
-    <div class="fin-row"><span class="fin-lbl">Paid weeks</span><span class="fin-val" style="color:var(--yellow)" id="f3">0</span></div>
-    <div class="fin-row"><span class="fin-lbl">Сер. expenses / апп</span><span class="fin-val" id="f4">$0</span></div>
-    <div class="fin-row"><span class="fin-lbl">Сер. lifetime</span><span class="fin-val" id="f5">0 дн.</span></div>
-    <div class="fin-row"><span class="fin-lbl">Бан-рейт тижня</span><span class="fin-val" id="f6">0%</span></div>
+  <div class="sec" style="margin:0">
+    <div class="sec-h"><span class="sec-t">💰 Фінанси (вибраний тиждень)</span><span class="bdg" style="background:var(--Yb);color:var(--Y);border:1px solid var(--Ybo)" id="bfin">$0</span></div>
+    <div class="fr"><span class="fl">Витрати тижня</span><span class="fv" style="color:var(--R)" id="f0">$0</span></div>
+    <div class="fr"><span class="fl">Влад</span><span class="fv" style="color:var(--O)" id="f1">$0</span></div>
+    <div class="fr"><span class="fl">Саня</span><span class="fv" style="color:var(--B)" id="f2">$0</span></div>
+    <div class="fr"><span class="fl">Paid weeks</span><span class="fv" style="color:var(--Y)" id="f3">0</span></div>
+    <div class="fr"><span class="fl">Сер. expenses / апп</span><span class="fv" id="f4">$0</span></div>
+    <div class="fr"><span class="fl">Сер. lifetime (живих)</span><span class="fv" id="f5">0 дн.</span></div>
+    <div class="fr"><span class="fl">Бан-рейт</span><span class="fv" id="f6">0%</span></div>
   </div>
 </div>
-<div style="margin-bottom:24px"></div>
+<div style="margin-bottom:22px"></div>
 
 <!-- MGR TABLE -->
-<div class="section">
-  <div class="section-head"><span class="section-title">👥 По менеджерах (вибраний тиждень)</span></div>
-  <div class="tbl-wrap">
+<div class="sec">
+  <div class="sec-h"><span class="sec-t">👥 По менеджерах</span></div>
+  <div class="tw">
     <table>
       <thead><tr>
-        <th>Менеджер</th><th>КПІ ✅</th><th>Сіра MOD ⏳</th>
-        <th>Біла LIVE</th><th>Dead 💀</th><th>Всього</th>
-        <th>Бан-рейт</th><th>Expenses</th><th>% КПІ</th>
+        <th>Менеджер</th><th>КПІ ✅</th><th>Сіра MOD</th><th>Біла LIVE</th>
+        <th>Dead</th><th>Живих зараз</th><th>Всього</th><th>Бан-рейт</th><th>Expenses</th><th>% КПІ</th>
       </tr></thead>
-      <tbody id="mgrBody">
-        <tr><td colspan="9"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr>
-      </tbody>
+      <tbody id="mgrTb"><tr><td colspan="10"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
     </table>
   </div>
 </div>
 
 <!-- DEAD DETAIL -->
-<div class="section">
-  <div class="section-head">
-    <span class="section-title">💀 Dead Apps — деталі</span>
-    <span class="badge" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)" id="bdead2">0</span>
+<div class="sec">
+  <div class="sec-h">
+    <span class="sec-t">💀 Dead apps — деталі</span>
+    <span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bdd">0</span>
   </div>
-  <div class="tbl-wrap">
+  <div class="tw">
     <table>
       <thead><tr>
         <th>Назва</th><th>Менеджер</th><th>Акаунт</th>
         <th>App Review</th><th>App Live</th><th>App Dead</th>
         <th>Lifetime</th><th>Expenses</th><th>Причина</th>
       </tr></thead>
-      <tbody id="deadBody">
-        <tr><td colspan="9"><div class="empty" style="padding:32px"><div class="empty-ico">✅</div><div class="empty-txt">Немає dead</div></div></td></tr>
-      </tbody>
+      <tbody id="deadTb"><tr><td colspan="9"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr></tbody>
     </table>
   </div>
 </div>
@@ -532,24 +546,22 @@ function checkPw(){
 </div><!-- /wrap -->
 
 <script>
-// ═══════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════
-var CUT = new Date(2026, 2, 1); // 01.03.2026 — фільтр початку
+// ════════════════════════════════════════
+// КОНФІГ
+var CUT = new Date(2026, 2, 1); // 01.03.2026
+var TODAY = new Date(); TODAY.setHours(23,59,59,999);
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
-var S1=[],S2=[],ALL=[],WEEKS=[];
+var S1=[], S2=[], ALL=[], WEEKS=[];
 var curF='all', curQ='', sortC='', sortD=1;
 var selWk='all';
 var autoT=null, setupOpen=true;
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════
 (function(){
-  var wp=document.getElementById('weekPick');
+  var wp=document.getElementById('wkPick');
   var now=new Date();
   var sun=new Date(now); sun.setDate(now.getDate()-now.getDay());
   wp.value=sun.getFullYear()+'-W'+pad(isoWk(sun));
@@ -562,82 +574,99 @@ var autoT=null, setupOpen=true;
 })();
 
 function pad(n){return String(n).padStart(2,'0');}
-function gl(k){try{return localStorage.getItem('at4_'+k)||'';}catch(e){return'';}}
-function sl(k,v){try{localStorage.setItem('at4_'+k,v);}catch(e){}}
+function gl(k){try{return localStorage.getItem('at5_'+k)||'';}catch(e){return'';}}
+function sl(k,v){try{localStorage.setItem('at5_'+k,v);}catch(e){}}
 
+// ISO week (Mon-based ISO8601)
 function isoWk(d){
   var dd=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
   dd.setUTCDate(dd.getUTCDate()+4-(dd.getUTCDay()||7));
   return Math.ceil((((dd-new Date(Date.UTC(dd.getUTCFullYear(),0,1)))/864e5)+1)/7);
 }
 
+// Week key = Sunday-based: Sun DD.MM - Sat DD.MM
+// We use Sun as start of reporting week
 function wkKey(d){
   var s=new Date(d); s.setDate(d.getDate()-d.getDay()); s.setHours(0,0,0,0);
-  return s.getFullYear()+'-W'+pad(isoWk(s));
+  return s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
 }
 
 function wkLabel(key){
-  var p=key.split('-W'),y=+p[0],w=+p[1];
-  var j4=new Date(y,0,4),day=j4.getDay()||7;
-  var mon=new Date(j4); mon.setDate(j4.getDate()-day+1+(w-1)*7);
-  var sun=new Date(mon); sun.setDate(mon.getDate()-1);
+  var sun=new Date(key);
   var sat=new Date(sun); sat.setDate(sun.getDate()+6);
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
   return f(sun)+' – '+f(sat);
 }
 
+function wkStart(key){return new Date(key);}
+function wkEnd(key){var d=new Date(key); d.setDate(d.getDate()+6); d.setHours(23,59,59,999); return d;}
+
+// Get monday of current week
+function thisMonday(){
+  var d=new Date(); var day=d.getDay(); var diff=day===0?-6:1-day;
+  d.setDate(d.getDate()+diff); d.setHours(0,0,0,0); return d;
+}
+
 function upWR(){
-  var v=document.getElementById('weekPick').value; if(!v)return;
+  var v=document.getElementById('wkPick').value; if(!v)return;
   var p=v.split('-W'),y=+p[0],w=+p[1];
   var j4=new Date(y,0,4),day=j4.getDay()||7;
   var mon=new Date(j4); mon.setDate(j4.getDate()-day+1+(w-1)*7);
   var sun=new Date(mon); sun.setDate(mon.getDate()-1);
   var sat=new Date(sun); sat.setDate(sun.getDate()+6);
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
-  document.getElementById('wrange').textContent=f(sun)+' – '+f(sat);
+  document.getElementById('wr').textContent=f(sun)+' – '+f(sat);
+}
+
+// Convert week picker value to wkKey format (Sunday)
+function pickerToWkKey(v){
+  if(!v)return null;
+  var p=v.split('-W'),y=+p[0],w=+p[1];
+  var j4=new Date(y,0,4),day=j4.getDay()||7;
+  var mon=new Date(j4); mon.setDate(j4.getDate()-day+1+(w-1)*7);
+  var sun=new Date(mon); sun.setDate(mon.getDate()-1);
+  return sun.getFullYear()+'-'+pad(sun.getMonth()+1)+'-'+pad(sun.getDate());
 }
 
 function setAuto(){
   if(autoT){clearInterval(autoT);autoT=null;}
-  var m=+document.getElementById('autoRef').value;
-  if(m>0)autoT=setInterval(function(){loadData(true);},m*60000);
+  var m=+document.getElementById('aref').value;
+  if(m>0) autoT=setInterval(function(){loadData(true);},m*60000);
 }
 
-var setupOpen=true;
 function toggleSetup(){
   setupOpen=!setupOpen;
   document.getElementById('setupEl').style.display=setupOpen?'block':'none';
-  document.getElementById('stoggle').textContent=setupOpen?'✕ Сховати':'⚙ Налаштування';
+  document.getElementById('stgl').textContent=setupOpen?'✕ Сховати':'⚙ Налаштування';
 }
 
 function showErr(m){var e=document.getElementById('errEl');e.textContent=m;e.style.display='block';}
 function hideErr(){document.getElementById('errEl').style.display='none';}
 function setLd(v){
   var b=document.getElementById('lbtn');
-  if(v){b.classList.add('loading');b.innerHTML='<span class="spin"></span>Завантаження...';}
-  else{b.classList.remove('loading');b.textContent='▶ Завантажити';}
+  if(v){b.classList.add('ld');b.innerHTML='<span class="spin"></span>Завантаження...';}
+  else{b.classList.remove('ld');b.textContent='▶ Завантажити';}
 }
 
-// ═══════════════════════════════════════════════
-// CSV
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
+// CSV PARSE
 function parseCSV(txt){
-  var lines=txt.split('\n'),hdrs=[],rows=[];
+  var lines=txt.split('\n'),h=[],rows=[];
   for(var i=0;i<lines.length;i++){
-    var c=sLine(lines[i]);
-    if(i===0){hdrs=c.map(function(h){return h.trim();});continue;}
+    var c=spl(lines[i]);
+    if(i===0){h=c.map(function(x){return x.trim();});continue;}
     if(c.every(function(x){return!x.trim();}))continue;
-    var o={};hdrs.forEach(function(h,j){o[h]=(c[j]||'').trim();});
+    var o={};h.forEach(function(k,j){o[k]=(c[j]||'').trim();});
     rows.push(o);
   }
   return rows;
 }
-function sLine(l){
+function spl(line){
   var r=[],c='',q=false;
-  for(var i=0;i<l.length;i++){
-    if(l[i]==='"')q=!q;
-    else if(l[i]===','&&!q){r.push(c.replace(/^"|"$/g,''));c='';}
-    else c+=l[i];
+  for(var i=0;i<line.length;i++){
+    if(line[i]==='"')q=!q;
+    else if(line[i]===','&&!q){r.push(c.replace(/^"|"$/g,''));c='';}
+    else c+=line[i];
   }
   r.push(c.replace(/^"|"$/g,''));
   return r;
@@ -646,15 +675,14 @@ async function fetchCSV(url){
   var us=[url,'https://corsproxy.io/?'+encodeURIComponent(url)];
   var last;
   for(var i=0;i<us.length;i++){
-    try{var r=await fetch(us[i],{cache:'no-cache'});if(r.ok){var t=await r.text();if(t.length>20&&t.includes(','))return t;}}
-    catch(e){last=e;}
+    try{var r=await fetch(us[i],{cache:'no-cache'});if(r.ok){var t=await r.text();if(t.length>30&&t.includes(','))return t;}}
+    catch(ex){last=ex;}
   }
   throw last||new Error('Не вдалось завантажити CSV');
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
 // LOAD
-// ═══════════════════════════════════════════════
 async function loadData(silent){
   var u1v=document.getElementById('u1').value.trim();
   var u2v=document.getElementById('u2').value.trim();
@@ -665,28 +693,26 @@ async function loadData(silent){
     var t1=await fetchCSV(u1v), t2=u2v?await fetchCSV(u2v):'';
     S1=parseCSV(t1); S2=u2v?parseCSV(t2):[];
     merge(); buildWeeks(); renderPills(); rAll();
-    document.getElementById('lupd').textContent='Оновлено '+new Date().toLocaleTimeString('uk-UA');
-    var rd=document.getElementById('rdot'); rd.className='rdot-dot on';
-    var totalS1=S1.length;
-    var filtered=totalS1-ALL.length;
-    document.getElementById('lst').innerHTML='✅ <strong>'+ALL.length+'</strong> записів від 01.03.2026 · відфільтровано: <span style="color:var(--text3)">'+filtered+' (до березня або без дат)</span>';
-    sl('u1',u1v); if(u2v)sl('u2',u2v);
+    var now=new Date();
+    document.getElementById('lupd').textContent='Оновлено '+now.toLocaleTimeString('uk-UA');
+    document.getElementById('rdot').className='ldot on';
+    document.getElementById('lst').innerHTML='✅ <b>'+ALL.length+'</b> записів від 01.03.2026';
+    sl('u1',u1v);if(u2v)sl('u2',u2v);
     if(setupOpen)toggleSetup();
   }catch(ex){
-    if(!silent)showErr('Помилка: '+ex.message+'. Переконайся що таблиця опублікована: Файл → Опублікувати → CSV');
-    document.getElementById('lst').textContent='❌ Помилка завантаження';
+    if(!silent)showErr('Помилка: '+ex.message);
+    document.getElementById('lst').textContent='❌ Помилка';
   }finally{if(!silent)setLd(false);}
 }
 
-// ═══════════════════════════════════════════════
-// PARSE HELPERS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
+// HELPERS
 function pDate(s){
-  if(!s||!s.trim())return null;
+  if(!s||!s.trim())return null; s=s.trim();
   var m;
-  m=s.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
   if(m)return new Date(+m[3],+m[2]-1,+m[1]);
-  m=s.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(m)return new Date(+m[1],+m[2]-1,+m[3]);
   return null;
 }
@@ -695,33 +721,36 @@ function dayDiff(a,b){return Math.round((b-a)/864e5);}
 function pVers(raw){
   var s=(raw||'').trim();
   if(!s||s==='-')return{t:'dr',lbl:'—',n:0};
-  var mod=s.endsWith('?'),n=parseFloat(s.replace('?',''));
+  var mod=s.endsWith('?'),n=parseFloat(s.replace(/\?/g,''));
   if(isNaN(n))return{t:'dr',lbl:s,n:0};
   if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
   if(n>=1)return mod?{t:'wm',lbl:s,n:n}:{t:'wp',lbl:s,n:n};
   return{t:'dr',lbl:s,n:0};
 }
-
 function getMgr(acc){
   if(!acc)return'other';
-  if(acc.startsWith('(O)'))return'other';
-  if(acc.startsWith('(V)'))return'vlad';
+  if(/^\(O\)/i.test(acc))return'other';
+  if(/^\(V\)/i.test(acc))return'vlad';
   return'sanya';
 }
 
-// ═══════════════════════════════════════════════
-// MERGE
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
+// MERGE — ключова логіка
 function merge(){
+  // Будуємо map по імені з S2
   var m2={};
   S2.forEach(function(r){
     var k=(r['App name']||r['Name']||'').trim().toLowerCase();
     if(k)m2[k]=r;
   });
+
   ALL=[];
   S1.forEach(function(r){
     var name=(r['Name']||'').trim(); if(!name)return;
-    var s2=m2[name.toLowerCase()]||{};
+    var s2=m2[name.toLowerCase()];
+    // Якщо немає запису в S2 — пропускаємо (немає дат = не можемо фільтрувати)
+    if(!s2)return;
+
     var acc=(r['Account']||'').trim();
     var vers=pVers(r['Vers']||'');
     var mgr=getMgr(acc);
@@ -730,271 +759,352 @@ function merge(){
     var liveDate=pDate(s2['App live']||'');
     var deadDate=pDate(s2['App dead']||'');
 
-    // ── ФІЛЬТР: тільки від 01.03.2026 ──
-    // Потрібна хоча б одна дата з S2 (App review або App live)
-    // Якщо s2 порожній (нема матчу по імені) — пропускаємо
-    if(Object.keys(s2).length===0)return;
-    var refDate=reviewDate||liveDate;
-    if(!refDate)return;
-    if(refDate<CUT)return;
+    // ── ФІЛЬТР від 01.03.2026 ──
+    // Беремо найстарішу дату що є
+    var anchor=reviewDate||liveDate;
+    if(!anchor)return;         // немає жодної дати
+    if(anchor<CUT)return;      // старіше березня
 
     var lifetimeRaw=(s2['Lifetime (days)']||'').trim();
-    var lifetime=0;
+
+    // ── LIFETIME РОЗРАХУНОК ──
+    // Правило: Lifetime (days) заповнюється ТІЛЬКИ коли додаток помер
+    // Якщо порожній:
+    //   - є App live + немає App dead → ЖИВИЙ → lifetime = сьогодні - App live
+    //   - є App live + є App dead (але lifetime не записали) → dead-live
+    // Якщо є значення → фінальна цифра після бану
+    var computedLife=0;
+    var isAlive=false;
     if(lifetimeRaw!==''){
-      lifetime=parseInt(lifetimeRaw)||0;
+      computedLife=parseInt(lifetimeRaw)||0;
+      isAlive=false; // є lifetime → помер
+    } else if(liveDate&&!deadDate){
+      computedLife=Math.max(0,dayDiff(liveDate,new Date()));
+      isAlive=true; // живий
     } else if(liveDate&&deadDate){
-      lifetime=Math.max(0,dayDiff(liveDate,deadDate));
+      computedLife=Math.max(0,dayDiff(liveDate,deadDate));
+      isAlive=false;
+    } else {
+      computedLife=0;
+      isAlive=false;
     }
 
     var expenses=parseFloat((s2['Expenses']||'0').replace(/[^\d.]/g,''))||0;
     var paidWeeks=parseInt(s2['Paid weeks']||'0')||0;
     var comments=(s2['Comments']||'').trim();
 
-    // App status
+    // ── СТАТУС ──
     var fds=(r['FDs']||r['App status']||'').trim().toLowerCase();
-    var appStatus='unknown';
-    if(fds==='live')appStatus='live';
-    else if(fds==='dead')appStatus='dead';
-    else if(fds.includes('invalid')||fds.includes('missing'))appStatus='removed';
-    else if(deadDate)appStatus='dead';
-    else if(liveDate&&!deadDate)appStatus='live';
+    var appStatus;
+    if(fds==='live') appStatus='live';
+    else if(fds==='dead') appStatus='dead';
+    else if(fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend')) appStatus='dead';
+    else if(isAlive) appStatus='live';
+    else if(deadDate||lifetimeRaw!=='') appStatus='dead';
+    else if(liveDate) appStatus='live';
+    else appStatus='unknown';
 
-    // KPI eligibility:
-    // - версія >= 3
-    // - прожила >= 1 день: ще жива (deadDate=null+liveDate) OR lifetime>=1 OR dead-live>=1
+    // Якщо isAlive але fds=dead — довіряємо fds
+    if(fds==='dead'&&isAlive) isAlive=false;
+
+    // ── KPI ЛОГІКА ──
+    // Умови КПІ для конкретного тижня:
+    // 1. vers.n >= 3 (сіра версія в першій таблиці)
+    // 2. App review дата потрапляє в тиждень
+    // 3. Прожила >= 1 день:
+    //    - isAlive → живий, точно >= 1 день якщо liveDate є
+    //    - computedLife >= 1
     var isGrey=(vers.n>=3);
-    var isAlive=(!deadDate&&liveDate);
-    var livedDay=(lifetimeRaw!==''&&lifetime>=1)||(liveDate&&deadDate&&dayDiff(liveDate,deadDate)>=1)||isAlive;
+    var survived1day = isAlive ? (liveDate&&computedLife>=1) : (computedLife>=1);
 
     ALL.push({
-      name,acc,manager:mgr,vers,vnum:vers.n,
+      name, acc, manager:mgr, vers, vnum:vers.n,
       brand:(r['Brand']||'').trim(),
-      appStatus,
-      reviewDate,reviewRaw:(s2['App review']||'').trim(),
-      liveDate,liveRaw:(s2['App live']||'').trim(),
-      deadDate,deadRaw:(s2['App dead']||'').trim(),
-      expenses,paidWeeks,lifetime,comments,
-      reviewWk:reviewDate?wkKey(reviewDate):null,
-      liveWk:liveDate?wkKey(liveDate):null,
-      deadWk:deadDate?wkKey(deadDate):null,
-      isGrey,livedDay
+      appStatus, isAlive,
+      reviewDate, reviewRaw:(s2['App review']||'').trim(),
+      liveDate, liveRaw:(s2['App live']||'').trim(),
+      deadDate, deadRaw:(s2['App dead']||'').trim(),
+      expenses, paidWeeks, computedLife, comments,
+      reviewWk: reviewDate?wkKey(reviewDate):null,
+      liveWk: liveDate?wkKey(liveDate):null,
+      deadWk: deadDate?wkKey(deadDate):null,
+      isGrey, survived1day
     });
   });
 }
 
-// KPI check for a week
-function isKPI(row,wk){
-  if(!row.isGrey||!row.livedDay)return false;
-  if(wk==='all')return row.reviewWk!==null;
+// KPI для конкретного тижня
+function isKPI(row, wk){
+  if(!row.isGrey || !row.survived1day) return false;
+  if(!row.reviewWk) return false;
+  if(wk==='all') return true;
   return row.reviewWk===wk;
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
 // WEEKS
-// ═══════════════════════════════════════════════
 function buildWeeks(){
   var ws={};
-  ALL.forEach(function(r){
-    if(r.reviewWk)ws[r.reviewWk]=true;
-  });
+  ALL.forEach(function(r){if(r.reviewWk)ws[r.reviewWk]=true;});
   WEEKS=Object.keys(ws).sort();
 }
 
+function getSelWk(){
+  // selWk is either 'all' or a wkKey string (YYYY-MM-DD of Sunday)
+  if(selWk!=='all') return selWk;
+  // Try to get from picker
+  var v=document.getElementById('wkPick').value;
+  return v?pickerToWkKey(v):'all';
+}
+
 function renderPills(){
-  var div=document.getElementById('weekPills');
-  if(!WEEKS.length){div.innerHTML='<span class="week-label">Швидкий вибір:</span><span style="font-size:12px;color:var(--text3)">немає даних</span>';return;}
-  var html='<span class="week-label">Швидкий вибір:</span>';
-  html+='<button class="wpill'+(selWk==='all'?' on':'')+'" onclick="selW(\'all\')">Всі тижні</button>';
+  var div=document.getElementById('wpills');
+  var html='<span class="wlbl">Тижні:</span>';
+  html+='<button class="wpill'+(selWk==='all'?' on':'')+'" onclick="selW(\'all\')">Всі</button>';
   WEEKS.slice().reverse().forEach(function(wk){
     html+='<button class="wpill'+(selWk===wk?' on':'')+'" onclick="selW(\''+wk+'\')">'+wkLabel(wk)+'</button>';
   });
   div.innerHTML=html;
   document.getElementById('bwks').textContent=WEEKS.length+' тижнів';
 }
+function selW(wk){
+  selWk=wk;
+  // Sync week picker if specific week
+  if(wk!=='all'){
+    // find ISO week from Sunday date
+    var sun=new Date(wk);
+    var mon=new Date(sun); mon.setDate(sun.getDate()+1);
+    document.getElementById('wkPick').value=mon.getFullYear()+'-W'+pad(isoWk(mon));
+    upWR();
+  }
+  renderPills();
+  rAll();
+}
 
-function selW(wk){selWk=wk;renderPills();rAll();}
-
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════
 // RENDER ALL
-// ═══════════════════════════════════════════════
-function rAll(){rKPI();rStats();rTable();rWk();rBan();rFin();rMgr();rDead();}
+function rAll(){
+  var wk=selWk==='all'?'all':selWk;
+  rKPI(wk); rStats(wk); rActive(); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
+}
 
-function rKPI(){
+// ════════════════════════════════════════
+// KPI
+function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
-  var vt=Math.round(tgt*0.53),st=tgt-vt;
-  var wk=selWk;
+  var vt=Math.round(tgt*0.53), st=tgt-vt;
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
-  var tot=ka.length,vl=ka.filter(function(r){return r.manager==='vlad';}).length;
+  var tot=ka.length;
+  var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
   var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-  var p=function(n,d){return Math.min(Math.round(n/Math.max(d,1)*100),100);};
+  var pct=function(n,d){return Math.min(Math.round(n/Math.max(d,1)*100),100);};
   var wlbl=wk==='all'?'Всі тижні від 01.03.26':wkLabel(wk);
 
-  q('kn0',tot); q('ko0','/ '+tgt);
-  document.getElementById('kb0').style.width=p(tot,tgt)+'%';
-  q('km0',p(tot,tgt)+'% від цілі · '+wlbl);
-  q('kn1',vl); q('ko1','/ ~'+vt);
-  document.getElementById('kb1').style.width=p(vl,vt)+'%';
-  q('km1',p(vl,vt)+'% від цілі · '+vl+' з '+tot);
-  q('kn2',sa); q('ko2','/ ~'+st);
-  document.getElementById('kb2').style.width=p(sa,st)+'%';
-  q('km2',p(sa,st)+'% від цілі · '+sa+' з '+tot);
+  Q('kn0',tot); Q('ko0','/ '+tgt);
+  document.getElementById('kp0').style.width=pct(tot,tgt)+'%';
+  Q('km0',pct(tot,tgt)+'% від цілі · '+wlbl);
+  Q('kn1',vl); Q('ko1','/ ~'+vt);
+  document.getElementById('kp1').style.width=pct(vl,vt)+'%';
+  Q('km1',pct(vl,vt)+'% · '+vl+'/'+tot+' КПІ');
+  Q('kn2',sa); Q('ko2','/ ~'+st);
+  document.getElementById('kp2').style.width=pct(sa,st)+'%';
+  Q('km2',pct(sa,st)+'% · '+sa+'/'+tot+' КПІ');
 }
 
-function rStats(){
-  var wk=selWk;
+// ════════════════════════════════════════
+// STATS
+function rStats(wk){
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
-  q('ss0',ka.length);
-  q('ss1',ALL.filter(function(r){return r.vers.t==='gm';}).length);
-  q('ss2',ALL.filter(function(r){return r.vers.t==='wp';}).length);
-  q('ss3',ALL.filter(function(r){return r.appStatus==='dead';}).length);
-  q('ss4',ka.filter(function(r){return r.manager==='vlad';}).length);
-  q('ss5',ka.filter(function(r){return r.manager==='sanya';}).length);
+  Q('s0',ka.length);
+  Q('s1',ALL.filter(function(r){return r.isAlive;}).length);
+  Q('s2',ALL.filter(function(r){return r.vers.t==='gm';}).length);
+  Q('s3',ALL.filter(function(r){return r.vers.t==='wp';}).length);
+  Q('s4',ALL.filter(function(r){return r.appStatus==='dead';}).length);
+  Q('s5',ALL.length);
 }
 
-function getVis(){
-  var wk=selWk;
-  var dfEl=document.getElementById('dateFrom'), dtEl=document.getElementById('dateTo');
-  var df=dfEl&&dfEl.value?new Date(dfEl.value):null;
-  var dt=dtEl&&dtEl.value?new Date(dtEl.value+' 23:59:59'):null;
+// ════════════════════════════════════════
+// ACTIVE NOW
+function rActive(){
+  // Section 1: Живих зараз (isAlive = true, computedLife >= 1)
+  var alive=ALL.filter(function(r){return r.isAlive;})
+    .sort(function(a,b){return b.computedLife-a.computedLife;});
+  document.getElementById('ac1cnt').textContent=alive.length;
+  var d1=document.getElementById('ac1list');
+  if(!alive.length){d1.innerHTML='<div class="empty"><div class="ei">🌱</div><div class="et">Живих немає</div></div>';return;}
+  d1.innerHTML=alive.slice(0,20).map(function(r){
+    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥</span>':'<span class="mg ms">💎</span>';
+    var days=r.computedLife;
+    var dc='ls_'; if(days>7)dc='lm'; if(days>21)dc='ll';
+    return'<div class="ac-row">'
+      +mgr
+      +'<div class="ac-name" title="'+e(r.name)+'">'+e(r.name)+'</div>'
+      +'<span class="ac-days lf '+dc+'">'+days+' дн.</span>'
+      +'<span class="dc" style="color:var(--G);margin-left:8px">↑ '+e(r.liveRaw)+'</span>'
+      +'</div>';
+  }).join('');
+
+  // Section 2: Залиті цього тижня (liveDate >= thisMonday)
+  var mon=thisMonday();
+  var thisWk=ALL.filter(function(r){return r.liveDate&&r.liveDate>=mon;})
+    .sort(function(a,b){return b.liveDate-a.liveDate;});
+  document.getElementById('ac2cnt').textContent=thisWk.length;
+  var d2=document.getElementById('ac2list');
+  if(!thisWk.length){d2.innerHTML='<div class="empty"><div class="ei">📱</div><div class="et">Цього тижня нічого</div></div>';return;}
+  d2.innerHTML=thisWk.map(function(r){
+    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥</span>':'<span class="mg ms">💎</span>';
+    var st=r.appStatus==='dead'?'<span class="mg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)">DEAD</span>':'<span class="mg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">LIVE</span>';
+    return'<div class="ac-row">'
+      +mgr
+      +'<div class="ac-name" title="'+e(r.name)+'">'+e(r.name)+'</div>'
+      +st
+      +'<span class="dc" style="color:var(--G);margin-left:8px">'+e(r.liveRaw)+'</span>'
+      +(r.deadRaw?'<span class="dc" style="color:var(--R);margin-left:6px">→ dead '+e(r.deadRaw)+'</span>':'')
+      +'</div>';
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// MAIN TABLE
+function getVis(wk){
+  var q=curQ.toLowerCase();
   return ALL.filter(function(r){
-    var sq=curQ.toLowerCase();
-    var ms=!sq||(r.name.toLowerCase().includes(sq)||r.acc.toLowerCase().includes(sq)||(r.brand||'').toLowerCase().includes(sq));
-    // date range filter on reviewDate or liveDate
-    var rd=r.reviewDate||r.liveDate;
-    if(df&&rd&&rd<df)return false;
-    if(dt&&rd&&rd>dt)return false;
+    var ms=!q||(r.name.toLowerCase().includes(q)||(r.acc||'').toLowerCase().includes(q)||(r.brand||'').toLowerCase().includes(q));
     var kpi=isKPI(r,wk);
     var mf=true;
-    if(curF==='gp')mf=r.vers.t==='gp';
-    else if(curF==='gm')mf=r.vers.t==='gm';
-    else if(curF==='wp')mf=r.vers.t==='wp';
-    else if(curF==='wm')mf=r.vers.t==='wm';
-    else if(curF==='dead')mf=r.appStatus==='dead';
-    else if(curF==='vlad')mf=r.manager==='vlad';
-    else if(curF==='sanya')mf=r.manager==='sanya';
-    else if(curF==='kpi')mf=kpi;
+    if(curF==='gp')      mf=r.vers.t==='gp';
+    else if(curF==='gm') mf=r.vers.t==='gm';
+    else if(curF==='wp') mf=r.vers.t==='wp';
+    else if(curF==='wm') mf=r.vers.t==='wm';
+    else if(curF==='dead')  mf=r.appStatus==='dead';
+    else if(curF==='alive') mf=r.isAlive;
+    else if(curF==='vlad')  mf=r.manager==='vlad';
+    else if(curF==='sanya') mf=r.manager==='sanya';
+    else if(curF==='kpi')   mf=kpi;
     return ms&&mf;
   }).sort(function(a,b){
     if(!sortC)return 0;
-    var av=a[sortC]||0,bv=b[sortC]||0;
-    if(av instanceof Date)av=av.getTime(); if(bv instanceof Date)bv=bv.getTime();
+    var av=a[sortC]||0, bv=b[sortC]||0;
+    if(av instanceof Date)av=av.getTime();
+    if(bv instanceof Date)bv=bv.getTime();
     if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
     return av<bv?-sortD:av>bv?sortD:0;
   });
 }
 
 var VT={
-  gp:{cls:'v-gp',icon:'✅',lbl:'Сіра LIVE'},
-  gm:{cls:'v-gm',icon:'⏳',lbl:'Сіра MOD'},
-  wp:{cls:'v-wp',icon:'🟦',lbl:'Біла LIVE'},
-  wm:{cls:'v-wm',icon:'🔶',lbl:'Біла MOD'},
-  dr:{cls:'v-dr',icon:'',lbl:'—'}
+  gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},
+  wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:''}
 };
 
-function rTable(){
-  var wk=selWk;
-  var rows=getVis();
+function rTable(wk){
+  var rows=getVis(wk);
   document.getElementById('bcnt').textContent=rows.length+' записів';
-  var body=document.getElementById('mainBody');
-  if(!rows.length){body.innerHTML='<tr><td colspan="13"><div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">Нічого не знайдено</div></div></td></tr>';return;}
+  var body=document.getElementById('mainTb');
+  if(!rows.length){body.innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">🔍</div><div class="et">Нічого не знайдено</div></div></td></tr>';return;}
   body.innerHTML=rows.map(function(r,i){
     var vt=VT[r.vers.t]||VT.dr;
     var kpi=isKPI(r,wk);
-    var mgr=r.manager==='vlad'?'<span class="mgr mgr-v">🔥 Влад</span>':r.manager==='sanya'?'<span class="mgr mgr-s">💎 Саня</span>':'<span class="mgr mgr-o">—</span>';
-    var st=r.appStatus==='live'?'<span class="status st-live"><span class="dot dot-g"></span>LIVE</span>':r.appStatus==='dead'?'<span class="status st-dead"><span class="dot dot-r"></span>DEAD</span>':'<span class="status st-unk">—</span>';
-    var lh=r.lifetime>0?('<span class="life '+(r.lifetime<=3?'l-s':r.lifetime<=7?'l-m':'l-l')+'">'+r.lifetime+' дн.</span>'):'<span style="color:var(--text3)">—</span>';
-    var rv=r.reviewRaw?('<span class="date-cell" style="color:var(--yellow)">'+e(r.reviewRaw)+'</span>'):'<span style="color:var(--text3)">—</span>';
-    var lv=r.liveRaw?('<span class="date-cell" style="color:var(--green)">'+e(r.liveRaw)+'</span>'):'<span style="color:var(--text3)">—</span>';
-    var dv=r.deadRaw?('<span class="date-cell" style="color:var(--red)">'+e(r.deadRaw)+'</span>'):'<span style="color:var(--text3)">—</span>';
-    var isdead=(r.appStatus==='dead');
-    return'<tr class="'+(isdead?'tr-dead':'')+(kpi?' tr-kpi':'')+'"><td style="color:var(--text3);font-size:12px">'+( i+1)+'</td>'
-      +'<td><div class="app-name" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
-      +'<td>'+(kpi?'<span class="kpi-tick">✓</span>':'<span style="color:var(--text3)">—</span>')+'</td>'
-      +'<td><span class="vbadge '+vt.cls+'">'+vt.icon+' '+e(r.vers.lbl)+'</span></td>'
+    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
+    var st=r.appStatus==='live'?'<span class="st st-l"><span class="dot dg"></span>LIVE</span>':r.appStatus==='dead'?'<span class="st st-d"><span class="dot dr_"></span>DEAD</span>':'<span class="st st-u">—</span>';
+    var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
+    var lhd=r.computedLife>0?('<span class="lf '+lfc+'">'+r.computedLife+(r.isAlive?' дн. ↑':' дн.')+'</span>'):'<span style="color:var(--t3)">—</span>';
+    return'<tr class="'+(r.appStatus==='dead'?'td':'')+'"><td style="color:var(--t3);font-size:12px">'+(i+1)+'</td>'
+      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
+      +'<td><span class="vb '+vt.cls+'">'+vt.ic+' '+e(r.vers.lbl)+'</span></td>'
+      +'<td>'+(kpi?'<span class="ktick">✓</span>':'<span style="color:var(--t3)">—</span>')+'</td>'
       +'<td>'+mgr+'</td>'
-      +'<td><div class="account-cell" title="'+e(r.acc)+'">'+e(r.acc)+'</div></td>'
-      +'<td style="font-size:12px;color:var(--text2)">'+e(r.brand||'—')+'</td>'
-      +'<td>'+rv+'</td><td>'+lv+'</td><td>'+dv+'</td>'
-      +'<td>'+lh+'</td>'
-      +'<td style="font-size:13px;font-weight:600;color:'+(r.expenses?'var(--yellow)':'var(--text3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
-      +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+      +'<td><div class="acnt" title="'+e(r.acc)+'">'+e(r.acc)+'</div></td>'
+      +'<td><span class="dc" style="color:var(--Y)">'+e(r.reviewRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--G)">'+e(r.liveRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--R)">'+e(r.deadRaw||'—')+'</span></td>'
+      +'<td>'+lhd+'</td>'
+      +'<td style="font-size:13px;font-weight:600;color:'+(r.expenses?'var(--Y)':'var(--t3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
+      +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--t3)">—</span>')+'</td></tr>';
   }).join('');
 }
 
-function rWk(){
+// ════════════════════════════════════════
+// WEEKLY REPORT
+function rWkReport(){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
-  var body=document.getElementById('wkBody');
-  if(!WEEKS.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr>';return;}
+  var body=document.getElementById('wkTb');
+  if(!WEEKS.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';return;}
   body.innerHTML=WEEKS.slice().reverse().map(function(wk){
     var ka=ALL.filter(function(r){return isKPI(r,wk);});
-    var tot=ka.length,vl=ka.filter(function(r){return r.manager==='vlad';}).length;
+    var tot=ka.length;
+    var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
     var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-    var dwk=ALL.filter(function(r){return r.deadWk===wk&&r.appStatus==='dead';}).length;
+    var dw=ALL.filter(function(r){return r.deadWk===wk&&r.appStatus==='dead';}).length;
     var wa=ALL.filter(function(r){return r.reviewWk===wk;});
     var exp=wa.reduce(function(s,r){return s+r.expenses;},0);
-    var br=tot>0?Math.round(dwk/tot*100):0;
+    var br=tot>0?Math.round(dw/tot*100):0;
     var pct=Math.min(Math.round(tot/tgt*100),200);
     var isCur=(wk===selWk);
-    var pctColor=pct>=100?'var(--green)':pct>=60?'var(--yellow)':'var(--red)';
-    return'<tr class="'+(isCur?'week-cur':'')+'">'
-      +'<td style="font-weight:600;color:'+(isCur?'var(--green)':'var(--text)')+'">'+(isCur?'▶ ':'')+wkLabel(wk)+'</td>'
-      +'<td><strong style="font-size:15px;color:var(--green)">'+tot+'</strong> <span style="color:var(--text3);font-size:12px">/ '+tgt+'</span></td>'
-      +'<td style="color:var(--vlad);font-weight:600">'+vl+'</td>'
-      +'<td style="color:var(--sanya);font-weight:600">'+sa+'</td>'
-      +'<td style="color:'+(dwk>0?'var(--red)':'var(--text3)')+';font-weight:600">'+dwk+'</td>'
-      +'<td style="color:'+(exp?'var(--yellow)':'var(--text3)')+';font-weight:500">'+( exp?'$'+exp:'—')+'</td>'
-      +'<td style="color:'+(br>30?'var(--red)':br>15?'var(--yellow)':'var(--green)')+';font-weight:600">'+br+'%</td>'
-      +'<td><span style="color:'+pctColor+';font-weight:700;font-size:14px">'+pct+'%</span></td></tr>';
+    var pc=pct>=100?'var(--G)':pct>=60?'var(--Y)':'var(--R)';
+    return'<tr style="'+(isCur?'background:rgba(34,197,94,.05)':'')+'">'
+      +'<td style="font-weight:600;color:'+(isCur?'var(--G)':'var(--t1)')+'">'+(isCur?'▶ ':'')+wkLabel(wk)+'</td>'
+      +'<td><b style="font-size:15px;color:var(--G)">'+tot+'</b> <span style="color:var(--t3);font-size:12px">/ '+tgt+'</span></td>'
+      +'<td style="color:var(--O);font-weight:600">'+vl+'</td>'
+      +'<td style="color:var(--B);font-weight:600">'+sa+'</td>'
+      +'<td style="color:'+(dw>0?'var(--R)':'var(--t3)')+';font-weight:600">'+dw+'</td>'
+      +'<td style="color:'+(exp?'var(--Y)':'var(--t3)')+';font-weight:500">'+( exp?'$'+exp:'—')+'</td>'
+      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+';font-weight:600">'+br+'%</td>'
+      +'<td><b style="font-size:14px;color:'+pc+'">'+pct+'%</b></td></tr>';
   }).join('');
 }
 
+// ════════════════════════════════════════
+// BAN
 function rBan(){
   var dead=ALL.filter(function(r){return r.appStatus==='dead';});
-  document.getElementById('bdead').textContent=dead.length+' dead';
+  document.getElementById('bban').textContent=dead.length+' dead';
   var cnt={};
   dead.forEach(function(r){
     if(!r.comments)return;
-    r.comments.split(/[,;\/]+/).forEach(function(p){var t=p.trim();if(t&&t!=='—')cnt[t]=(cnt[t]||0)+1;});
+    r.comments.split(/[,;\/\n]+/).forEach(function(p){var t=p.trim();if(t&&t!=='—')cnt[t]=(cnt[t]||0)+1;});
   });
-  var sorted=Object.entries(cnt).sort(function(a,b){return b[1]-a[1];}).slice(0,12);
+  var sorted=Object.entries(cnt).sort(function(a,b){return b[1]-a[1];}).slice(0,15);
   var max=sorted[0]?sorted[0][1]:1;
   var div=document.getElementById('banDiv');
-  if(!sorted.length){div.innerHTML='<div class="empty"><div class="empty-ico">✅</div><div class="empty-txt">Немає коментарів у dead</div></div>';return;}
+  if(!sorted.length){div.innerHTML='<div class="empty"><div class="ei">✅</div><div class="et">Немає даних</div></div>';return;}
   div.innerHTML=sorted.map(function(x){
-    return'<div class="anal-row"><span class="anal-name" title="'+e(x[0])+'">'+e(x[0])+'</span>'
-      +'<div class="anal-bar"><div class="anal-fill" style="width:'+Math.round(x[1]/max*100)+'%;background:var(--red)"></div></div>'
-      +'<span class="anal-cnt" style="color:var(--red)">'+x[1]+'</span></div>';
+    return'<div class="ar"><span class="an" title="'+e(x[0])+'">'+e(x[0])+'</span>'
+      +'<div class="ab"><div class="af" style="width:'+Math.round(x[1]/max*100)+'%"></div></div>'
+      +'<span class="ac_">'+x[1]+'</span></div>';
   }).join('');
 }
 
-function rFin(){
-  var wk=selWk;
+// ════════════════════════════════════════
+// FINANCE
+function rFin(wk){
   var wa=wk==='all'?ALL:ALL.filter(function(r){return r.reviewWk===wk;});
   var tot=wa.reduce(function(s,r){return s+r.expenses;},0);
   var vl=wa.filter(function(r){return r.manager==='vlad';}).reduce(function(s,r){return s+r.expenses;},0);
   var sa=wa.filter(function(r){return r.manager==='sanya';}).reduce(function(s,r){return s+r.expenses;},0);
   var pw=wa.reduce(function(s,r){return s+r.paidWeeks;},0);
-  var lf=wa.filter(function(r){return r.lifetime>0;}).map(function(r){return r.lifetime;});
-  var al=lf.length?Math.round(lf.reduce(function(a,b){return a+b;},0)/lf.length):0;
+  var alive=wa.filter(function(r){return r.isAlive&&r.computedLife>0;}).map(function(r){return r.computedLife;});
+  var al=alive.length?Math.round(alive.reduce(function(a,b){return a+b;})/alive.length):0;
   var we=wa.filter(function(r){return r.expenses>0;}).length;
   var ae=we?Math.round(tot/we):0;
   var ka=wa.filter(function(r){return isKPI(r,wk);}).length;
-  var dwk=wa.filter(function(r){return r.appStatus==='dead';}).length;
-  var br=ka>0?Math.round(dwk/ka*100):0;
-  q('f0','$'+tot); q('f1','$'+vl); q('f2','$'+sa);
-  q('f3',pw); q('f4','$'+ae); q('f5',al+' дн.');
+  var dw=wa.filter(function(r){return r.appStatus==='dead';}).length;
+  var br=ka>0?Math.round(dw/ka*100):0;
+  Q('f0','$'+tot); Q('f1','$'+vl); Q('f2','$'+sa);
+  Q('f3',pw); Q('f4','$'+ae); Q('f5',al+' дн.');
   var fe=document.getElementById('f6');
   fe.textContent=br+'%';
-  fe.style.color=br>30?'var(--red)':br>15?'var(--yellow)':'var(--green)';
+  fe.style.color=br>30?'var(--R)':br>15?'var(--Y)':'var(--G)';
   document.getElementById('bfin').textContent='$'+tot;
 }
 
-function rMgr(){
+// ════════════════════════════════════════
+// MANAGER BREAKDOWN
+function rMgr(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
-  var wk=selWk;
-  var vt=Math.round(tgt*0.53),st=tgt-vt;
-  var defs=[{k:'vlad',l:'🔥 Влад',c:'mgr-v'},{k:'sanya',l:'💎 Саня',c:'mgr-s'},{k:'other',l:'⚪ Інший',c:'mgr-o'}];
-  var body=document.getElementById('mgrBody');
+  var vt=Math.round(tgt*0.53), st=tgt-vt;
+  var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
+  var body=document.getElementById('mgrTb');
   var html=defs.map(function(d){
     var apps=ALL.filter(function(r){return r.manager===d.k;});
     if(!apps.length)return'';
@@ -1002,68 +1112,75 @@ function rMgr(){
     var gm=apps.filter(function(r){return r.vers.t==='gm';}).length;
     var wp=apps.filter(function(r){return r.vers.t==='wp';}).length;
     var dead=apps.filter(function(r){return r.appStatus==='dead';}).length;
+    var alive=apps.filter(function(r){return r.isAlive;}).length;
     var tot=apps.length;
     var br=ka>0?Math.round(dead/ka*100):0;
     var ex=apps.reduce(function(s,r){return s+r.expenses;},0);
     var ks=d.k==='vlad'?vt:d.k==='sanya'?st:0;
     var kp=ks?Math.min(Math.round(ka/ks*100),200):0;
-    return'<tr><td><span class="mgr '+d.c+'">'+d.l+'</span></td>'
-      +'<td><strong style="font-size:15px;color:var(--green)">'+ka+'</strong></td>'
-      +'<td style="color:var(--yellow);font-weight:600">'+gm+'</td>'
-      +'<td style="color:var(--blue);font-weight:600">'+wp+'</td>'
-      +'<td style="color:'+(dead>0?'var(--red)':'var(--text3)')+';font-weight:600">'+dead+'</td>'
-      +'<td style="color:var(--text2)">'+tot+'</td>'
-      +'<td style="color:'+(br>30?'var(--red)':br>15?'var(--yellow)':'var(--green)')+';font-weight:600">'+br+'%</td>'
-      +'<td style="color:'+(ex?'var(--yellow)':'var(--text3)')+';font-weight:500">'+( ex?'$'+ex:'—')+'</td>'
-      +'<td><span style="color:'+(kp>=100?'var(--green)':kp>=60?'var(--yellow)':'var(--red)')+';font-weight:700;font-size:14px">'+( ks?kp+'%':'—')+'</span></td></tr>';
+    var pc=kp>=100?'var(--G)':kp>=60?'var(--Y)':'var(--R)';
+    return'<tr><td><span class="mg '+d.c+'">'+d.l+'</span></td>'
+      +'<td><b style="font-size:15px;color:var(--G)">'+ka+'</b></td>'
+      +'<td style="color:var(--Y);font-weight:600">'+gm+'</td>'
+      +'<td style="color:var(--B);font-weight:600">'+wp+'</td>'
+      +'<td style="color:'+(dead>0?'var(--R)':'var(--t3)')+';font-weight:600">'+dead+'</td>'
+      +'<td style="color:var(--G);font-weight:600">'+alive+'</td>'
+      +'<td style="color:var(--t2)">'+tot+'</td>'
+      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+';font-weight:600">'+br+'%</td>'
+      +'<td style="color:'+(ex?'var(--Y)':'var(--t3)')+';font-weight:500">'+( ex?'$'+ex:'—')+'</td>'
+      +'<td><b style="font-size:14px;color:'+pc+'">'+( ks?kp+'%':'—')+'</b></td></tr>';
   }).filter(Boolean).join('');
-  body.innerHTML=html||'<tr><td colspan="9"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr>';
+  body.innerHTML=html||'<tr><td colspan="10"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';
 }
 
+// ════════════════════════════════════════
+// DEAD DETAIL
 function rDead(){
-  var dead=ALL.filter(function(r){return r.appStatus==='dead';});
-  document.getElementById('bdead2').textContent=dead.length;
-  var body=document.getElementById('deadBody');
-  if(!dead.length){body.innerHTML='<tr><td colspan="9"><div class="empty" style="padding:32px"><div class="empty-ico">✅</div><div class="empty-txt">Dead немає</div></div></td></tr>';return;}
+  var dead=ALL.filter(function(r){return r.appStatus==='dead';})
+    .sort(function(a,b){return (b.deadDate||0)-(a.deadDate||0);});
+  document.getElementById('bdd').textContent=dead.length;
+  var body=document.getElementById('deadTb');
+  if(!dead.length){body.innerHTML='<tr><td colspan="9"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr>';return;}
   body.innerHTML=dead.map(function(r){
-    var mgr=r.manager==='vlad'?'<span class="mgr mgr-v">🔥 Влад</span>':r.manager==='sanya'?'<span class="mgr mgr-s">💎 Саня</span>':'<span class="mgr mgr-o">—</span>';
-    var lh=r.lifetime>0?('<span class="life '+(r.lifetime<=3?'l-s':r.lifetime<=7?'l-m':'l-l')+'">'+r.lifetime+' дн.</span>'):'—';
+    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
+    var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
+    var lh=r.computedLife>0?('<span class="lf '+lfc+'">'+r.computedLife+' дн.</span>'):'—';
     return'<tr>'
-      +'<td><div class="app-name" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
+      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
       +'<td>'+mgr+'</td>'
-      +'<td><div class="account-cell" title="'+e(r.acc)+'">'+e(r.acc)+'</div></td>'
-      +'<td><span class="date-cell" style="color:var(--yellow)">'+e(r.reviewRaw||'—')+'</span></td>'
-      +'<td><span class="date-cell" style="color:var(--green)">'+e(r.liveRaw||'—')+'</span></td>'
-      +'<td><span class="date-cell" style="color:var(--red)">'+e(r.deadRaw||'—')+'</span></td>'
+      +'<td><div class="acnt" title="'+e(r.acc)+'">'+e(r.acc)+'</div></td>'
+      +'<td><span class="dc" style="color:var(--Y)">'+e(r.reviewRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--G)">'+e(r.liveRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--R)">'+e(r.deadRaw||'—')+'</span></td>'
       +'<td>'+lh+'</td>'
-      +'<td style="font-weight:600;color:'+(r.expenses?'var(--yellow)':'var(--text3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
-      +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--text3)">—</span>')+'</td></tr>';
+      +'<td style="font-weight:600;color:'+(r.expenses?'var(--Y)':'var(--t3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
+      +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--t3)">—</span>')+'</td></tr>';
   }).join('');
 }
 
-function resetFilters(){
-  curF='all'; curQ='';
-  document.getElementById('srch').value='';
-  var df=document.getElementById('dateFrom'); if(df)df.value='';
-  var dt=document.getElementById('dateTo'); if(dt)dt.value='';
-  document.querySelectorAll('.ftag').forEach(function(b){b.classList.remove('on');});
-  document.querySelector('.ftag.f-all').classList.add('on');
-  rTable();
-}
+// ════════════════════════════════════════
+// FILTER / SORT / SEARCH
 function setF(f,btn){
   curF=f;
-  document.querySelectorAll('.ftag').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
-  rTable();
+  rTable(selWk);
 }
-function doSearch(){curQ=document.getElementById('srch').value;rTable();}
+function resetF(){
+  curF='all'; curQ='';
+  document.getElementById('srch').value='';
+  document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});
+  document.querySelector('.chip.all').classList.add('on');
+  rTable(selWk);
+}
+function doSearch(){curQ=document.getElementById('srch').value;rTable(selWk);}
 function srt(col){
   if(sortC===col)sortD*=-1;else{sortC=col;sortD=1;}
   document.querySelectorAll('thead th').forEach(function(th){th.classList.remove('asc','desc');});
   event.currentTarget.classList.add(sortD===1?'asc':'desc');
-  rTable();
+  rTable(selWk);
 }
-function q(id,v){document.getElementById(id).textContent=v;}
+function Q(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
