@@ -572,6 +572,11 @@ var autoT=null, setupOpen=true;
   if(u1)document.getElementById('u1').value=u1;
   if(u2)document.getElementById('u2').value=u2;
   setAuto();
+  // Автозавантаження якщо URL вже збережений
+  if(u1){
+    document.getElementById('lst').innerHTML='<span class="spin"></span>Автозавантаження...';
+    setTimeout(function(){ loadData(true); }, 300);
+  }
 })();
 
 function pad(n){return String(n).padStart(2,'0');}
@@ -847,8 +852,16 @@ function merge(){
     // 3. Прожила >= 1 день:
     //    - isAlive → живий, точно >= 1 день якщо liveDate є
     //    - computedLife >= 1
-    var isGrey=(vers.t==='gp'); // тільки gp = опублікований сірий (без ?). gm = модерація, не КПІ
-    var survived1day = isAlive ? (liveDate&&computedLife>=1) : (computedLife>=1);
+    var isGrey=(vers.t==='gp'); // КПІ тільки версія без ? (опублікована сіра)
+    // survived1day: чи пережив додаток >= 1 день (для КПІ)
+    // - Живий (isAlive) і є liveDate → рахується (навіть якщо сьогодні залили)
+    // - Є lifetime >= 1 (заповнено після бану)
+    // - Є обидві дати і різниця >= 1
+    // - Немає liveDate але є reviewDate і версія >= 3 → на модерації → рахується
+    var survived1day = (isAlive && liveDate!=null) ||
+                       (lifetimeRaw!=='' && computedLife>=1) ||
+                       (liveDate && deadDate && computedLife>=1) ||
+                       (reviewDate && vers.n>=3 && !liveDate && !deadDate); // на модерації
 
     ALL.push({
       name, acc, manager:mgr, vers, vnum:vers.n,
@@ -872,6 +885,16 @@ function isKPI(row, wk){
   if(!row.reviewWk) return false;
   if(wk==='all') return true;
   return row.reviewWk===wk;
+}
+
+// DEBUG: виводить в консоль всі КПІ-кандидати і їх тижні
+function debugKPI(){
+  console.log('=== ALL records ===');
+  ALL.forEach(function(r){
+    console.log(r.name, '| vers:', r.vers.t, r.vers.lbl, '| isGrey:', r.isGrey, '| survived1day:', r.survived1day, '| reviewWk:', r.reviewWk, '| reviewRaw:', r.reviewRaw);
+  });
+  console.log('=== WEEKS found ===', WEEKS);
+  console.log('=== selWk ===', selWk);
 }
 
 // ════════════════════════════════════════
