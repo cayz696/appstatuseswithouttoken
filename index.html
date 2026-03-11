@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppTrack v3</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ── LOGIN SCREEN ── */
+#loginScreen{position:fixed;inset:0;background:#07070b;z-index:9999;display:flex;align-items:center;justify-content:center;}
+.login-box{background:#0e0e15;border:1px solid rgba(0,230,118,.2);border-radius:16px;padding:40px 44px;width:340px;text-align:center;}
+.login-logo{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:900;margin-bottom:6px;}
+.login-logo em{color:#00e676;font-style:normal;}
+.login-sub{font-size:10px;color:#363655;letter-spacing:2px;margin-bottom:32px;}
+.login-label{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#7070a0;margin-bottom:8px;text-align:left;}
+.login-input{width:100%;background:#1b1b27;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:11px 14px;color:#eeeef8;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;letter-spacing:2px;transition:border-color .2s;margin-bottom:16px;}
+.login-input:focus{border-color:#00e676;}
+.login-btn{width:100%;background:#00e676;color:#000;border:none;border-radius:8px;padding:11px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s;}
+.login-btn:hover{background:#00ff80;}
+.login-err{color:#ff5252;font-size:11px;margin-top:10px;min-height:16px;}
+.login-hint{font-size:9px;color:#363655;margin-top:20px;line-height:1.6;}
+</style>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">APP<em>TRACK</em></div>
+    <div class="login-sub">WEEKLY DASHBOARD</div>
+    <label class="login-label">Пароль доступу</label>
+    <input class="login-input" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="login-btn" onclick="checkPw()">▶ УВІЙТИ</button>
+    <div class="login-err" id="pwErr"></div>
+    <div class="login-hint">Доступ тільки для авторизованих користувачів</div>
+  </div>
+</div>
+
+<script>
+// ── ЗМІНИТИ ПАРОЛЬ ТУТ ──
+var ACCESS_PASSWORD = 'apptrack2026';
+// ────────────────────────
+
+function checkPw(){
+  var v=document.getElementById('pwInput').value;
+  if(v===ACCESS_PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    try{sessionStorage.setItem('at_auth','1');}catch(e){}
+  } else {
+    var err=document.getElementById('pwErr');
+    err.textContent='❌ Невірний пароль';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+    setTimeout(function(){err.textContent='';},2500);
+  }
+}
+// Check if already authenticated this session
+(function(){
+  try{if(sessionStorage.getItem('at_auth')==='1'){document.getElementById('loginScreen').style.display='none';}}catch(e){}
+})();
+</script>
+
+<style>
+:root{
+  --bg:#07070b;--s1:#0e0e15;--s2:#14141e;--s3:#1b1b27;--s4:#232330;--s5:#2c2c3c;
+  --b1:rgba(255,255,255,0.055);--b2:rgba(255,255,255,0.1);
+  --tx:#eeeef8;--tx2:#7070a0;--tx3:#363655;
+  --G:#00e676;--G2:rgba(0,230,118,.11);
+  --Y:#ffd740;--Y2:rgba(255,215,64,.11);
+  --R:#ff5252;--R2:rgba(255,82,82,.11);
+  --B:#40c4ff;--B2:rgba(64,196,255,.11);
+  --VL:#ff6e40;--VL2:rgba(255,110,64,.11);
+  --SA:#40c4ff;--SA2:rgba(64,196,255,.11);
+  --OR:#ffa726;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tx);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--b1) 1px,transparent 1px),linear-gradient(90deg,var(--b1) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.w{position:relative;z-index:1;max-width:1720px;margin:0 auto;padding:18px 22px;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px;flex-wrap:wrap;}
+.logo{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:900;letter-spacing:-.5px;}
+.logo em{color:var(--G);font-style:normal;}
+.logo-sub{font-size:9px;color:var(--tx3);letter-spacing:2px;margin-top:2px;}
+.top-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.rdot{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex-shrink:0;}
+.rdot.on{background:var(--G);box-shadow:0 0 6px var(--G);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.75);opacity:.5}}
+.lupd{font-size:10px;color:var(--tx3);}
+.sel{background:var(--s3);border:1px solid var(--b2);color:var(--tx);border-radius:5px;padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;}
+.btn-g{background:transparent;border:1px solid var(--b2);color:var(--tx2);border-radius:6px;padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;}
+.btn-g:hover{border-color:var(--tx2);color:var(--tx);}
+
+/* SETUP */
+.setup{background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:18px 20px;margin-bottom:18px;}
+.setup h2{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--G);margin-bottom:14px;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:750px){.sg{grid-template-columns:1fr;}}
+.ulbl{display:block;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--tx2);margin-bottom:5px;}
+.ui{width:100%;background:var(--s3);border:1px solid var(--b2);border-radius:7px;padding:8px 11px;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;transition:border-color .2s;}
+.ui:focus{border-color:var(--G);}
+.ui::placeholder{color:var(--tx3);}
+.uhint{font-size:9px;color:var(--tx3);margin-top:3px;line-height:1.6;}
+.steps-box{grid-column:1/-1;background:var(--s3);border-radius:8px;padding:12px 14px;}
+.steps-box h3{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;}
+.steps-row{display:flex;flex-wrap:wrap;gap:0;}
+.si{display:flex;align-items:flex-start;gap:7px;padding:4px 12px 4px 0;font-size:10px;color:var(--tx2);line-height:1.5;flex:1;min-width:160px;}
+.sn{min-width:18px;height:18px;background:var(--s4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--G);flex-shrink:0;margin-top:2px;}
+.load-row{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.btn-load{background:var(--G);color:#000;border:none;border-radius:7px;padding:8px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-load:hover{background:#00ff80;transform:translateY(-1px);}
+.btn-load.ld{background:var(--s4);color:var(--tx3);cursor:not-allowed;transform:none;}
+.lstatus{font-size:10px;color:var(--tx3);}
+.err{background:var(--R2);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:9px 13px;font-size:11px;color:var(--R);margin-bottom:14px;display:none;}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--s4);border-top-color:var(--G);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:4px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* WEEK SELECTOR */
+.wbar{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:10px 15px;margin-bottom:18px;flex-wrap:wrap;}
+.wlbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);}
+.win{background:var(--s3);border:1px solid var(--b2);border-radius:6px;padding:5px 9px;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;}
+.win:focus{border-color:var(--G);}
+.wrange{font-size:11px;color:var(--tx3);}
+.kpi-inp{background:var(--s3);border:1px solid var(--G);border-radius:6px;padding:4px 8px;color:var(--G);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;outline:none;width:54px;text-align:center;}
+
+/* WEEK PILLS - auto-detected weeks */
+.week-pills{display:flex;gap:5px;flex-wrap:wrap;padding:10px 15px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;margin-bottom:18px;align-items:center;}
+.week-pill-lbl{font-size:9px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;margin-right:4px;}
+.wpill{padding:4px 10px;border-radius:99px;font-size:10px;cursor:pointer;border:1px solid var(--b1);color:var(--tx2);transition:all .15s;background:transparent;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.wpill:hover{border-color:var(--b2);color:var(--tx);}
+.wpill.on{border-color:var(--G);color:var(--G);background:var(--G2);}
+.wpill.all{border-color:var(--tx3);}
+.wpill.all.on{border-color:var(--tx);color:var(--tx);background:var(--s3);}
+
+/* KPI CARDS */
+.krow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:650px){.krow{grid-template-columns:1fr;}}
+.kcard{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kcard.kt::before{background:linear-gradient(90deg,var(--G),transparent);}
+.kcard.kv::before{background:linear-gradient(90deg,var(--VL),transparent);}
+.kcard.ks::before{background:linear-gradient(90deg,var(--SA),transparent);}
+.klbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;}
+.knum-row{display:flex;align-items:flex-end;gap:7px;margin-bottom:7px;}
+.kbig{font-family:'Unbounded',sans-serif;font-size:40px;font-weight:900;line-height:1;}
+.kcard.kt .kbig{color:var(--G);}
+.kcard.kv .kbig{color:var(--VL);}
+.kcard.ks .kbig{color:var(--SA);}
+.kof{font-size:12px;color:var(--tx2);padding-bottom:5px;}
+.bt{height:3px;background:var(--s4);border-radius:99px;overflow:hidden;margin-bottom:4px;}
+.bf{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1);}
+.kcard.kt .bf{background:var(--G);}
+.kcard.kv .bf{background:var(--VL);}
+.kcard.ks .bf{background:var(--SA);}
+.kpct{font-size:9px;color:var(--tx3);}
+/* KPI legend */
+.klegend{font-size:9px;color:var(--tx3);margin-top:6px;line-height:1.5;border-top:1px solid var(--b1);padding-top:6px;}
+.klegend span{color:var(--G);}
+
+/* STAT BOXES */
+.srow{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:18px;}
+@media(max-width:1100px){.srow{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:550px){.srow{grid-template-columns:repeat(2,1fr);}}
+.sb{background:var(--s1);border:1px solid var(--b1);border-radius:9px;padding:11px 13px;}
+.sb-lbl{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx3);margin-bottom:5px;}
+.sb-val{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:700;line-height:1;}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:11px;overflow:hidden;margin-bottom:18px;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--b1);background:var(--s2);gap:8px;flex-wrap:wrap;}
+.ct{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx2);}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;}
+
+/* FILTERS */
+.frow{display:flex;gap:4px;flex-wrap:wrap;padding:7px 11px;border-bottom:1px solid var(--b1);background:var(--s2);}
+.chip{padding:2px 9px;border-radius:99px;font-size:9px;cursor:pointer;border:1px solid var(--b1);color:var(--tx2);transition:all .15s;background:transparent;font-family:'JetBrains Mono',monospace;}
+.chip.on.all{border-color:var(--tx2);color:var(--tx);}
+.chip.on.gp{border-color:var(--G);color:var(--G);}
+.chip.on.gm{border-color:var(--Y);color:var(--Y);}
+.chip.on.wp{border-color:var(--B);color:var(--B);}
+.chip.on.wm{border-color:var(--OR);color:var(--OR);}
+.chip.on.vl{border-color:var(--VL);color:var(--VL);}
+.chip.on.sa{border-color:var(--SA);color:var(--SA);}
+.chip.on.dead{border-color:var(--R);color:var(--R);}
+.chip.on.kpi{border-color:var(--G);color:var(--G);background:var(--G2);}
+.srch{background:var(--s3);border:1px solid var(--b1);border-radius:5px;padding:4px 9px;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;width:130px;}
+.srch:focus{border-color:var(--G);}
+
+/* TABLE */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:8px 11px;text-align:left;font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx3);background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{color:var(--tx2);}
+thead th.asc::after{content:' ↑';}
+thead th.desc::after{content:' ↓';}
+tbody tr{border-bottom:1px solid var(--b1);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--s2);}
+tbody td{padding:7px 11px;font-size:10px;vertical-align:middle;}
+tr.rdead{opacity:.6;}
+tr.rdead:hover{opacity:1;}
+tr.rkpi{background:rgba(0,230,118,.04);}
+
+/* VERSION BADGE */
+.vb{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;white-space:nowrap;}
+.gp{background:rgba(0,230,118,.12);color:var(--G);border:1px solid rgba(0,230,118,.22);}
+.gm{background:rgba(255,215,64,.1);color:var(--Y);border:1px solid rgba(255,215,64,.22);}
+.wp{background:rgba(64,196,255,.09);color:var(--B);border:1px solid rgba(64,196,255,.18);}
+.wm{background:rgba(255,167,38,.09);color:var(--OR);border:1px solid rgba(255,167,38,.18);}
+.dr{background:var(--s3);color:var(--tx3);border:1px solid var(--b1);}
+/* MGR */
+.mb{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;}
+.mv{background:var(--VL2);color:var(--VL);}
+.ms{background:var(--SA2);color:var(--SA);}
+.mo{background:var(--s3);color:var(--tx3);}
+/* STATUS */
+.stlive{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;background:var(--G2);color:var(--G);}
+.stdead{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;background:var(--R2);color:var(--R);}
+.strem{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;background:var(--s3);color:var(--tx3);}
+.dlive{width:4px;height:4px;border-radius:50%;background:var(--G);box-shadow:0 0 4px var(--G);}
+.ddead{width:4px;height:4px;border-radius:50%;background:var(--R);}
+/* KPI TICK */
+.kpi-tick{display:inline-block;width:14px;height:14px;background:var(--G2);border:1px solid rgba(0,230,118,.3);border-radius:3px;text-align:center;line-height:13px;font-size:9px;color:var(--G);}
+/* DAYS */
+.db{padding:1px 6px;border-radius:99px;font-size:8px;font-weight:700;}
+.ds{background:var(--G2);color:var(--G);}
+.dm{background:var(--Y2);color:var(--Y);}
+.dl{background:var(--R2);color:var(--R);}
+
+/* 2 COL */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+@media(max-width:850px){.two{grid-template-columns:1fr;}}
+
+/* ANALYSIS */
+.ar{display:flex;align-items:center;gap:7px;padding:6px 14px;border-bottom:1px solid var(--b1);font-size:10px;}
+.ar:last-child{border-bottom:none;}
+.an{min-width:120px;color:var(--tx);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ab{flex:1;height:3px;background:var(--s4);border-radius:99px;overflow:hidden;}
+.abf{height:100%;border-radius:99px;}
+.ac{font-size:9px;font-weight:700;min-width:16px;text-align:right;}
+/* FIN */
+.fr{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--b1);font-size:10px;}
+.fr:last-child{border-bottom:none;}
+.fl{color:var(--tx2);}
+.fv{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;}
+/* EMPTY */
+.empty{padding:30px 16px;text-align:center;color:var(--tx3);font-size:10px;line-height:2;}
+.empty .ico{font-size:24px;display:block;margin-bottom:6px;}
+
+/* WEEK REPORT TABLE */
+.wrt td,.wrt th{padding:7px 12px;font-size:10px;}
+.wrt thead th{font-size:8px;}
+.week-row-cur{background:rgba(0,230,118,.05);}
+
+/* ANAME */
+.aname{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.ctag{display:inline-block;background:var(--R2);border:1px solid rgba(255,82,82,.15);color:#ff8a80;font-size:8px;padding:1px 5px;border-radius:3px;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div>
+    <div class="logo">APP<em>TRACK</em> <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--tx3);font-weight:400">v3</span></div>
+    <div class="logo-sub">WEEKLY KPI · 23 APPS + 9 RENTAL · від 01.01.2026</div>
+  </div>
+  <div class="top-right">
+    <div style="display:flex;align-items:center;gap:5px;">
+      <div class="rdot" id="rdot"></div>
+      <span class="lupd" id="lupd">не завантажено</span>
+    </div>
+    <label style="font-size:9px;color:var(--tx3);display:flex;align-items:center;gap:5px;">
+      Авто:
+      <select class="sel" id="autoRef" onchange="setAuto()">
+        <option value="0">вимк.</option>
+        <option value="5" selected>5 хв</option>
+        <option value="10">10 хв</option>
+        <option value="30">30 хв</option>
+      </select>
+    </label>
+    <button class="btn-g" onclick="toggleSetup()" id="stoggle">▼ Налаштування</button>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="setupEl" class="setup">
+  <h2>📐 Підключення Google Sheets</h2>
+  <div class="sg">
+    <div>
+      <label class="ulbl">📋 "23 Apps" — CSV URL</label>
+      <input class="ui" id="u1" placeholder="https://docs.google.com/spreadsheets/d/ID/pub?gid=0&single=true&output=csv">
+      <div class="uhint">Лист з основним списком додатків (Name, Account, Vers, Brand...)</div>
+    </div>
+    <div>
+      <label class="ulbl">💰 "9 Rental" — CSV URL</label>
+      <input class="ui" id="u2" placeholder="https://docs.google.com/spreadsheets/d/ID/pub?gid=ЧИСЛО&single=true&output=csv">
+      <div class="uhint">Лист з App review, App live, App dead, Expenses, Lifetime...</div>
+    </div>
+    <div class="steps-box">
+      <h3>Як підключити (1 раз)</h3>
+      <div class="steps-row">
+        <div class="si"><div class="sn">1</div><div>Відкрий таблицю → перейди на лист <strong style="color:var(--tx)">"23 Apps"</strong></div></div>
+        <div class="si"><div class="sn">2</div><div><strong style="color:var(--tx)">Файл → Поділитися → Опублікувати в інтернеті</strong></div></div>
+        <div class="si"><div class="sn">3</div><div>Вибери лист → формат <strong style="color:var(--G)">CSV</strong> → Опублікувати → скопіюй URL</div></div>
+        <div class="si"><div class="sn">4</div><div>Повтори для <strong style="color:var(--tx)">"9 Rental"</strong></div></div>
+        <div class="si"><div class="sn">5</div><div>Встав URLs → натисни <strong style="color:var(--G)">Завантажити</strong></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="load-row">
+    <button class="btn-load" id="lbtn" onclick="loadData()">▶ Завантажити</button>
+    <span class="lstatus" id="lst">—</span>
+  </div>
+</div>
+<div class="err" id="errEl"></div>
+
+<!-- WEEK BAR -->
+<div class="wbar">
+  <span class="wlbl">Тиждень звіту</span>
+  <input type="week" class="win" id="weekPick">
+  <span class="wrange" id="wr">—</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+    <span style="font-size:9px;color:var(--tx2);">КПІ ціль:</span>
+    <input type="number" class="kpi-inp" id="kpiT" value="15" min="1" oninput="rAll()">
+    <span style="font-size:9px;color:var(--tx2);">сірих ≥1д</span>
+  </div>
+</div>
+
+<!-- AUTO-DETECTED WEEK PILLS -->
+<div class="week-pills" id="weekPills">
+  <span class="week-pill-lbl">Тижні в даних:</span>
+  <span style="font-size:9px;color:var(--tx3)">— завантаж дані —</span>
+</div>
+
+<!-- KPI CARDS -->
+<div class="krow">
+  <div class="kcard kt">
+    <div class="klbl">📦 КПІ тижня (сірих ≥1д)</div>
+    <div class="knum-row"><div class="kbig" id="kn0">0</div><div class="kof" id="ko0">/ 15</div></div>
+    <div class="bt"><div class="bf" id="kb0" style="width:0%"></div></div>
+    <div class="kpct" id="kp0">0% від цілі</div>
+    <div class="klegend" id="kleg0">Вибери тиждень вище</div>
+  </div>
+  <div class="kcard kv">
+    <div class="klbl">🔥 Влад (V) — сірих ≥1д</div>
+    <div class="knum-row"><div class="kbig" id="kn1">0</div><div class="kof" id="ko1">/ ~8</div></div>
+    <div class="bt"><div class="bf" id="kb1" style="width:0%"></div></div>
+    <div class="kpct" id="kp1">0% від цілі</div>
+    <div class="klegend" id="kleg1">—</div>
+  </div>
+  <div class="kcard ks">
+    <div class="klbl">💎 Саня — сірих ≥1д</div>
+    <div class="knum-row"><div class="kbig" id="kn2">0</div><div class="kof" id="ko2">/ ~7</div></div>
+    <div class="bt"><div class="bf" id="kb2" style="width:0%"></div></div>
+    <div class="kpct" id="kp2">0% від цілі</div>
+    <div class="klegend" id="kleg2">—</div>
+  </div>
+</div>
+
+<!-- STAT BOXES -->
+<div class="srow">
+  <div class="sb"><div class="sb-lbl">✅ КПІ (сірих ≥1д)</div><div class="sb-val" style="color:var(--G)" id="ss0">0</div></div>
+  <div class="sb"><div class="sb-lbl">⏳ Сірих MOD зараз</div><div class="sb-val" style="color:var(--Y)" id="ss1">0</div></div>
+  <div class="sb"><div class="sb-lbl">🟦 Білих LIVE</div><div class="sb-val" style="color:var(--B)" id="ss2">0</div></div>
+  <div class="sb"><div class="sb-lbl">💀 Dead (всього)</div><div class="sb-val" style="color:var(--R)" id="ss3">0</div></div>
+  <div class="sb"><div class="sb-lbl">🔥 Влад КПІ тижня</div><div class="sb-val" style="color:var(--VL)" id="ss4">0</div></div>
+  <div class="sb"><div class="sb-lbl">💎 Саня КПІ тижня</div><div class="sb-val" style="color:var(--SA)" id="ss5">0</div></div>
+</div>
+
+<!-- MAIN TABLE -->
+<div class="card">
+  <div class="ch">
+    <span class="ct">📱 Додатки (від 01.01.2026)</span>
+    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+      <span class="badge" style="background:var(--G2);color:var(--G)" id="bcnt">0</span>
+      <input class="srch" placeholder="🔍 пошук..." id="srch" oninput="doSearch()">
+    </div>
+  </div>
+  <div class="frow">
+    <button class="chip all on" onclick="sf('all',this)">Всі</button>
+    <button class="chip kpi" onclick="sf('kpi',this)">✅ КПІ тижня</button>
+    <button class="chip gp" onclick="sf('gp',this)">🔷 Сіра LIVE</button>
+    <button class="chip gm" onclick="sf('gm',this)">⏳ Сіра MOD</button>
+    <button class="chip wp" onclick="sf('wp',this)">🟦 Біла LIVE</button>
+    <button class="chip wm" onclick="sf('wm',this)">🔶 Біла MOD</button>
+    <button class="chip vl" onclick="sf('vl',this)">🔥 Влад</button>
+    <button class="chip sa" onclick="sf('sa',this)">💎 Саня</button>
+    <button class="chip dead" onclick="sf('dead',this)">💀 Dead</button>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>#</th>
+        <th onclick="srt('name')">Назва</th>
+        <th>КПІ?</th>
+        <th onclick="srt('vnum')">Версія</th>
+        <th onclick="srt('manager')">Менеджер</th>
+        <th onclick="srt('account')">Акаунт</th>
+        <th onclick="srt('brand')">Brand</th>
+        <th onclick="srt('appReview')">App Review</th>
+        <th onclick="srt('appLive')">App Live</th>
+        <th onclick="srt('appDead')">App Dead</th>
+        <th onclick="srt('lifetime')">Lifetime</th>
+        <th onclick="srt('expenses')">Expenses</th>
+        <th>Comments</th>
+      </tr></thead>
+      <tbody id="mainBody">
+        <tr><td colspan="13"><div class="empty"><span class="ico">📊</span>Підключи Google Sheets і завантаж дані</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- WEEKLY REPORT TABLE -->
+<div class="card">
+  <div class="ch">
+    <span class="ct">📅 Тижневі звіти (автоматично)</span>
+    <span class="badge" style="background:var(--B2);color:var(--B)" id="bwks">0 тижнів</span>
+  </div>
+  <div class="tw">
+    <table class="wrt">
+      <thead><tr>
+        <th>Тиждень</th>
+        <th>КПІ всього ✅</th>
+        <th>Влад 🔥</th>
+        <th>Саня 💎</th>
+        <th>Dead цього тижня 💀</th>
+        <th>Expenses</th>
+        <th>Бан-рейт</th>
+        <th>КПІ %</th>
+      </tr></thead>
+      <tbody id="wkBody">
+        <tr><td colspan="8"><div class="empty" style="padding:20px">Завантаж дані</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ANALYSIS + FINANCE -->
+<div class="two">
+  <div class="card">
+    <div class="ch">
+      <span class="ct">🚫 Причини смерті (Comments)</span>
+      <span class="badge" style="background:var(--R2);color:var(--R)" id="bdead">0</span>
+    </div>
+    <div id="banDiv"><div class="empty"><span class="ico">💀</span>Немає dead</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct">💰 Фінанси (вибраний тиждень)</span><span class="badge" style="background:var(--Y2);color:var(--Y)" id="bfin">$0</span></div>
+    <div class="fr"><span class="fl">Витрати тижня</span><span class="fv" style="color:var(--R)" id="f0">$0</span></div>
+    <div class="fr"><span class="fl">Влад витрати</span><span class="fv" style="color:var(--VL)" id="f1">$0</span></div>
+    <div class="fr"><span class="fl">Саня витрати</span><span class="fv" style="color:var(--SA)" id="f2">$0</span></div>
+    <div class="fr"><span class="fl">Paid weeks</span><span class="fv" style="color:var(--Y)" id="f3">0</span></div>
+    <div class="fr"><span class="fl">Сер. expenses / апп</span><span class="fv" id="f4">$0</span></div>
+    <div class="fr"><span class="fl">Сер. lifetime (дні)</span><span class="fv" id="f5">0</span></div>
+    <div class="fr"><span class="fl">Бан-рейт тижня</span><span class="fv" id="f6">0%</span></div>
+  </div>
+</div>
+
+<!-- MGR TABLE -->
+<div class="card">
+  <div class="ch"><span class="ct">👥 По менеджерах (вибраний тиждень)</span></div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Менеджер</th><th>КПІ ✅</th><th>Сірих MOD ⏳</th>
+        <th>Білих LIVE</th><th>Dead 💀</th><th>Всього</th>
+        <th>Бан-рейт</th><th>Expenses</th><th>КПІ %</th>
+      </tr></thead>
+      <tbody id="mgrBody">
+        <tr><td colspan="9"><div class="empty" style="padding:18px">Завантаж дані</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DEAD DETAIL -->
+<div class="card">
+  <div class="ch">
+    <span class="ct">💀 Dead деталі (від 01.01.2026)</span>
+    <span class="badge" style="background:var(--R2);color:var(--R)" id="bdead2">0</span>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Назва</th><th>Менеджер</th><th>Акаунт</th>
+        <th>App Review</th><th>Live</th><th>Dead</th>
+        <th>Lifetime</th><th>Expenses</th><th>Коментар</th>
+      </tr></thead>
+      <tbody id="deadBody">
+        <tr><td colspan="9"><div class="empty" style="padding:18px"><span class="ico" style="font-size:18px">✅</span>Dead немає</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /w -->
+<script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+var S1=[],S2=[],ALL=[],WEEKS=[];
+var curF='all',curQ='',sortC='',sortD=1;
+var selWeek='all'; // 'all' or 'YYYY-WNN'
+var autoT=null;
+var setupOpen=true;
+
+// ════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════
+var CUT = new Date('2026-01-01'); // фільтр від 01.01.2026
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+(function(){
+  var wp=document.getElementById('weekPick');
+  var now=new Date();
+  // Set to previous Sunday
+  var sun=new Date(now);
+  sun.setDate(now.getDate()-now.getDay());
+  wp.value=sun.getFullYear()+'-W'+String(isoWeek(sun)).padStart(2,'0');
+  upWR();
+  wp.addEventListener('change',function(){upWR();rAll();});
+
+  var u1=gl('u1'),u2=gl('u2');
+  if(u1)document.getElementById('u1').value=u1;
+  if(u2)document.getElementById('u2').value=u2;
+  setAuto();
+})();
+
+function gl(k){try{return localStorage.getItem('at3_'+k)||'';}catch(e){return'';}}
+function sl(k,v){try{localStorage.setItem('at3_'+k,v);}catch(e){}}
+
+// ISO week number
+function isoWeek(d){
+  var dd=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  dd.setUTCDate(dd.getUTCDate()+4-(dd.getUTCDay()||7));
+  var y1=new Date(Date.UTC(dd.getUTCFullYear(),0,1));
+  return Math.ceil((((dd-y1)/864e5)+1)/7);
+}
+
+// Get Sunday-Saturday week range for a given date
+function weekRange(d){
+  var sun=new Date(d);
+  sun.setDate(d.getDate()-d.getDay()); // Sunday
+  sun.setHours(0,0,0,0);
+  var sat=new Date(sun);
+  sat.setDate(sun.getDate()+6);
+  sat.setHours(23,59,59,999);
+  return{start:sun,end:sat};
+}
+
+// Get week key "YYYY-WNN" from a date (Sunday-based)
+function weekKey(d){
+  // Use the Sunday of the week
+  var sun=new Date(d);
+  sun.setDate(d.getDate()-d.getDay());
+  return sun.getFullYear()+'-W'+String(isoWeek(sun)).padStart(2,'0');
+}
+
+function weekLabel(key){
+  var parts=key.split('-W'),y=+parts[0],w=+parts[1];
+  // find Sunday of this ISO week
+  var jan4=new Date(y,0,4);
+  var day=jan4.getDay()||7;
+  var mon=new Date(jan4);
+  mon.setDate(jan4.getDate()-day+1+(w-1)*7);
+  var sun=new Date(mon);
+  sun.setDate(mon.getDate()-1); // Sunday before Monday
+  var sat=new Date(sun);
+  sat.setDate(sun.getDate()+6);
+  var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
+  return f(sun)+' — '+f(sat);
+}
+
+function upWR(){
+  var v=document.getElementById('weekPick').value;
+  if(!v)return;
+  var parts=v.split('-W'),y=+parts[0],w=+parts[1];
+  var jan4=new Date(y,0,4),day=jan4.getDay()||7;
+  var mon=new Date(jan4);
+  mon.setDate(jan4.getDate()-day+1+(w-1)*7);
+  var sun=new Date(mon);sun.setDate(mon.getDate()-1);
+  var sat=new Date(sun);sat.setDate(sun.getDate()+6);
+  var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
+  document.getElementById('wr').textContent=f(sun)+' — '+f(sat);
+}
+
+// ════════════════════════════════════════════
+// PARSE DATE (DD.MM.YYYY or YYYY-MM-DD)
+// ════════════════════════════════════════════
+function pDate(s){
+  if(!s||!s.trim())return null;
+  s=s.trim();
+  var m;
+  // DD.MM.YYYY
+  m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+  // YYYY-MM-DD
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  return null;
+}
+
+function dayDiff(d1,d2){
+  // days between two dates (d2-d1)
+  return Math.round((d2-d1)/864e5);
+}
+
+// ════════════════════════════════════════════
+// AUTO-REFRESH
+// ════════════════════════════════════════════
+function setAuto(){
+  if(autoT){clearInterval(autoT);autoT=null;}
+  var m=+document.getElementById('autoRef').value;
+  if(m>0)autoT=setInterval(function(){loadData(true);},m*60000);
+}
+
+// ════════════════════════════════════════════
+// UI
+// ════════════════════════════════════════════
+function toggleSetup(){
+  setupOpen=!setupOpen;
+  document.getElementById('setupEl').style.display=setupOpen?'block':'none';
+  document.getElementById('stoggle').textContent=setupOpen?'▲ Сховати':'▼ Налаштування';
+}
+function showErr(m){var e=document.getElementById('errEl');e.textContent=m;e.style.display='block';}
+function hideErr(){document.getElementById('errEl').style.display='none';}
+function setLd(v){
+  var b=document.getElementById('lbtn');
+  if(v){b.classList.add('ld');b.innerHTML='<span class="spin"></span>Завантаження...';}
+  else{b.classList.remove('ld');b.textContent='▶ Завантажити';}
+}
+
+// ════════════════════════════════════════════
+// CSV
+// ════════════════════════════════════════════
+function parseCSV(txt){
+  var lines=txt.split('\n'),hdrs=[],rows=[];
+  for(var i=0;i<lines.length;i++){
+    var c=splitL(lines[i]);
+    if(i===0){hdrs=c.map(function(h){return h.trim();});continue;}
+    if(c.every(function(x){return!x.trim();}))continue;
+    var obj={};
+    hdrs.forEach(function(h,j){obj[h]=(c[j]||'').trim();});
+    rows.push(obj);
+  }
+  return rows;
+}
+function splitL(line){
+  var r=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){r.push(cur.replace(/^"|"$/g,''));cur='';}
+    else cur+=c;
+  }
+  r.push(cur.replace(/^"|"$/g,''));
+  return r;
+}
+async function fetchCSV(url){
+  var proxies=[url,'https://corsproxy.io/?'+encodeURIComponent(url)];
+  var last;
+  for(var i=0;i<proxies.length;i++){
+    try{
+      var r=await fetch(proxies[i],{cache:'no-cache'});
+      if(r.ok){var t=await r.text();if(t.length>20&&t.includes(','))return t;}
+    }catch(ex){last=ex;}
+  }
+  throw last||new Error('Не вдалось завантажити');
+}
+
+// ════════════════════════════════════════════
+// LOAD
+// ════════════════════════════════════════════
+async function loadData(silent){
+  var u1v=document.getElementById('u1').value.trim();
+  var u2v=document.getElementById('u2').value.trim();
+  if(!u1v){if(!silent)showErr('Введи URL для листа "23 Apps"');return;}
+  hideErr();
+  if(!silent)setLd(true);
+  document.getElementById('lst').textContent='Завантаження...';
+  try{
+    var t1=await fetchCSV(u1v);
+    var t2=u2v?await fetchCSV(u2v):'';
+    S1=parseCSV(t1);
+    S2=u2v?parseCSV(t2):[];
+    merge();
+    buildWeeks();
+    renderWeekPills();
+    rAll();
+    var now=new Date().toLocaleTimeString('uk-UA');
+    document.getElementById('lupd').textContent='Оновлено '+now;
+    var rd=document.getElementById('rdot');rd.className='rdot on';
+    document.getElementById('lst').textContent='✅ '+ALL.length+' записів';
+    sl('u1',u1v);if(u2v)sl('u2',u2v);
+    if(setupOpen)toggleSetup();
+  }catch(ex){
+    if(!silent)showErr('Помилка: '+ex.message+'. Переконайся що таблиця опублікована: Файл → Опублікувати → CSV');
+    document.getElementById('lst').textContent='❌ Помилка';
+  }finally{
+    if(!silent)setLd(false);
+  }
+}
+
+// ════════════════════════════════════════════
+// PARSE VERSION
+// ════════════════════════════════════════════
+function pVers(raw){
+  var s=(raw||'').trim();
+  if(!s||s==='-')return{t:'dr',lbl:'—',n:0};
+  var mod=s.endsWith('?'),n=parseFloat(s.replace('?',''));
+  if(isNaN(n))return{t:'dr',lbl:s,n:0};
+  // Grey = version >= 3, White = 1-2
+  if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
+  if(n>=1)return mod?{t:'wm',lbl:s,n:n}:{t:'wp',lbl:s,n:n};
+  return{t:'dr',lbl:s,n:n};
+}
+
+function getMgr(acc){
+  if(!acc)return'other';
+  if(acc.startsWith('(O)'))return'other';
+  if(acc.startsWith('(V)'))return'vlad';
+  return'sanya';
+}
+
+// ════════════════════════════════════════════
+// MERGE S1 + S2
+// ════════════════════════════════════════════
+function merge(){
+  // Build lookup from S2 by App name
+  var m2={};
+  S2.forEach(function(r){
+    var k=(r['App name']||r['Name']||'').trim().toLowerCase();
+    if(k)m2[k]=r;
+  });
+
+  ALL=[];
+  S1.forEach(function(r){
+    var name=(r['Name']||'').trim();
+    if(!name)return;
+    var s2=m2[name.toLowerCase()]||{};
+    var acc=(r['Account']||'').trim();
+    var vers=pVers(r['Vers']||r['Version']||'');
+    var mgr=getMgr(acc);
+
+    // Dates from S2
+    var reviewRaw=s2['App review']||'';
+    var liveRaw=s2['App live']||'';
+    var deadRaw=s2['App dead']||'';
+    var reviewDate=pDate(reviewRaw);
+    var liveDate=pDate(liveRaw);
+    var deadDate=pDate(deadRaw);
+
+    // Filter: only from 01.01.2026
+    // Use App review date as primary, fallback to App live
+    var refDate=reviewDate||liveDate;
+    if(refDate&&refDate<CUT)return; // skip pre-2026
+
+    var expenses=parseFloat((s2['Expenses']||'0').replace(/[^\d.]/g,''))||0;
+    var paidWeeks=parseInt(s2['Paid weeks']||'0')||0;
+
+    // Lifetime: колонка заповнюється ТІЛЬКИ після бану
+    // Якщо порожня — додаток ще живий або щойно забанився без запису
+    var lifetimeRaw = s2['Lifetime (days)']||'';
+    var lifetime = 0;
+    if(lifetimeRaw.trim()!==''){
+      // є значення — був бан, беремо його
+      lifetime = parseInt(lifetimeRaw)||0;
+    } else if(liveDate&&deadDate){
+      // немає значення але є обидві дати — рахуємо самі
+      lifetime = Math.max(0, dayDiff(liveDate, deadDate));
+    }
+    // якщо lifetime=0 і deadDate пустий — ще живий (lifetime = ∞)
+
+    var comments=(s2['Comments']||'').trim();
+
+    // App status
+    var fds=(r['FDs']||r['App status']||'').trim().toLowerCase();
+    var appStatus='unknown';
+    if(fds==='live')appStatus='live';
+    else if(fds==='dead')appStatus='dead';
+    else if(fds.includes('invalid')||fds.includes('missing'))appStatus='removed';
+    else if(deadDate)appStatus='dead';
+    else if(liveDate&&!deadDate)appStatus='live';
+
+    // ── KPI LOGIC ──
+    // Додаток рахується в КПІ якщо:
+    // 1. Версія >= 3 (сіра частина)
+    // 2. App review дата потрапляє в тиждень звіту
+    // 3. Прожила >= 1 день:
+    //    - Lifetime (days) >= 1  (заповнюється після бану)
+    //    - АБО deadDate пусте (ще жива = точно >= 1 день)
+    //    - АБО dead-live >= 1 день (якщо є обидві дати але lifetime не записаний)
+    var wasGreyAtReview = (vers.n >= 3); // версія >= 3
+    var isStillAlive = !deadDate && liveDate; // живий (deadDate пустий, але є liveDate)
+    var bannedAfter1Day = (lifetimeRaw.trim()!=='' && lifetime>=1); // є lifetime і >= 1
+    var calcAfter1Day = (liveDate && deadDate && dayDiff(liveDate,deadDate)>=1); // розрахований
+    var livedAtLeastOneDay = isStillAlive || bannedAfter1Day || calcAfter1Day;
+
+    // Week key based on App review date
+    var reviewWeekKey = reviewDate ? weekKey(reviewDate) : null;
+
+    // Also track the live week (for week report)
+    var liveWeekKey = liveDate ? weekKey(liveDate) : null;
+    var deadWeekKey = deadDate ? weekKey(deadDate) : null;
+
+    ALL.push({
+      name:name, account:acc, manager:mgr, vers:vers, vnum:vers.n,
+      brand:(r['Brand']||'').trim(),
+      appStatus:appStatus,
+      reviewDate:reviewDate, reviewRaw:reviewRaw,
+      liveDate:liveDate, liveRaw:liveRaw,
+      deadDate:deadDate, deadRaw:deadRaw,
+      expenses:expenses, paidWeeks:paidWeeks, lifetime:lifetime,
+      comments:comments,
+      reviewWeekKey:reviewWeekKey,
+      liveWeekKey:liveWeekKey,
+      deadWeekKey:deadWeekKey,
+      wasGreyAtReview:wasGreyAtReview,
+      livedAtLeastOneDay:livedAtLeastOneDay,
+      // kpiEligible: grey version + survived >=1d (evaluated per week below)
+    });
+  });
+}
+
+// ════════════════════════════════════════════
+// KPI CHECK FOR A GIVEN WEEK KEY
+// An app counts for week W if:
+//   - wasGreyAtReview (vers >= 3)
+//   - reviewWeekKey === W
+//   - livedAtLeastOneDay
+// ════════════════════════════════════════════
+function isKPI(row, wk){
+  if(!row.wasGreyAtReview)return false;
+  if(!row.livedAtLeastOneDay)return false;
+  if(wk==='all')return row.reviewWeekKey!==null; // any week
+  return row.reviewWeekKey===wk;
+}
+
+// ════════════════════════════════════════════
+// BUILD WEEKS LIST (from App review dates)
+// ════════════════════════════════════════════
+function buildWeeks(){
+  var wkSet={};
+  ALL.forEach(function(r){
+    if(r.reviewWeekKey)wkSet[r.reviewWeekKey]=true;
+    if(r.liveWeekKey)wkSet[r.liveWeekKey]=true;
+  });
+  WEEKS=Object.keys(wkSet).sort();
+}
+
+// ════════════════════════════════════════════
+// WEEK PILLS
+// ════════════════════════════════════════════
+function renderWeekPills(){
+  var div=document.getElementById('weekPills');
+  if(!WEEKS.length){div.innerHTML='<span class="week-pill-lbl">Тижні:</span><span style="font-size:9px;color:var(--tx3)">немає даних</span>';return;}
+  var html='<span class="week-pill-lbl">Тижні:</span>';
+  html+='<button class="wpill all'+(selWeek==='all'?' on':'')+'" onclick="selW(\'all\')">Всі</button>';
+  WEEKS.slice().reverse().forEach(function(wk){
+    html+='<button class="wpill'+(selWeek===wk?' on':'')+'" onclick="selW(\''+wk+'\')">'+weekLabel(wk)+'</button>';
+  });
+  div.innerHTML=html;
+  document.getElementById('bwks').textContent=WEEKS.length+' тижнів';
+}
+
+function selW(wk){
+  selWeek=wk;
+  renderWeekPills();
+  rAll();
+}
+
+// ════════════════════════════════════════════
+// RENDER ALL
+// ════════════════════════════════════════════
+function rAll(){rKPI();rStats();rTable();rDeadDetail();rBan();rFin();rMgr();rWkReport();}
+
+// ════════════════════════════════════════════
+// KPI RENDER
+// ════════════════════════════════════════════
+function rKPI(){
+  var tgt=parseInt(document.getElementById('kpiT').value)||15;
+  var vt=Math.round(tgt*0.53),st=tgt-vt;
+  var wk=selWeek;
+
+  var kpiAll=ALL.filter(function(r){return isKPI(r,wk);});
+  var tot=kpiAll.length;
+  var vl=kpiAll.filter(function(r){return r.manager==='vlad';}).length;
+  var sa=kpiAll.filter(function(r){return r.manager==='sanya';}).length;
+
+  var p=function(n,d){return Math.min(Math.round(n/Math.max(d,1)*100),100);};
+
+  // Total
+  document.getElementById('kn0').textContent=tot;
+  document.getElementById('ko0').textContent='/ '+tgt;
+  document.getElementById('kb0').style.width=p(tot,tgt)+'%';
+  document.getElementById('kp0').textContent=p(tot,tgt)+'% від цілі';
+  var wlbl=wk==='all'?'Всі тижні від 01.01.26':('Тиждень: '+weekLabel(wk));
+  document.getElementById('kleg0').innerHTML='<span>'+tot+'</span> сірих ≥1д | '+wlbl;
+
+  // Vlad
+  document.getElementById('kn1').textContent=vl;
+  document.getElementById('ko1').textContent='/ ~'+vt;
+  document.getElementById('kb1').style.width=p(vl,vt)+'%';
+  document.getElementById('kp1').textContent=p(vl,vt)+'% від цілі';
+  document.getElementById('kleg1').innerHTML='<span>'+vl+'</span> з '+tot+' KPI додатків';
+
+  // Sanya
+  document.getElementById('kn2').textContent=sa;
+  document.getElementById('ko2').textContent='/ ~'+st;
+  document.getElementById('kb2').style.width=p(sa,st)+'%';
+  document.getElementById('kp2').textContent=p(sa,st)+'% від цілі';
+  document.getElementById('kleg2').innerHTML='<span>'+sa+'</span> з '+tot+' KPI додатків';
+}
+
+function rStats(){
+  var wk=selWeek;
+  var kpiAll=ALL.filter(function(r){return isKPI(r,wk);});
+  document.getElementById('ss0').textContent=kpiAll.length;
+  document.getElementById('ss1').textContent=ALL.filter(function(r){return r.vers.t==='gm';}).length;
+  document.getElementById('ss2').textContent=ALL.filter(function(r){return r.vers.t==='wp';}).length;
+  document.getElementById('ss3').textContent=ALL.filter(function(r){return r.appStatus==='dead';}).length;
+  document.getElementById('ss4').textContent=kpiAll.filter(function(r){return r.manager==='vlad';}).length;
+  document.getElementById('ss5').textContent=kpiAll.filter(function(r){return r.manager==='sanya';}).length;
+}
+
+// ════════════════════════════════════════════
+// MAIN TABLE
+// ════════════════════════════════════════════
+function getVis(){
+  var wk=selWeek;
+  return ALL.filter(function(r){
+    var q=curQ.toLowerCase();
+    var ms=!q||(r.name.toLowerCase().includes(q)||r.account.toLowerCase().includes(q)||(r.brand||'').toLowerCase().includes(q));
+    var mf=true;
+    var kpi=isKPI(r,wk);
+    if(curF==='kpi')mf=kpi;
+    else if(curF==='gp')mf=r.vers.t==='gp';
+    else if(curF==='gm')mf=r.vers.t==='gm';
+    else if(curF==='wp')mf=r.vers.t==='wp';
+    else if(curF==='wm')mf=r.vers.t==='wm';
+    else if(curF==='vl')mf=r.manager==='vlad';
+    else if(curF==='sa')mf=r.manager==='sanya';
+    else if(curF==='dead')mf=r.appStatus==='dead';
+    return ms&&mf;
+  }).sort(function(a,b){
+    if(!sortC)return 0;
+    var av=a[sortC]||0,bv=b[sortC]||0;
+    if(sortC==='reviewDate'||sortC==='liveDate'||sortC==='deadDate'){
+      av=av?av.getTime():0; bv=bv?bv.getTime():0;
+    } else if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
+    return av<bv?-sortD:av>bv?sortD:0;
+  });
+}
+
+var VT={gp:{c:'gp',p:'✅'},gm:{c:'gm',p:'⏳'},wp:{c:'wp',p:'🟦'},wm:{c:'wm',p:'🔶'},dr:{c:'dr',p:''}};
+
+function rTable(){
+  var wk=selWeek;
+  var rows=getVis();
+  document.getElementById('bcnt').textContent=rows.length+' записів';
+  var body=document.getElementById('mainBody');
+  if(!rows.length){body.innerHTML='<tr><td colspan="13"><div class="empty"><span class="ico">🔍</span>Нічого</div></td></tr>';return;}
+  body.innerHTML=rows.map(function(r,i){
+    var vt=VT[r.vers.t]||VT.dr;
+    var kpi=isKPI(r,wk);
+    var mgr=r.manager==='vlad'?'<span class="mb mv">ВЛАД</span>':r.manager==='sanya'?'<span class="mb ms">САНЯ</span>':'<span class="mb mo">—</span>';
+    var st=r.appStatus==='live'?'<span class="stlive"><span class="dlive"></span>LIVE</span>':r.appStatus==='dead'?'<span class="stdead"><span class="ddead"></span>DEAD</span>':'<span class="strem">—</span>';
+    var lh=r.lifetime>0?('<span class="db '+(r.lifetime<=3?'ds':r.lifetime<=7?'dm':'dl')+'">'+r.lifetime+'д</span>'):'<span style="color:var(--tx3)">—</span>';
+    return'<tr class="'+(r.appStatus==='dead'?'rdead':'')+(kpi?' rkpi':'')+'"><td style="color:var(--tx3);font-size:9px">'+(i+1)+'</td>'
+      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
+      +'<td>'+(kpi?'<span class="kpi-tick">✓</span>':'<span style="color:var(--tx3)">—</span>')+'</td>'
+      +'<td><span class="vb '+vt.c+'">'+vt.p+' '+e(r.vers.lbl)+'</span></td>'
+      +'<td>'+mgr+'</td>'
+      +'<td style="font-size:9px;color:var(--tx2);max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+e(r.account)+'">'+e(r.account)+'</td>'
+      +'<td style="font-size:9px;color:var(--tx2)">'+e(r.brand||'—')+'</td>'
+      +'<td style="font-size:9px;color:var(--Y)">'+e(r.reviewRaw||'—')+'</td>'
+      +'<td style="font-size:9px;color:var(--G)">'+e(r.liveRaw||'—')+'</td>'
+      +'<td style="font-size:9px;color:var(--R)">'+e(r.deadRaw||'—')+'</td>'
+      +'<td>'+lh+'</td>'
+      +'<td style="font-size:9px;color:'+(r.expenses?'var(--Y)':'var(--tx3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
+      +'<td>'+(r.comments?'<span class="ctag">'+e(r.comments)+'</span>':'<span style="color:var(--tx3)">—</span>')+'</td></tr>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// WEEKLY REPORT TABLE
+// ════════════════════════════════════════════
+function rWkReport(){
+  var tgt=parseInt(document.getElementById('kpiT').value)||15;
+  var body=document.getElementById('wkBody');
+  if(!WEEKS.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:18px">Завантаж дані</div></td></tr>';return;}
+
+  // Current selected week for highlighting
+  var curWk=selWeek;
+
+  var rows=WEEKS.slice().reverse().map(function(wk){
+    var kpiApps=ALL.filter(function(r){return isKPI(r,wk);});
+    var kpiTot=kpiApps.length;
+    var kpiVl=kpiApps.filter(function(r){return r.manager==='vlad';}).length;
+    var kpiSa=kpiApps.filter(function(r){return r.manager==='sanya';}).length;
+    // Dead this week = apps whose deadWeekKey === wk
+    var deadWk=ALL.filter(function(r){return r.deadWeekKey===wk&&r.appStatus==='dead';}).length;
+    // Expenses for apps active this week (review in this week)
+    var wkApps=ALL.filter(function(r){return r.reviewWeekKey===wk;});
+    var exp=wkApps.reduce(function(s,r){return s+r.expenses;},0);
+    // Ban rate = dead this week / kpi tot
+    var br=kpiTot>0?Math.round(deadWk/kpiTot*100):0;
+    var pct=Math.min(Math.round(kpiTot/tgt*100),200);
+    var isCur=wk===curWk;
+    return'<tr class="'+(isCur?'week-row-cur':'')+'">'
+      +'<td style="color:'+(isCur?'var(--G)':'var(--tx)')+'"><strong>'+(isCur?'▶ ':'')+weekLabel(wk)+'</strong></td>'
+      +'<td><strong style="color:var(--G)">'+kpiTot+'</strong> <span style="color:var(--tx3);font-size:9px">/ '+tgt+'</span></td>'
+      +'<td style="color:var(--VL)">'+kpiVl+'</td>'
+      +'<td style="color:var(--SA)">'+kpiSa+'</td>'
+      +'<td style="color:var(--R)">'+deadWk+'</td>'
+      +'<td style="color:'+(exp?'var(--Y)':'var(--tx3)')+'">'+( exp?'$'+exp:'—')+'</td>'
+      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+'">'+br+'%</td>'
+      +'<td><span style="color:'+(pct>=100?'var(--G)':pct>=60?'var(--Y)':'var(--R)')+'">'+pct+'%</span></td>'
+      +'</tr>';
+  }).join('');
+  body.innerHTML=rows;
+}
+
+// ════════════════════════════════════════════
+// DEAD DETAIL
+// ════════════════════════════════════════════
+function rDeadDetail(){
+  var dead=ALL.filter(function(r){return r.appStatus==='dead';});
+  document.getElementById('bdead').textContent=dead.length+' dead';
+  document.getElementById('bdead2').textContent=dead.length;
+  var body=document.getElementById('deadBody');
+  if(!dead.length){body.innerHTML='<tr><td colspan="9"><div class="empty" style="padding:16px"><span class="ico" style="font-size:16px">✅</span>Dead немає</div></td></tr>';return;}
+  body.innerHTML=dead.map(function(r){
+    var mgr=r.manager==='vlad'?'<span class="mb mv">ВЛАД</span>':r.manager==='sanya'?'<span class="mb ms">САНЯ</span>':'<span class="mb mo">—</span>';
+    var lh=r.lifetime>0?('<span class="db '+(r.lifetime<=3?'ds':r.lifetime<=7?'dm':'dl')+'">'+r.lifetime+'д</span>'):'—';
+    return'<tr><td class="aname" title="'+e(r.name)+'">'+e(r.name)+'</td>'
+      +'<td>'+mgr+'</td>'
+      +'<td style="font-size:9px;color:var(--tx2)">'+e(r.account)+'</td>'
+      +'<td style="font-size:9px;color:var(--Y)">'+e(r.reviewRaw||'—')+'</td>'
+      +'<td style="font-size:9px;color:var(--G)">'+e(r.liveRaw||'—')+'</td>'
+      +'<td style="font-size:9px;color:var(--R)">'+e(r.deadRaw||'—')+'</td>'
+      +'<td>'+lh+'</td>'
+      +'<td style="font-size:9px;color:'+(r.expenses?'var(--Y)':'var(--tx3)')+'">'+( r.expenses?'$'+r.expenses:'—')+'</td>'
+      +'<td>'+(r.comments?'<span class="ctag">'+e(r.comments)+'</span>':'<span style="color:var(--tx3)">—</span>')+'</td></tr>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// BAN ANALYSIS
+// ════════════════════════════════════════════
+function rBan(){
+  var dead=ALL.filter(function(r){return r.appStatus==='dead';});
+  var cnt={};
+  dead.forEach(function(r){
+    if(!r.comments)return;
+    r.comments.split(/[,;\/]+/).forEach(function(p){
+      var t=p.trim();if(t&&t!=='—')cnt[t]=(cnt[t]||0)+1;
+    });
+  });
+  var sorted=Object.entries(cnt).sort(function(a,b){return b[1]-a[1];}).slice(0,12);
+  var max=sorted[0]?sorted[0][1]:1;
+  var div=document.getElementById('banDiv');
+  if(!sorted.length){div.innerHTML='<div class="empty">Немає коментарів у dead</div>';return;}
+  div.innerHTML=sorted.map(function(x){
+    return'<div class="ar"><span class="an" title="'+e(x[0])+'">'+e(x[0])+'</span>'
+      +'<div class="ab"><div class="abf" style="width:'+(x[1]/max*100)+'%;background:var(--R)"></div></div>'
+      +'<span class="ac" style="color:var(--R)">'+x[1]+'</span></div>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// FINANCE
+// ════════════════════════════════════════════
+function rFin(){
+  var wk=selWeek;
+  // Finance for selected week (apps with review in this week)
+  var wkApps=wk==='all'?ALL:ALL.filter(function(r){return r.reviewWeekKey===wk;});
+  var tot=wkApps.reduce(function(s,r){return s+r.expenses;},0);
+  var vl=wkApps.filter(function(r){return r.manager==='vlad';}).reduce(function(s,r){return s+r.expenses;},0);
+  var sa=wkApps.filter(function(r){return r.manager==='sanya';}).reduce(function(s,r){return s+r.expenses;},0);
+  var pw=wkApps.reduce(function(s,r){return s+r.paidWeeks;},0);
+  var lf=wkApps.filter(function(r){return r.lifetime>0;}).map(function(r){return r.lifetime;});
+  var al=lf.length?Math.round(lf.reduce(function(a,b){return a+b;},0)/lf.length):0;
+  var we=wkApps.filter(function(r){return r.expenses>0;}).length;
+  var ae=we?Math.round(tot/we):0;
+  var dead=wkApps.filter(function(r){return r.appStatus==='dead';}).length;
+  var kpiTot=wkApps.filter(function(r){return isKPI(r,wk);}).length;
+  var br=kpiTot>0?Math.round(dead/kpiTot*100):0;
+
+  document.getElementById('f0').textContent='$'+tot;
+  document.getElementById('f1').textContent='$'+vl;
+  document.getElementById('f2').textContent='$'+sa;
+  document.getElementById('f3').textContent=pw;
+  document.getElementById('f4').textContent='$'+ae;
+  document.getElementById('f5').textContent=al+' дн.';
+  var fe=document.getElementById('f6');
+  fe.textContent=br+'%';
+  fe.style.color=br>30?'var(--R)':br>15?'var(--Y)':'var(--G)';
+  document.getElementById('bfin').textContent='$'+tot;
+}
+
+// ════════════════════════════════════════════
+// MANAGER BREAKDOWN
+// ════════════════════════════════════════════
+function rMgr(){
+  var tgt=parseInt(document.getElementById('kpiT').value)||15;
+  var wk=selWeek;
+  var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
+  var vt=Math.round(tgt*0.53),st=tgt-vt;
+  var body=document.getElementById('mgrBody');
+  var html=defs.map(function(d){
+    var apps=ALL.filter(function(r){return r.manager===d.k;});
+    if(!apps.length)return'';
+    var kpiApps=apps.filter(function(r){return isKPI(r,wk);});
+    var kpi=kpiApps.length;
+    var gm=apps.filter(function(r){return r.vers.t==='gm';}).length;
+    var wp=apps.filter(function(r){return r.vers.t==='wp';}).length;
+    var dead=apps.filter(function(r){return r.appStatus==='dead';}).length;
+    var tot=apps.length;
+    var br=kpi>0?Math.round(dead/kpi*100):0;
+    var ex=apps.reduce(function(s,r){return s+r.expenses;},0);
+    var ks=d.k==='vlad'?vt:d.k==='sanya'?st:0;
+    var kp=ks?Math.min(Math.round(kpi/ks*100),200):0;
+    return'<tr><td><span class="mb '+d.c+'">'+d.l+'</span></td>'
+      +'<td><strong style="color:var(--G)">'+kpi+'</strong></td>'
+      +'<td style="color:var(--Y)">'+gm+'</td>'
+      +'<td style="color:var(--B)">'+wp+'</td>'
+      +'<td style="color:var(--R)">'+dead+'</td>'
+      +'<td style="color:var(--tx2)">'+tot+'</td>'
+      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+'">'+br+'%</td>'
+      +'<td style="color:'+(ex?'var(--Y)':'var(--tx3)')+'">'+( ex?'$'+ex:'—')+'</td>'
+      +'<td style="color:'+(kp>=100?'var(--G)':kp>=60?'var(--Y)':'var(--R)')+'">'+( ks?kp+'%':'—')+'</td></tr>';
+  }).filter(Boolean).join('');
+  body.innerHTML=html||'<tr><td colspan="9"><div class="empty" style="padding:16px">Завантаж дані</div></td></tr>';
+}
+
+// ════════════════════════════════════════════
+// FILTER / SORT / SEARCH
+// ════════════════════════════════════════════
+function sf(f,btn){
+  curF=f;
+  document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  rTable();
+}
+function doSearch(){curQ=document.getElementById('srch').value;rTable();}
+function srt(col){
+  if(sortC===col)sortD*=-1;else{sortC=col;sortD=1;}
+  document.querySelectorAll('thead th').forEach(function(th){th.classList.remove('asc','desc');});
+  event.currentTarget.classList.add(sortD===1?'asc':'desc');
+  rTable();
+}
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
