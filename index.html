@@ -814,21 +814,23 @@ function merge(){
     }
 
     // ── СТАТУС ДОДАТКУ ──
+    // App status з S1 — якщо менеджер ще не записав дату dead в Rental
+    var fds=(r1['App status (FDs)']||r1['FDs']||r1['App status']||'').trim().toLowerCase();
+    var fdsIsDead=fds==='dead'||fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend')||fds.includes('remov');
+
     var appStatus;
     if(vers.t==='dr'){
-      // Порожня версія = ще не залито = draft
-      appStatus = 'draft';
-      isAlive = false;
-    } else if(deadDate || (lifetimeRaw !== '' && computedLife >= 0)){
-      // Є дата смерті або є записаний lifetime → dead
-      appStatus = 'dead';
-      isAlive = false;
-    } else if(isAlive){
-      appStatus = 'live';
-    } else if(liveDate){
-      appStatus = 'live';
+      appStatus='draft'; isAlive=false;
+    } else if(deadDate||(lifetimeRaw!==''&&computedLife>=0)){
+      // Є дата смерті або lifetime записаний → dead
+      appStatus='dead'; isAlive=false;
+    } else if(fdsIsDead){
+      // S1 каже dead/invalid/missing — дата ще не вписана в Rental
+      appStatus='dead'; isAlive=false;
+    } else if(isAlive||liveDate){
+      appStatus='live';
     } else {
-      appStatus = 'unknown';
+      appStatus='unknown';
     }
 
     // ── КПІ УМОВИ ──
@@ -843,13 +845,13 @@ function merge(){
     var isGrey = (vers.t === 'gp'); // ТІЛЬКИ без знаку ?
 
     // ── SURVIVED >= 1 ДЕНЬ ──
-    // Умова для КПІ: додаток реально жив >= 1 день після публікації
     var survived = false;
     var lt = parseInt(lifetimeRaw)||0;
-    if(lifetimeRaw !== '' && lt >= 1)              survived = true; // є записаний lifetime >= 1 день
-    else if(liveDate && deadDate && computedLife>=1) survived = true; // dead-live >= 1 день
-    else if(isAlive && liveDate)                     survived = true; // живий прямо зараз
-    else if(reviewDate && vers.t==='gp' && !deadDate) survived = true; // gp на ревʼю або moderation
+    if(lifetimeRaw !== '' && lt >= 1)                survived = true; // є lifetime >= 1
+    else if(liveDate && deadDate && computedLife>=1)  survived = true; // dead-live >= 1
+    else if(liveDate && fdsIsDead && computedLife>=1) survived = true; // fds=dead, live дата є, >= 1 день
+    else if(isAlive && liveDate)                      survived = true; // живий зараз
+    else if(liveDate && vers.t==='gp' && !fdsIsDead)  survived = true; // gp залитий, живий
 
     ALL.push({
       name, acc, mgr,
@@ -871,15 +873,15 @@ function merge(){
 
 // KPI для конкретного тижня
 function isKPI(row, wk){
-  // Умова 1: версія gp (≥3 без ?)
+  // Умова 1: версія gp (≥3 без ?) 
   if(!row.isGrey) return false;
-  // Умова 3: прожив >= 1 день
+  // Умова 2: прожив >= 1 день
   if(!row.survived) return false;
-  // Потрібна App review дата для прив'язки до тижня
-  if(!row.reviewWk) return false;
-  // Умова 2: App review в цьому тижні
+  // Орієнтир — App live дата (коли реально опублікувався)
+  if(!row.liveWk) return false;
+  // Умова 3: App live в цьому тижні
   if(wk==='all') return true;
-  return row.reviewWk === wk;
+  return row.liveWk === wk;
 }
 
 
@@ -888,7 +890,8 @@ function isKPI(row, wk){
 // WEEKS
 function buildWeeks(){
   var ws={};
-  ALL.forEach(function(r){if(r.reviewWk)ws[r.reviewWk]=true;});
+  // Тижні по App live (основний орієнтир КПІ)
+  ALL.forEach(function(r){if(r.liveWk)ws[r.liveWk]=true;});
   WEEKS=Object.keys(ws).sort();
 }
 
@@ -959,7 +962,7 @@ function rKPI(wk){
 function rStats(wk){
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
   // Якщо вибрано конкретний тиждень — фільтруємо по reviewWk
-  var wkApps = (wk==='all') ? ALL : ALL.filter(function(r){return r.reviewWk===wk;});
+  var wkApps = (wk==='all') ? ALL : ALL.filter(function(r){return r.liveWk===wk;});
   Q('s0',ka.length);
   Q('s1',ALL.filter(function(r){return r.isAlive;}).length);  // живих зараз — завжди всі
   Q('s2',wkApps.filter(function(r){return r.vers.t==='gm';}).length);
@@ -1084,7 +1087,7 @@ function rWkReport(){
     var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
     var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
     var dw=ALL.filter(function(r){return r.deadWk===wk&&r.appStatus==='dead';}).length;
-    var wa=ALL.filter(function(r){return r.reviewWk===wk;});
+    var wa=ALL.filter(function(r){return r.liveWk===wk;});
     var exp=wa.reduce(function(s,r){return s+r.expenses;},0);
     var br=tot>0?Math.round(dw/tot*100):0;
     var pct=Math.min(Math.round(tot/tgt*100),200);
@@ -1109,7 +1112,7 @@ function rBan(){
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
-    return r.deadWk===wk || r.reviewWk===wk;
+    return r.deadWk===wk || r.liveWk===wk;
   });
   document.getElementById('bban').textContent=dead.length+' dead';
   var cnt={};
@@ -1131,7 +1134,7 @@ function rBan(){
 // ════════════════════════════════════════
 // FINANCE
 function rFin(wk){
-  var wa=wk==='all'?ALL:ALL.filter(function(r){return r.reviewWk===wk;});
+  var wa=wk==='all'?ALL:ALL.filter(function(r){return r.liveWk===wk;});
   var tot=wa.reduce(function(s,r){return s+r.expenses;},0);
   var vl=wa.filter(function(r){return r.manager==='vlad';}).reduce(function(s,r){return s+r.expenses;},0);
   var sa=wa.filter(function(r){return r.manager==='sanya';}).reduce(function(s,r){return s+r.expenses;},0);
@@ -1195,7 +1198,7 @@ function rDead(){
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
-    return r.deadWk===wk || r.reviewWk===wk;
+    return r.deadWk===wk || r.liveWk===wk;
   })
     .sort(function(a,b){
       // Сортуємо: спочатку dead цього тижня, потім по даті dead (новіші вгорі)
