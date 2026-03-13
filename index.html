@@ -935,21 +935,6 @@ function selW(wk){
 function rAll(){
   var wk=selWk==='all'?'all':selWk;
   rKPI(wk); rStats(wk); rActive(); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
-  // Debug: показуємо всі записи з liveWk цього тижня і їх KPI статус
-  if(wk!=='all'){
-    var dbg=ALL.filter(function(r){return r.liveWk===wk;});
-    console.table(dbg.map(function(r){return{
-      name:r.name,
-      vers:r.vers.t+' '+r.vers.lbl,
-      isGrey:r.isGrey,
-      isAlive:r.isAlive,
-      computedLife:r.computedLife,
-      fdsStatus:(r.appStatus),
-      liveRaw:r.liveRaw,
-      deadRaw:r.deadRaw,
-      KPI:isKPI(r,wk)
-    };}));
-  }
 }
 
 // ════════════════════════════════════════
