@@ -326,12 +326,12 @@ function chkPw(){
   <div class="inp2">
     <div class="ig">
       <label>📋 "23 Apps" — CSV URL</label>
-      <input class="ti" id="u1" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=0&output=csv">
+      <input class="ti" id="u1" placeholder="">
       <div class="hint">Name, Account, Vers, Brand, FDs...</div>
     </div>
     <div class="ig">
       <label>💰 "9 Rental" — CSV URL</label>
-      <input class="ti" id="u2" placeholder="https://docs.google.com/spreadsheets/d/.../pub?gid=ЧИСЛО&output=csv">
+      <input class="ti" id="u2" placeholder="">
       <div class="hint">App review, App live, App dead, Expenses, Lifetime (days)...</div>
     </div>
   </div>
@@ -398,7 +398,7 @@ function chkPw(){
   <div class="sb"><div class="sb-l">🟢 Живих зараз</div><div class="sb-v" style="color:var(--G)" id="s1">0</div></div>
   <div class="sb"><div class="sb-l">⏳ Сірих на модерації</div><div class="sb-v" style="color:var(--Y)" id="s2">0</div></div>
   <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
-  <div class="sb"><div class="sb-l">💀 Dead всього</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
+  <div class="sb"><div class="sb-l">💀 Dead (тиждень)</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
   <div class="sb"><div class="sb-l">📊 Всього (тиждень)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
 </div>
 
@@ -752,150 +752,137 @@ function getMgr(acc){
 // ════════════════════════════════════════
 // MERGE — ключова логіка
 function merge(){
-  // Будуємо map по імені з S2
+  // Map імен з S2
   var m2={};
-  S2.forEach(function(r){
-    var k=(r['App name']||r['Name']||'').trim().toLowerCase();
-    if(!k)return;
-    // Якщо є дублікат — зберігаємо той що має більше даних (App review або App live)
-    if(m2[k]){
-      var old=m2[k];
-      var oldScore=(old['App review']?2:0)+(old['App live']?1:0);
-      var newScore=(r['App review']?2:0)+(r['App live']?1:0);
-      if(newScore>oldScore) m2[k]=r; // новий має більше даних
-    } else {
-      m2[k]=r;
-    }
+  S2.forEach(function(row){
+    var k=(row['App name']||row['Name']||'').trim().toLowerCase();
+    if(!k) return;
+    if(!m2[k]) { m2[k]=row; return; }
+    // дублікат — зберігаємо той що має більше даних
+    var o=m2[k];
+    if((row['App review']?1:0)+(row['App live']?1:0) > (o['App review']?1:0)+(o['App live']?1:0))
+      m2[k]=row;
   });
 
   ALL=[];
-  S1.forEach(function(r){
-    var name=(r['Name']||'').trim(); if(!name)return;
-    var s2=m2[name.toLowerCase()]||{}; // якщо немає в S2 — порожній об'єкт, дати будуть null
+  S1.forEach(function(r1){
+    var name=(r1['Name']||'').trim();
+    if(!name) return;
 
-    var acc=(r['Account']||'').trim();
-    var vers=pVers(r['Vers']||'');
+    // ── ВЕРСІЯ (з першої таблиці) ──
+    var versRaw=(r1['Vers']||'').trim();
+    var vers=pVers(versRaw);
+
+    // ── АКАУНТ і МЕНЕДЖЕР (з першої таблиці) ──
+    var acc=(r1['Account']||'').trim();
     var mgr=getMgr(acc);
 
-    var reviewDate=pDate(s2['App review']||'');
-    var liveDate=pDate(s2['App live']||'');
-    var deadDate=pDate(s2['App dead']||'');
+    // ── ДАНІ З ДРУГОЇ ТАБЛИЦІ ──
+    var r2=m2[name.toLowerCase()]||{};
+    var reviewDate = pDate(r2['App review']||'');
+    var liveDate   = pDate(r2['App live']||'');
+    var deadDate   = pDate(r2['App dead']||'');
+    var lifetimeRaw=(r2['Lifetime (days)']||'').trim();
+    var expenses   = parseFloat((r2['Expenses']||'0').replace(/[^\d.]/g,''))||0;
+    var paidWeeks  = parseInt(r2['Paid weeks']||'0')||0;
+    var comments   = (r2['Comments']||'').trim();
 
-    // ── ФІЛЬТР від 01.03.2026 ──
-    // Беремо найстарішу дату що є
-    var anchor=reviewDate||liveDate;
-    if(!anchor)return;         // немає жодної дати
-    if(anchor<CUT)return;      // старіше березня
+    // ── ФІЛЬТР: тільки від 01.03.2026 ──
+    // Орієнтуємось на App review, якщо немає — App live
+    var anchor = reviewDate || liveDate;
+    if(!anchor) return;          // немає жодної дати — пропускаємо
+    if(anchor < CUT) return;     // до 01.03.2026 — пропускаємо
 
-    var lifetimeRaw=(s2['Lifetime (days)']||'').trim();
+    // ── LIFETIME ──
+    // Правило: Lifetime (days) заповнюється ТІЛЬКИ після бану
+    // Якщо порожній + немає deadDate → живий → рахуємо від liveDate до сьогодні
+    var computedLife = 0;
+    var isAlive = false;
 
-    // ── LIFETIME РОЗРАХУНОК ──
-    // Правило: Lifetime (days) заповнюється ТІЛЬКИ коли додаток помер
-    // Якщо порожній:
-    //   - є App live + немає App dead → ЖИВИЙ → lifetime = сьогодні - App live
-    //   - є App live + є App dead (але lifetime не записали) → dead-live
-    // Якщо є значення → фінальна цифра після бану
-    var computedLife=0;
-    var isAlive=false;
-    if(lifetimeRaw!==''){
-      computedLife=parseInt(lifetimeRaw)||0;
-      isAlive=false; // є lifetime → помер
-    } else if(liveDate&&!deadDate){
-      computedLife=Math.max(0,dayDiff(liveDate,new Date()));
-      isAlive=true; // живий
-    } else if(liveDate&&deadDate){
-      computedLife=Math.max(0,dayDiff(liveDate,deadDate));
-      isAlive=false;
-    } else {
-      computedLife=0;
-      isAlive=false;
+    if(lifetimeRaw !== ''){
+      // Є lifetime → бан відбувся, це фінальна цифра
+      computedLife = parseInt(lifetimeRaw)||0;
+      isAlive = false;
+    } else if(liveDate && !deadDate){
+      // Немає lifetime, немає deadDate → живий
+      computedLife = Math.max(0, dayDiff(liveDate, new Date()));
+      isAlive = true;
+    } else if(liveDate && deadDate){
+      // Є обидві дати але lifetime не записано → рахуємо вручну
+      computedLife = Math.max(0, dayDiff(liveDate, deadDate));
+      isAlive = false;
     }
 
-    var expenses=parseFloat((s2['Expenses']||'0').replace(/[^\d.]/g,''))||0;
-    var paidWeeks=parseInt(s2['Paid weeks']||'0')||0;
-    var comments=(s2['Comments']||'').trim();
-
-    // ── СТАТУС ──
-    // Draft (vers порожній / '-') → не залито, ігноруємо дати
-    var fds=(r['FDs']||r['App status (FDs)']||r['App status']||'').trim().toLowerCase();
+    // ── СТАТУС ДОДАТКУ ──
     var appStatus;
     if(vers.t==='dr'){
-      // Реально порожня версія — ще не залитий = draft
-      appStatus='draft';
-      isAlive=false;
-    } else if(vers.t==='dash'&&(deadDate||lifetimeRaw!=='')){
-      // Прочерк у версії + є dead дата або lifetime → dead
-      appStatus='dead';
-      isAlive=false;
-    } else if(deadDate || lifetimeRaw!==''){
-      // Dead: є дата смерті або записаний lifetime → точно помер
-      appStatus='dead';
-      isAlive=false;
+      // Порожня версія = ще не залито = draft
+      appStatus = 'draft';
+      isAlive = false;
+    } else if(deadDate || (lifetimeRaw !== '' && computedLife >= 0)){
+      // Є дата смерті або є записаний lifetime → dead
+      appStatus = 'dead';
+      isAlive = false;
+    } else if(isAlive){
+      appStatus = 'live';
     } else if(liveDate){
-      // Live: є дата заливу, немає смерті
-      appStatus='live';
-      // isAlive вже встановлено вище правильно
+      appStatus = 'live';
     } else {
-      // Немає дат — fallback на FDs текст
-      if(fds.includes('dead')||fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend'))
-        appStatus='dead';
-      else if(fds.includes('live'))
-        appStatus='live';
-      else
-        appStatus='unknown';
+      appStatus = 'unknown';
     }
 
-    // ── KPI ЛОГІКА ──
-    // Умови КПІ для конкретного тижня:
-    // 1. vers.n >= 3 (сіра версія в першій таблиці)
-    // 2. App review дата потрапляє в тиждень
-    // 3. Прожила >= 1 день:
-    //    - isAlive → живий, точно >= 1 день якщо liveDate є
-    //    - computedLife >= 1
-    var isGrey=(vers.t==='gp'); // КПІ тільки версія без ? (опублікована сіра)
-    // survived1day: чи пережив додаток >= 1 день (для КПІ)
-    // - Живий (isAlive) і є liveDate → рахується (навіть якщо сьогодні залили)
-    // - Є lifetime >= 1 (заповнено після бану)
-    // - Є обидві дати і різниця >= 1
-    // - Немає liveDate але є reviewDate і версія >= 3 → на модерації → рахується
-    var survived1day = (isAlive && liveDate!=null) ||
-                       (lifetimeRaw!=='' && computedLife>=1) ||
-                       (liveDate && deadDate && computedLife>=1) ||
-                       (reviewDate && vers.n>=3 && !liveDate && !deadDate); // на модерації
+    // ── КПІ УМОВИ ──
+    // Додаток рахується в КПІ тижня якщо ВСІ умови виконані:
+    // 1. Версія рівно 3 або вище БЕЗ знаку ? (vers.t === 'gp')
+    // 2. App review дата потрапляє в тиждень звіту
+    // 3. Прожив >= 1 день:
+    //    - lifetimeRaw >= 1 (записано після бану)
+    //    - або dead - live >= 1 день
+    //    - або живий (isAlive = true) → вже живе >= 0 днів, вважаємо ок
+    //    - або на модерації (є reviewDate, liveDate ще немає) → ще не вийшов але вже рахується
+    var isGrey = (vers.t === 'gp'); // ТІЛЬКИ без знаку ?
+
+    // ── SURVIVED >= 1 ДЕНЬ ──
+    // Умова для КПІ: додаток реально жив >= 1 день після публікації
+    var survived = false;
+    var lt = parseInt(lifetimeRaw)||0;
+    if(lifetimeRaw !== '' && lt >= 1)              survived = true; // є записаний lifetime >= 1 день
+    else if(liveDate && deadDate && computedLife>=1) survived = true; // dead-live >= 1 день
+    else if(isAlive && liveDate)                     survived = true; // живий прямо зараз
+    else if(reviewDate && vers.t==='gp' && !deadDate) survived = true; // gp на ревʼю або moderation
 
     ALL.push({
-      name, acc, manager:mgr, vers, vnum:vers.n,
-      brand:(r['Brand']||'').trim(),
+      name, acc, mgr,
+      manager: mgr,
+      vers, vnum: vers.n,
+      brand: (r1['Brand']||'').trim(),
       appStatus, isAlive,
-      reviewDate, reviewRaw:(s2['App review']||'').trim(),
-      liveDate, liveRaw:(s2['App live']||'').trim(),
-      deadDate, deadRaw:(s2['App dead']||'').trim(),
+      reviewDate, reviewRaw: (r2['App review']||'').trim(),
+      liveDate,   liveRaw:   (r2['App live']||'').trim(),
+      deadDate,   deadRaw:   (r2['App dead']||'').trim(),
       expenses, paidWeeks, computedLife, comments,
-      reviewWk: reviewDate?wkKey(reviewDate):null,
-      liveWk: liveDate?wkKey(liveDate):null,
-      deadWk: deadDate?wkKey(deadDate):null,
-      isGrey, survived1day
+      reviewWk: reviewDate ? wkKey(reviewDate) : null,
+      liveWk:   liveDate   ? wkKey(liveDate)   : null,
+      deadWk:   deadDate   ? wkKey(deadDate)   : null,
+      isGrey, survived
     });
   });
 }
 
 // KPI для конкретного тижня
 function isKPI(row, wk){
-  if(!row.isGrey || !row.survived1day) return false;
+  // Умова 1: версія gp (≥3 без ?)
+  if(!row.isGrey) return false;
+  // Умова 3: прожив >= 1 день
+  if(!row.survived) return false;
+  // Потрібна App review дата для прив'язки до тижня
   if(!row.reviewWk) return false;
+  // Умова 2: App review в цьому тижні
   if(wk==='all') return true;
-  return row.reviewWk===wk;
+  return row.reviewWk === wk;
 }
 
-// DEBUG: виводить в консоль всі КПІ-кандидати і їх тижні
-function debugKPI(){
-  console.log('=== ALL records ===');
-  ALL.forEach(function(r){
-    console.log(r.name, '| vers:', r.vers.t, r.vers.lbl, '| isGrey:', r.isGrey, '| survived1day:', r.survived1day, '| reviewWk:', r.reviewWk, '| reviewRaw:', r.reviewRaw);
-  });
-  console.log('=== WEEKS found ===', WEEKS);
-  console.log('=== selWk ===', selWk);
-}
+
 
 // ════════════════════════════════════════
 // WEEKS
@@ -977,7 +964,7 @@ function rStats(wk){
   Q('s1',ALL.filter(function(r){return r.isAlive;}).length);  // живих зараз — завжди всі
   Q('s2',wkApps.filter(function(r){return r.vers.t==='gm';}).length);
   Q('s3',wkApps.filter(function(r){return r.vers.t==='wp';}).length);
-  Q('s4',ALL.filter(function(r){return r.appStatus==='dead';}).length); // dead — завжди всі
+  Q('s4',wkApps.filter(function(r){return r.appStatus==='dead';}).length); // dead цього тижня
   Q('s5',wkApps.length);
 }
 
@@ -1118,7 +1105,12 @@ function rWkReport(){
 // ════════════════════════════════════════
 // BAN
 function rBan(){
-  var dead=ALL.filter(function(r){return r.appStatus==='dead';});
+  // Фільтруємо dead по вибраному тижні (по deadWk або reviewWk)
+  var dead=ALL.filter(function(r){
+    if(r.appStatus!=='dead') return false;
+    if(wk==='all') return true;
+    return r.deadWk===wk || r.reviewWk===wk;
+  });
   document.getElementById('bban').textContent=dead.length+' dead';
   var cnt={};
   dead.forEach(function(r){
@@ -1199,7 +1191,12 @@ function rMgr(wk){
 function rDead(){
   var wk=selWk;
   // Dead section: показуємо всіх dead, але підсвічуємо тих що відносяться до вибраного тижня
-  var dead=ALL.filter(function(r){return r.appStatus==='dead';})
+  // Фільтруємо dead по вибраному тижні (по deadWk або reviewWk)
+  var dead=ALL.filter(function(r){
+    if(r.appStatus!=='dead') return false;
+    if(wk==='all') return true;
+    return r.deadWk===wk || r.reviewWk===wk;
+  })
     .sort(function(a,b){
       // Сортуємо: спочатку dead цього тижня, потім по даті dead (новіші вгорі)
       var aw=(wk!=='all'&&a.deadWk===wk)||(!a.deadWk&&wk!=='all'&&a.reviewWk===wk);
