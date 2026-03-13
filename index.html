@@ -456,17 +456,17 @@ function chkPw(){
     <table>
       <thead><tr>
         <th style="width:38px">#</th>
-        <th onclick="srt('name')">Назва</th>
-        <th onclick="srt('vnum')" style="width:120px">Версія</th>
+        <th onclick=\"srt('name',this)\">Назва</th>
+        <th onclick=\"srt('vnum',this)\" style="width:120px">Версія</th>
         <th style="width:65px">КПІ?</th>
-        <th onclick="srt('appStatus')">Статус</th>
-        <th onclick="srt('manager')">Менеджер</th>
-        <th onclick="srt('acc')">Акаунт</th>
-        <th onclick="srt('reviewRaw')">App Review</th>
-        <th onclick="srt('liveRaw')">App Live</th>
-        <th onclick="srt('deadRaw')">App Dead</th>
-        <th onclick="srt('computedLife')">Lifetime</th>
-        <th onclick="srt('expenses')">Expenses</th>
+        <th onclick=\"srt('appStatus',this)\">Статус</th>
+        <th onclick=\"srt('manager',this)\">Менеджер</th>
+        <th onclick=\"srt('acc',this)\">Акаунт</th>
+        <th onclick=\"srt('reviewRaw',this)\">App Review</th>
+        <th onclick=\"srt('liveRaw',this)\">App Live</th>
+        <th onclick=\"srt('deadRaw',this)\">App Dead</th>
+        <th onclick=\"srt('computedLife',this)\">Lifetime</th>
+        <th onclick=\"srt('expenses',this)\">Expenses</th>
         <th>Comments</th>
       </tr></thead>
       <tbody id="mainTb">
@@ -872,14 +872,20 @@ function merge(){
 }
 
 // KPI для конкретного тижня
+// Умови: версія >=3 БЕЗ ? (gp) + App live в тижні + lifetime >= 1 день
 function isKPI(row, wk){
-  // Умова 1: версія gp (≥3 без ?) 
-  if(!row.isGrey) return false;
-  // Умова 2: прожив >= 1 день
-  if(!row.survived) return false;
-  // Орієнтир — App live дата (коли реально опублікувався)
+  // 1. Версія строго gp (>=3, без знаку ?)
+  if(row.vers.t !== 'gp') return false;
+  // 2. Є App live дата
   if(!row.liveWk) return false;
-  // Умова 3: App live в цьому тижні
+  // 3. Lifetime >= 1 день:
+  //    - живий зараз (isAlive = true, liveDate є)
+  //    - або забанений з lifetime >= 1 (lifetimeRaw >= 1)
+  //    - або dead-live >= 1 день (computedLife >= 1)
+  var lt = parseInt(row.computedLife)||0;
+  var lived = row.isAlive || lt >= 1;
+  if(!lived) return false;
+  // 4. App live потрапляє в вибраний тиждень
   if(wk==='all') return true;
   return row.liveWk === wk;
 }
@@ -1247,10 +1253,10 @@ function resetF(){
   rTable(selWk);
 }
 function doSearch(){curQ=document.getElementById('srch').value;rTable(selWk);}
-function srt(col){
+function srt(col,el){
   if(sortC===col)sortD*=-1;else{sortC=col;sortD=1;}
   document.querySelectorAll('thead th').forEach(function(th){th.classList.remove('asc','desc');});
-  event.currentTarget.classList.add(sortD===1?'asc':'desc');
+  if(el)el.classList.add(sortD===1?'asc':'desc');
   rTable(selWk);
 }
 function Q(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
