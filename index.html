@@ -168,8 +168,8 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 table{width:100%;border-collapse:collapse;}
 thead th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--t2);background:var(--c2);border-bottom:2px solid var(--b2);white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:.3px;}
 thead th:hover{color:var(--t1);}
-thead th.asc::after{content:' ↑';}
-thead th.desc::after{content:' ↓';}
+thead th.asc::after{content:' ↑';color:var(--G);font-weight:700;}
+thead th.desc::after{content:' ↓';color:var(--R);font-weight:700;}
 tbody tr{border-bottom:1px solid var(--b1);transition:background .1s;}
 tbody tr:nth-child(even){background:rgba(255,255,255,.018);}
 tbody tr:last-child{border-bottom:none;}
@@ -821,7 +821,7 @@ function merge(){
     var appStatus;
     if(vers.t==='dr'){
       appStatus='draft'; isAlive=false;
-    } else if(deadDate||(lifetimeRaw!==''&&computedLife>=0)){
+    } else if(deadDate||(lifetimeRaw!==''&&computedLife>=1)){
       // Є дата смерті або lifetime записаний → dead
       appStatus='dead'; isAlive=false;
     } else if(fdsIsDead){
@@ -876,16 +876,13 @@ function merge(){
 function isKPI(row, wk){
   // 1. Версія строго gp (>=3, без знаку ?)
   if(row.vers.t !== 'gp') return false;
-  // 2. Є App live дата
+  // 2. Є App live дата → прив'язка до тижня
   if(!row.liveWk) return false;
-  // 3. Lifetime >= 1 день:
-  //    - живий зараз (isAlive = true, liveDate є)
-  //    - або забанений з lifetime >= 1 (lifetimeRaw >= 1)
-  //    - або dead-live >= 1 день (computedLife >= 1)
-  var lt = parseInt(row.computedLife)||0;
-  var lived = row.isAlive || lt >= 1;
-  if(!lived) return false;
-  // 4. App live потрапляє в вибраний тиждень
+  // 3. Lived >= 1 день:
+  //    - computedLife >= 1 (живий або dead, але прожив >=1 день)
+  //    - isAlive = true (живий прямо зараз, computedLife може бути 0 якщо залили сьогодні)
+  if(!row.isAlive && row.computedLife < 1) return false;
+  // 4. App live в тижні
   if(wk==='all') return true;
   return row.liveWk === wk;
 }
