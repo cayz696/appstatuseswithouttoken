@@ -1108,7 +1108,7 @@ function rWkReport(){
 // ════════════════════════════════════════
 // BAN
 function rBan(){
-  // Фільтруємо dead по вибраному тижні (по deadWk або reviewWk)
+  var wk=selWk; // отримуємо поточний вибраний тиждень
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
