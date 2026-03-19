@@ -456,17 +456,17 @@ function chkPw(){
     <table>
       <thead><tr>
         <th style="width:38px">#</th>
-        <th onclick=\"srt('name',this)\">Назва</th>
-        <th onclick=\"srt('vnum',this)\" style="width:120px">Версія</th>
+        <th onclick="srt('name',this)">Назва</th>
+        <th onclick="srt('vnum',this)" style="width:120px">Версія</th>
         <th style="width:65px">КПІ?</th>
-        <th onclick=\"srt('appStatus',this)\">Статус</th>
-        <th onclick=\"srt('manager',this)\">Менеджер</th>
-        <th onclick=\"srt('acc',this)\">Акаунт</th>
-        <th onclick=\"srt('reviewRaw',this)\">App Review</th>
-        <th onclick=\"srt('liveRaw',this)\">App Live</th>
-        <th onclick=\"srt('deadRaw',this)\">App Dead</th>
-        <th onclick=\"srt('computedLife',this)\">Lifetime</th>
-        <th onclick=\"srt('expenses',this)\">Expenses</th>
+        <th onclick="srt('appStatus',this)">Статус</th>
+        <th onclick="srt('manager',this)">Менеджер</th>
+        <th onclick="srt('acc',this)">Акаунт</th>
+        <th onclick="srt('reviewRaw',this)">App Review</th>
+        <th onclick="srt('liveRaw',this)">App Live</th>
+        <th onclick="srt('deadRaw',this)">App Dead</th>
+        <th onclick="srt('computedLife',this)">Lifetime</th>
+        <th onclick="srt('expenses',this)">Expenses</th>
         <th>Comments</th>
       </tr></thead>
       <tbody id="mainTb">
@@ -564,8 +564,10 @@ var autoT=null, setupOpen=true;
 (function(){
   var wp=document.getElementById('wkPick');
   var now=new Date();
-  var sun=new Date(now); sun.setDate(now.getDate()-now.getDay());
-  wp.value=sun.getFullYear()+'-W'+pad(isoWk(sun));
+  // Початковий тиждень = поточний понеділок
+  var day=now.getDay();
+  var mon=new Date(now); mon.setDate(now.getDate()+((day===0)?-6:1-day)); mon.setHours(0,0,0,0);
+  wp.value=mon.getFullYear()+'-W'+pad(isoWk(mon));
   upWR();
   wp.addEventListener('change',function(){upWR();rAll();});
   var u1=gl('u1'),u2=gl('u2');
@@ -590,26 +592,27 @@ function isoWk(d){
   return Math.ceil((((dd-new Date(Date.UTC(dd.getUTCFullYear(),0,1)))/864e5)+1)/7);
 }
 
-// Week key = Sunday-based: Sun DD.MM - Sat DD.MM
-// We use Sun as start of reporting week
+// Week key = Mon-based: Пн DD.MM - Нд DD.MM
 function wkKey(d){
-  // Повертає YYYY-MM-DD неділі тижня (в локальному часі)
+  // Повертає YYYY-MM-DD понеділка тижня (локальний час)
   var s=new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  s.setDate(s.getDate()-s.getDay()); // відматати до неділі
+  var day=s.getDay(); // 0=Нд,1=Пн,...,6=Сб
+  var diff=(day===0)?-6:1-day; // відматати до понеділка
+  s.setDate(s.getDate()+diff);
   return s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
 }
 
 function wkLabel(key){
-  // key = 'YYYY-MM-DD' неділі — парсимо в локальному часі!
+  // key = 'YYYY-MM-DD' понеділка — парсимо в локальному часі
   var p=key.split('-');
-  var sun=new Date(+p[0],+p[1]-1,+p[2]); // локальний час, без UTC зсуву
-  var sat=new Date(sun); sat.setDate(sun.getDate()+6);
+  var mon=new Date(+p[0],+p[1]-1,+p[2]);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6); // неділя = пн + 6
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
-  return f(sun)+' – '+f(sat);
+  return f(mon)+' – '+f(sun);
 }
 
-function wkStart(key){var p=key.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
-function wkEnd(key){var p=key.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+6);d.setHours(23,59,59,999);return d;}
+function wkStart(key){var p=key.split('-');return new Date(+p[0],+p[1]-1,+p[2]);} // понеділок
+function wkEnd(key){var p=key.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+6);d.setHours(23,59,59,999);return d;} // неділя
 
 // Get monday of current week
 function thisMonday(){
@@ -622,20 +625,18 @@ function upWR(){
   var p=v.split('-W'),y=+p[0],w=+p[1];
   var j4=new Date(y,0,4),day=j4.getDay()||7;
   var mon=new Date(j4); mon.setDate(j4.getDate()-day+1+(w-1)*7);
-  var sun=new Date(mon); sun.setDate(mon.getDate()-1);
-  var sat=new Date(sun); sat.setDate(sun.getDate()+6);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6); // неділя = пн+6
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
-  document.getElementById('wr').textContent=f(sun)+' – '+f(sat);
+  document.getElementById('wr').textContent=f(mon)+' – '+f(sun);
 }
 
-// Convert week picker value to wkKey format (Sunday)
+// Convert week picker value to wkKey format (Monday)
 function pickerToWkKey(v){
   if(!v)return null;
   var p=v.split('-W'),y=+p[0],w=+p[1];
   var j4=new Date(y,0,4),day=j4.getDay()||7;
   var mon=new Date(j4); mon.setDate(j4.getDate()-day+1+(w-1)*7);
-  var sun=new Date(mon); sun.setDate(mon.getDate()-1);
-  return sun.getFullYear()+'-'+pad(sun.getMonth()+1)+'-'+pad(sun.getDate());
+  return mon.getFullYear()+'-'+pad(mon.getMonth()+1)+'-'+pad(mon.getDate());
 }
 
 function setAuto(){
@@ -919,10 +920,9 @@ function renderPills(){
 function selW(wk){
   selWk=wk;
   if(wk!=='all'){
-    // key = YYYY-MM-DD неділі → пікер потребує понеділок того ж тижня
+    // key = YYYY-MM-DD понеділка → пікер = той самий тиждень
     var p=wk.split('-');
-    var sun=new Date(+p[0],+p[1]-1,+p[2]);
-    var mon=new Date(sun); mon.setDate(sun.getDate()+1); // пн = нд + 1
+    var mon=new Date(+p[0],+p[1]-1,+p[2]);
     document.getElementById('wkPick').value=mon.getFullYear()+'-W'+pad(isoWk(mon));
     upWR();
   }
@@ -934,7 +934,7 @@ function selW(wk){
 // RENDER ALL
 function rAll(){
   var wk=selWk==='all'?'all':selWk;
-  rKPI(wk); rStats(wk); rActive(); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
+  rKPI(wk); rStats(wk); rActive(wk); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
 }
 
 // ════════════════════════════════════════
@@ -976,7 +976,7 @@ function rStats(wk){
 
 // ════════════════════════════════════════
 // ACTIVE NOW
-function rActive(){
+function rActive(wk){
   // Section 1: Живих зараз (isAlive = true, computedLife >= 1)
   var alive=ALL.filter(function(r){return r.isAlive;})
     .sort(function(a,b){return b.computedLife-a.computedLife;});
@@ -995,10 +995,17 @@ function rActive(){
       +'</div>';
   }).join('');
 
-  // Section 2: Залиті цього тижня (liveDate >= thisMonday)
-  var mon=thisMonday();
-  var thisWk=ALL.filter(function(r){return r.liveDate&&r.liveDate>=mon;})
-    .sort(function(a,b){return b.liveDate-a.liveDate;});
+  // Section 2: Залиті вибраного тижня (по liveWk)
+  var thisWk;
+  if(wk==='all'){
+    var mon=thisMonday();
+    thisWk=ALL.filter(function(r){return r.liveDate&&r.liveDate>=mon;});
+  } else {
+    thisWk=ALL.filter(function(r){return r.liveWk===wk;});
+  }
+  thisWk=thisWk.sort(function(a,b){return b.liveDate-a.liveDate;});
+  var ac2t=document.getElementById('ac2title');
+  if(ac2t){ac2t.textContent=wk==='all'?'📅 Залиті цього тижня (Пн–Сьогодні)':'📅 Залиті тижня '+wkLabel(wk);}
   document.getElementById('ac2cnt').textContent=thisWk.length;
   var d2=document.getElementById('ac2list');
   if(!thisWk.length){d2.innerHTML='<div class="empty"><div class="ei">📱</div><div class="et">Цього тижня нічого</div></div>';return;}
@@ -1035,10 +1042,15 @@ function getVis(wk){
     return ms&&mf;
   }).sort(function(a,b){
     if(!sortC)return 0;
-    var av=a[sortC]||0, bv=b[sortC]||0;
+    // Map raw date fields to actual Date objects for correct sorting
+    var dateMap={reviewRaw:'reviewDate',liveRaw:'liveDate',deadRaw:'deadDate'};
+    var realCol=dateMap[sortC]||sortC;
+    var av=a[realCol]!=null?a[realCol]:a[sortC];
+    var bv=b[realCol]!=null?b[realCol]:b[sortC];
     if(av instanceof Date)av=av.getTime();
     if(bv instanceof Date)bv=bv.getTime();
-    if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
+    av=av||0; bv=bv||0;
+    if(typeof av==='string'){av=av.toLowerCase();bv=(bv||'').toLowerCase();}
     return av<bv?-sortD:av>bv?sortD:0;
   });
 }
@@ -1089,7 +1101,7 @@ function rWkReport(){
     var tot=ka.length;
     var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
     var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-    var dw=ALL.filter(function(r){return r.deadWk===wk&&r.appStatus==='dead';}).length;
+    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length;
     var wa=ALL.filter(function(r){return r.liveWk===wk;});
     var exp=wa.reduce(function(s,r){return s+r.expenses;},0);
     var br=tot>0?Math.round(dw/tot*100):0;
@@ -1165,16 +1177,18 @@ function rMgr(wk){
   var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
   var body=document.getElementById('mgrTb');
   var html=defs.map(function(d){
-    var apps=ALL.filter(function(r){return r.manager===d.k;});
-    if(!apps.length)return'';
+    var allMgrApps=ALL.filter(function(r){return r.manager===d.k;});
+    if(!allMgrApps.length)return'';
+    // Фільтруємо по тижню (liveWk)
+    var apps=wk==='all'?allMgrApps:allMgrApps.filter(function(r){return r.liveWk===wk;});
     var ka=apps.filter(function(r){return isKPI(r,wk);}).length;
     var gm=apps.filter(function(r){return r.vers.t==='gm';}).length;
     var wp=apps.filter(function(r){return r.vers.t==='wp';}).length;
     var dead=apps.filter(function(r){return r.appStatus==='dead';}).length;
-    var alive=apps.filter(function(r){return r.isAlive;}).length;
+    var alive=allMgrApps.filter(function(r){return r.isAlive;}).length; // живих — завжди всі
     var tot=apps.length;
     var br=ka>0?Math.round(dead/ka*100):0;
-    var ex=apps.reduce(function(s,r){return s+r.expenses;},0);
+    var ex=apps.reduce(function(s,r){return s+r.expenses;},0); // витрати тільки вибраного тижня
     var ks=d.k==='vlad'?vt:d.k==='sanya'?st:0;
     var kp=ks?Math.min(Math.round(ka/ks*100),200):0;
     var pc=kp>=100?'var(--G)':kp>=60?'var(--Y)':'var(--R)';
@@ -1205,8 +1219,8 @@ function rDead(){
   })
     .sort(function(a,b){
       // Сортуємо: спочатку dead цього тижня, потім по даті dead (новіші вгорі)
-      var aw=(wk!=='all'&&a.deadWk===wk)||(!a.deadWk&&wk!=='all'&&a.reviewWk===wk);
-      var bw=(wk!=='all'&&b.deadWk===wk)||(!b.deadWk&&wk!=='all'&&b.reviewWk===wk);
+      var aw=(wk!=='all'&&a.deadWk===wk)||(!a.deadWk&&wk!=='all'&&a.liveWk===wk);
+      var bw=(wk!=='all'&&b.deadWk===wk)||(!b.deadWk&&wk!=='all'&&b.liveWk===wk);
       if(aw&&!bw)return -1; if(bw&&!aw)return 1;
       return (b.deadDate||b.reviewDate||0)-(a.deadDate||a.reviewDate||0);
     });
