@@ -449,7 +449,7 @@ function chkPw(){
 <!-- MAIN TABLE -->
 <div class="sec">
   <div class="sec-h">
-    <span class="sec-t">📱 Всі додатки (від 01.03.2026)</span>
+    <span class="sec-t" id="mainTitle">📱 Всі додатки</span>
     <span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)" id="bcnt">0 записів</span>
   </div>
   <div class="tw">
@@ -514,7 +514,7 @@ function chkPw(){
 
 <!-- MGR TABLE -->
 <div class="sec">
-  <div class="sec-h"><span class="sec-t">👥 По менеджерах</span></div>
+  <div class="sec-h"><span class="sec-t" id="mgrTitle">👥 По менеджерах</span></div>
   <div class="tw">
     <table>
       <thead><tr>
@@ -529,15 +529,22 @@ function chkPw(){
 <!-- DEAD DETAIL -->
 <div class="sec">
   <div class="sec-h">
-    <span class="sec-t">💀 Dead apps — деталі</span>
+    <span class="sec-t" id="deadTitle">💀 Dead apps — деталі</span>
     <span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bdd">0</span>
   </div>
   <div class="tw">
     <table>
       <thead><tr>
-        <th>Назва</th><th>Менеджер</th><th>Версія</th><th>Акаунт</th>
-        <th>App Review</th><th>App Live</th><th>App Dead</th>
-        <th>Lifetime</th><th>Expenses</th><th>Причина</th>
+        <th onclick="srtDead('name',this)">Назва</th>
+        <th>Менеджер</th>
+        <th onclick="srtDead('vnum',this)">Версія</th>
+        <th onclick="srtDead('acc',this)">Акаунт</th>
+        <th onclick="srtDead('reviewRaw',this)">App Review</th>
+        <th onclick="srtDead('liveRaw',this)">App Live</th>
+        <th onclick="srtDead('deadRaw',this)">App Dead</th>
+        <th onclick="srtDead('computedLife',this)">Lifetime</th>
+        <th onclick="srtDead('expenses',this)">Expenses</th>
+        <th>Причина</th>
       </tr></thead>
       <tbody id="deadTb"><tr><td colspan="10"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr></tbody>
     </table>
@@ -1027,6 +1034,8 @@ function rActive(wk){
 function getVis(wk){
   var q=curQ.toLowerCase();
   return ALL.filter(function(r){
+    // Фільтр по тижню: якщо вибраний конкретний тиждень — тільки записи з цим liveWk
+    if(wk!=='all' && r.liveWk!==wk) return false;
     var ms=!q||(r.name.toLowerCase().includes(q)||(r.acc||'').toLowerCase().includes(q)||(r.brand||'').toLowerCase().includes(q));
     var kpi=isKPI(r,wk);
     var mf=true;
@@ -1063,6 +1072,9 @@ var VT={
 };
 
 function rTable(wk){
+  // Оновити заголовок секції
+  var mt=document.getElementById('mainTitle');
+  if(mt) mt.textContent=wk==='all'?'📱 Всі додатки':'📱 Додатки: '+wkLabel(wk);
   var rows=getVis(wk);
   document.getElementById('bcnt').textContent=rows.length+' записів';
   var body=document.getElementById('mainTb');
@@ -1172,6 +1184,8 @@ function rFin(wk){
 // ════════════════════════════════════════
 // MANAGER BREAKDOWN
 function rMgr(wk){
+  var mt=document.getElementById('mgrTitle');
+  if(mt) mt.textContent=wk==='all'?'👥 По менеджерах':'👥 По менеджерах: '+wkLabel(wk);
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*0.53), st=tgt-vt;
   var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
@@ -1208,21 +1222,39 @@ function rMgr(wk){
 
 // ════════════════════════════════════════
 // DEAD DETAIL
+var deadSortC='', deadSortD=1;
+function srtDead(col,el){
+  if(deadSortC===col)deadSortD*=-1;else{deadSortC=col;deadSortD=1;}
+  document.querySelectorAll('#deadTb').forEach(function(t){
+    t.closest('table').querySelectorAll('thead th').forEach(function(th){th.classList.remove('asc','desc');});
+  });
+  if(el)el.classList.add(deadSortD===1?'asc':'desc');
+  rDead();
+}
 function rDead(){
   var wk=selWk;
-  // Dead section: показуємо всіх dead, але підсвічуємо тих що відносяться до вибраного тижня
-  // Фільтруємо dead по вибраному тижні (по deadWk або reviewWk)
+  var dt=document.getElementById('deadTitle');
+  if(dt) dt.textContent=wk==='all'?'💀 Dead apps — деталі':'💀 Dead apps: '+wkLabel(wk);
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
     return r.deadWk===wk || r.liveWk===wk;
   })
     .sort(function(a,b){
-      // Сортуємо: спочатку dead цього тижня, потім по даті dead (новіші вгорі)
-      var aw=(wk!=='all'&&a.deadWk===wk)||(!a.deadWk&&wk!=='all'&&a.liveWk===wk);
-      var bw=(wk!=='all'&&b.deadWk===wk)||(!b.deadWk&&wk!=='all'&&b.liveWk===wk);
-      if(aw&&!bw)return -1; if(bw&&!aw)return 1;
-      return (b.deadDate||b.reviewDate||0)-(a.deadDate||a.reviewDate||0);
+      // Користувацьке сортування якщо вибрано
+      if(deadSortC){
+        var dateMapD={reviewRaw:'reviewDate',liveRaw:'liveDate',deadRaw:'deadDate'};
+        var rc=dateMapD[deadSortC]||deadSortC;
+        var av=a[rc]!=null?a[rc]:a[deadSortC];
+        var bv=b[rc]!=null?b[rc]:b[deadSortC];
+        if(av instanceof Date)av=av.getTime();
+        if(bv instanceof Date)bv=bv.getTime();
+        av=av||0; bv=bv||0;
+        if(typeof av==='string'){av=av.toLowerCase();bv=(bv||'').toLowerCase();}
+        return av<bv?-deadSortD:av>bv?deadSortD:0;
+      }
+      // Дефолт: по liveDate desc
+      return (b.liveDate||0)-(a.liveDate||0);
     });
   document.getElementById('bdd').textContent=dead.length;
   var body=document.getElementById('deadTb');
