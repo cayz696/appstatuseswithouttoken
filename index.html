@@ -81,6 +81,15 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 .wi{background:var(--c3);border:1.5px solid var(--b2);border-radius:8px;padding:7px 12px;color:var(--t1);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
 .wi:focus{border-color:var(--G);}
 .wrange{font-size:13px;color:var(--t3);}
+.cdr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--b1);margin-top:2px;}
+.cdr-lbl{font-size:12px;color:var(--t3);font-weight:500;letter-spacing:.3px;}
+.cdr input[type=date]{background:var(--c3);border:1.5px solid var(--b2);border-radius:8px;padding:5px 10px;color:var(--t1);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+.cdr input[type=date]:focus{border-color:var(--G);}
+.cdr-btn{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--G);color:var(--G);background:var(--Gb);font-family:'Inter',sans-serif;transition:all .14s;}
+.cdr-btn:hover{background:var(--G);color:#000;}
+.cdr-reset{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--b2);color:var(--t2);background:transparent;font-family:'Inter',sans-serif;transition:all .14s;}
+.cdr-reset:hover{border-color:var(--R);color:var(--R);}
+.cdr-active{font-size:12px;color:var(--G);font-weight:600;}
 .kpi-set{display:flex;align-items:center;gap:8px;margin-left:auto;}
 .kpi-set label{font-size:12px;color:var(--t2);}
 .kpi-in{background:var(--c3);border:1.5px solid var(--G);border-radius:8px;padding:6px 12px;color:var(--G);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;outline:none;width:62px;text-align:center;}
@@ -368,6 +377,15 @@ function chkPw(){
     <span class="wlbl">Тижні:</span>
     <span style="font-size:12px;color:var(--t3)">завантаж дані</span>
   </div>
+  <div class="cdr">
+    <span class="cdr-lbl">📅 ДІАПАЗОН:</span>
+    <input type="date" id="cdrFrom" placeholder="від">
+    <span class="cdr-lbl">—</span>
+    <input type="date" id="cdrTo" placeholder="до">
+    <button class="cdr-btn" onclick="applyCustomRange()">Застосувати</button>
+    <button class="cdr-reset" onclick="resetCustomRange()">✕ Скинути</button>
+    <span class="cdr-active" id="cdrActive" style="display:none"></span>
+  </div>
 </div>
 
 <!-- KPI CARDS -->
@@ -564,6 +582,7 @@ var TODAY = new Date(); TODAY.setHours(23,59,59,999);
 var S1=[], S2=[], ALL=[], WEEKS=[];
 var curF='all', curQ='', sortC='', sortD=1;
 var selWk='all';
+var customRange=null; // {from: Date, to: Date, label: string} або null
 var autoT=null, setupOpen=true;
 
 // ════════════════════════════════════════
@@ -610,10 +629,10 @@ function wkKey(d){
 }
 
 function wkLabel(key){
-  // key = 'YYYY-MM-DD' понеділка — парсимо в локальному часі
+  if(!key||key==='all'||key==='custom') return key||'';
   var p=key.split('-');
   var mon=new Date(+p[0],+p[1]-1,+p[2]);
-  var sun=new Date(mon); sun.setDate(mon.getDate()+6); // неділя = пн + 6
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6);
   var f=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'});};
   return f(mon)+' – '+f(sun);
 }
@@ -882,16 +901,11 @@ function merge(){
 // KPI для конкретного тижня
 // Умови: версія >=3 БЕЗ ? (gp) + App live в тижні + lifetime >= 1 день
 function isKPI(row, wk){
-  // 1. Версія строго gp (>=3, без знаку ?)
   if(row.vers.t !== 'gp') return false;
-  // 2. Є App live дата → прив'язка до тижня
-  if(!row.liveWk) return false;
-  // 3. Lived >= 1 день:
-  //    - computedLife >= 1 (живий або dead, але прожив >=1 день)
-  //    - isAlive = true (живий прямо зараз, computedLife може бути 0 якщо залили сьогодні)
+  if(!row.liveDate) return false;
   if(!row.isAlive && row.computedLife < 1) return false;
-  // 4. App live в тижні
   if(wk==='all') return true;
+  if(wk==='custom') return customRange ? inRange(row.liveDate) : false;
   return row.liveWk === wk;
 }
 
@@ -924,7 +938,58 @@ function renderPills(){
   div.innerHTML=html;
   document.getElementById('bwks').textContent=WEEKS.length+' тижнів';
 }
+// ── КАСТОМНИЙ ДІАПАЗОН ──
+function applyCustomRange(){
+  var f=document.getElementById('cdrFrom').value;
+  var t=document.getElementById('cdrTo').value;
+  if(!f||!t){alert('Вкажи обидві дати');return;}
+  var from=new Date(f+'T00:00:00');
+  var to=new Date(t+'T23:59:59');
+  if(from>to){alert('Дата "від" має бути менша за "до"');return;}
+  var lf=function(x){return x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});};
+  customRange={from:from,to:to,label:lf(from)+' – '+lf(to)};
+  selWk='custom';
+  // Скинути активну пілюлю
+  document.querySelectorAll('.wpill').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('cdrActive').style.display='';
+  document.getElementById('cdrActive').textContent='✅ '+customRange.label;
+  rAll();
+}
+
+function resetCustomRange(){
+  customRange=null;
+  selWk='all';
+  document.getElementById('cdrFrom').value='';
+  document.getElementById('cdrTo').value='';
+  document.getElementById('cdrActive').style.display='none';
+  renderPills();
+  rAll();
+}
+
+// Перевіряє чи дата потрапляє в активний діапазон (тиждень або кастом)
+function inRange(date){
+  if(!date) return false;
+  if(customRange){
+    return date>=customRange.from && date<=customRange.to;
+  }
+  if(selWk==='all') return true;
+  var s=wkStart(selWk), e=wkEnd(selWk);
+  return date>=s && date<=e;
+}
+
+// wkKey для фільтрації — повертає ключ тижня або перевіряє кастом
+function matchWk(row, wk){
+  if(wk==='custom'){
+    // В кастомному режимі перевіряємо liveDate напряму
+    return row.liveDate && inRange(row.liveDate);
+  }
+  if(wk==='all') return true;
+  return row.liveWk===wk;
+}
+
 function selW(wk){
+  customRange=null;
+  document.getElementById('cdrActive').style.display='none';
   selWk=wk;
   if(wk!=='all'){
     // key = YYYY-MM-DD понеділка → пікер = той самий тиждень
@@ -940,7 +1005,7 @@ function selW(wk){
 // ════════════════════════════════════════
 // RENDER ALL
 function rAll(){
-  var wk=selWk==='all'?'all':selWk;
+  var wk=selWk; // 'all', 'custom', або YYYY-MM-DD понеділка
   rKPI(wk); rStats(wk); rActive(wk); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
 }
 
@@ -972,7 +1037,10 @@ function rKPI(wk){
 function rStats(wk){
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
   // Якщо вибрано конкретний тиждень — фільтруємо по reviewWk
-  var wkApps = (wk==='all') ? ALL : ALL.filter(function(r){return r.liveWk===wk;});
+  var wkApps;
+  if(wk==='all') wkApps=ALL;
+  else if(wk==='custom') wkApps=ALL.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
+  else wkApps=ALL.filter(function(r){return r.liveWk===wk;});
   Q('s0',ka.length);
   Q('s1',ALL.filter(function(r){return r.isAlive;}).length);  // живих зараз — завжди всі
   Q('s2',wkApps.filter(function(r){return r.vers.t==='gm';}).length);
@@ -1004,7 +1072,9 @@ function rActive(wk){
 
   // Section 2: Залиті вибраного тижня (по liveWk)
   var thisWk;
-  if(wk==='all'){
+  if(wk==='custom'){
+    thisWk=ALL.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
+  } else if(wk==='all'){
     var mon=thisMonday();
     thisWk=ALL.filter(function(r){return r.liveDate&&r.liveDate>=mon;});
   } else {
@@ -1012,7 +1082,7 @@ function rActive(wk){
   }
   thisWk=thisWk.sort(function(a,b){return b.liveDate-a.liveDate;});
   var ac2t=document.getElementById('ac2title');
-  if(ac2t){ac2t.textContent=wk==='all'?'📅 Залиті цього тижня (Пн–Сьогодні)':'📅 Залиті тижня '+wkLabel(wk);}
+  if(ac2t){ac2t.textContent=wk==='all'?'📅 Залиті цього тижня (Пн–Сьогодні)':wk==='custom'?'📅 Залиті: '+(customRange?customRange.label:'діапазон'):'📅 Залиті тижня '+wkLabel(wk);}
   document.getElementById('ac2cnt').textContent=thisWk.length;
   var d2=document.getElementById('ac2list');
   if(!thisWk.length){d2.innerHTML='<div class="empty"><div class="ei">📱</div><div class="et">Цього тижня нічого</div></div>';return;}
@@ -1035,7 +1105,9 @@ function getVis(wk){
   var q=curQ.toLowerCase();
   return ALL.filter(function(r){
     // Фільтр по тижню: якщо вибраний конкретний тиждень — тільки записи з цим liveWk
-    if(wk!=='all' && r.liveWk!==wk) return false;
+    // Фільтр по тижню / кастомному діапазону
+    if(wk==='custom'){if(!r.liveDate||!inRange(r.liveDate)) return false;}
+    else if(wk!=='all'){if(r.liveWk!==wk) return false;}
     var ms=!q||(r.name.toLowerCase().includes(q)||(r.acc||'').toLowerCase().includes(q)||(r.brand||'').toLowerCase().includes(q));
     var kpi=isKPI(r,wk);
     var mf=true;
@@ -1074,7 +1146,7 @@ var VT={
 function rTable(wk){
   // Оновити заголовок секції
   var mt=document.getElementById('mainTitle');
-  if(mt) mt.textContent=wk==='all'?'📱 Всі додатки':'📱 Додатки: '+wkLabel(wk);
+  if(mt) mt.textContent=wk==='all'?'📱 Всі додатки':wk==='custom'?'📱 Додатки: '+(customRange?customRange.label:'діапазон'):'📱 Додатки: '+wkLabel(wk);
   var rows=getVis(wk);
   document.getElementById('bcnt').textContent=rows.length+' записів';
   var body=document.getElementById('mainTb');
@@ -1113,7 +1185,7 @@ function rWkReport(){
     var tot=ka.length;
     var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
     var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length;
+    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length; // wkReport завжди по тижнях (не custom)
     var wa=ALL.filter(function(r){return r.liveWk===wk;});
     var exp=wa.reduce(function(s,r){return s+r.expenses;},0);
     var br=tot>0?Math.round(dw/tot*100):0;
@@ -1139,7 +1211,8 @@ function rBan(){
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
-    return r.deadWk===wk || r.liveWk===wk;
+    if(wk==='custom') return r.liveDate&&inRange(r.liveDate);
+    return r.liveWk===wk;
   });
   document.getElementById('bban').textContent=dead.length+' dead';
   var cnt={};
@@ -1161,7 +1234,10 @@ function rBan(){
 // ════════════════════════════════════════
 // FINANCE
 function rFin(wk){
-  var wa=wk==='all'?ALL:ALL.filter(function(r){return r.liveWk===wk;});
+  var wa;
+  if(wk==='all') wa=ALL;
+  else if(wk==='custom') wa=ALL.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
+  else wa=ALL.filter(function(r){return r.liveWk===wk;});
   var tot=wa.reduce(function(s,r){return s+r.expenses;},0);
   var vl=wa.filter(function(r){return r.manager==='vlad';}).reduce(function(s,r){return s+r.expenses;},0);
   var sa=wa.filter(function(r){return r.manager==='sanya';}).reduce(function(s,r){return s+r.expenses;},0);
@@ -1185,7 +1261,7 @@ function rFin(wk){
 // MANAGER BREAKDOWN
 function rMgr(wk){
   var mt=document.getElementById('mgrTitle');
-  if(mt) mt.textContent=wk==='all'?'👥 По менеджерах':'👥 По менеджерах: '+wkLabel(wk);
+  if(mt) mt.textContent=wk==='all'?'👥 По менеджерах':wk==='custom'?'👥 По менеджерах: '+(customRange?customRange.label:'діапазон'):'👥 По менеджерах: '+wkLabel(wk);
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*0.53), st=tgt-vt;
   var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
@@ -1194,7 +1270,10 @@ function rMgr(wk){
     var allMgrApps=ALL.filter(function(r){return r.manager===d.k;});
     if(!allMgrApps.length)return'';
     // Фільтруємо по тижню (liveWk)
-    var apps=wk==='all'?allMgrApps:allMgrApps.filter(function(r){return r.liveWk===wk;});
+    var apps;
+    if(wk==='all') apps=allMgrApps;
+    else if(wk==='custom') apps=allMgrApps.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
+    else apps=allMgrApps.filter(function(r){return r.liveWk===wk;});
     var ka=apps.filter(function(r){return isKPI(r,wk);}).length;
     var gm=apps.filter(function(r){return r.vers.t==='gm';}).length;
     var wp=apps.filter(function(r){return r.vers.t==='wp';}).length;
@@ -1234,11 +1313,12 @@ function srtDead(col,el){
 function rDead(){
   var wk=selWk;
   var dt=document.getElementById('deadTitle');
-  if(dt) dt.textContent=wk==='all'?'💀 Dead apps — деталі':'💀 Dead apps: '+wkLabel(wk);
+  if(dt) dt.textContent=wk==='all'?'💀 Dead apps — деталі':wk==='custom'?'💀 Dead apps: '+(customRange?customRange.label:'діапазон'):'💀 Dead apps: '+wkLabel(wk);
   var dead=ALL.filter(function(r){
     if(r.appStatus!=='dead') return false;
     if(wk==='all') return true;
-    return r.deadWk===wk || r.liveWk===wk;
+    if(wk==='custom') return r.liveDate&&inRange(r.liveDate);
+    return r.liveWk===wk;
   })
     .sort(function(a,b){
       // Користувацьке сортування якщо вибрано
