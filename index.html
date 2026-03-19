@@ -851,8 +851,8 @@ function merge(){
     } else if(deadDate||(lifetimeRaw!==''&&computedLife>=1)){
       // Є дата смерті або lifetime записаний → dead
       appStatus='dead'; isAlive=false;
-    } else if(fdsIsDead){
-      // S1 каже dead/invalid/missing — дата ще не вписана в Rental
+    } else if(fdsIsDead && (deadDate || lifetimeRaw!=='')){
+      // S1 каже dead + є підтвердження з Rental (дата або lifetime) → dead
       appStatus='dead'; isAlive=false;
     } else if(isAlive||liveDate){
       appStatus='live';
@@ -876,7 +876,7 @@ function merge(){
     var lt = parseInt(lifetimeRaw)||0;
     if(lifetimeRaw !== '' && lt >= 1)                survived = true; // є lifetime >= 1
     else if(liveDate && deadDate && computedLife>=1)  survived = true; // dead-live >= 1
-    else if(liveDate && fdsIsDead && computedLife>=1) survived = true; // fds=dead, live дата є, >= 1 день
+    // fdsIsDead без deadDate/lifetime — не рахуємо як dead, менеджер ще не підтвердив
     else if(isAlive && liveDate)                      survived = true; // живий зараз
     else if(liveDate && vers.t==='gp' && !fdsIsDead)  survived = true; // gp залитий, живий
 
