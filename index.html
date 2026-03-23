@@ -313,7 +313,7 @@ function chkPw(){
 <div class="topbar">
   <div>
     <div class="logo">APP<em>TRACK</em></div>
-    <div class="logo-sub">Weekly KPI · від 01.03.2026</div>
+    <div class="logo-sub">Weekly KPI Dashboard</div>
   </div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
@@ -779,20 +779,48 @@ function getMgr(acc){
 // ════════════════════════════════════════
 // MERGE — ключова логіка
 function merge(){
-  // Map імен з S2
-  var m2={};
-  S2.forEach(function(row){
-    var k=(row['App name']||row['Name']||'').trim().toLowerCase();
+  // ── Дедуп S1 по Bundle ID (унікальний ключ) ──
+  var m1={};
+  S1.forEach(function(row){
+    var bundle=(row['Bundle ID']||row['Bundle']||'').trim().toLowerCase();
+    var name=(row['Name']||'').trim().toLowerCase();
+    var k=bundle||name; // Bundle ID пріоритет, fallback на ім'я
     if(!k) return;
-    if(!m2[k]) { m2[k]=row; return; }
-    // дублікат — зберігаємо той що має більше даних
-    var o=m2[k];
-    if((row['App review']?1:0)+(row['App live']?1:0) > (o['App review']?1:0)+(o['App live']?1:0))
-      m2[k]=row;
+    if(!m1[k]){ m1[k]=row; return; }
+    // дублікат — зберігаємо з вищою версією
+    var oldV=parseFloat((m1[k]['Vers']||'0').replace(/[^0-9.]/g,''))||0;
+    var newV=parseFloat((row['Vers']||'0').replace(/[^0-9.]/g,''))||0;
+    if(newV>oldV) m1[k]=row;
+  });
+  var S1dedup=Object.values(m1);
+
+  // ── Дедуп S2 по Bundle ID ──
+  // S2 може мати Bundle ID або тільки App name
+  var m2bundle={}; // ключ = bundle id з S2
+  var m2name={};   // fallback ключ = app name
+  S2.forEach(function(row){
+    var bundle=(row['Bundle ID']||row['Bundle']||'').trim().toLowerCase();
+    var name=(row['App name']||row['Name']||'').trim().toLowerCase();
+    if(bundle){
+      if(!m2bundle[bundle]) m2bundle[bundle]=row;
+      else{
+        var o=m2bundle[bundle];
+        if((row['App review']?2:0)+(row['App live']?1:0)>(o['App review']?2:0)+(o['App live']?1:0))
+          m2bundle[bundle]=row;
+      }
+    }
+    if(name){
+      if(!m2name[name]) m2name[name]=row;
+      else{
+        var o2=m2name[name];
+        if((row['App review']?2:0)+(row['App live']?1:0)>(o2['App review']?2:0)+(o2['App live']?1:0))
+          m2name[name]=row;
+      }
+    }
   });
 
   ALL=[];
-  S1.forEach(function(r1){
+  S1dedup.forEach(function(r1){
     var name=(r1['Name']||'').trim();
     if(!name) return;
 
@@ -805,7 +833,9 @@ function merge(){
     var mgr=getMgr(acc);
 
     // ── ДАНІ З ДРУГОЇ ТАБЛИЦІ ──
-    var r2=m2[name.toLowerCase()]||{};
+    // Лукап S2: спочатку по Bundle ID з S1, потім по імені
+    var bundle1=(r1['Bundle ID']||r1['Bundle']||'').trim().toLowerCase();
+    var r2=(bundle1&&m2bundle[bundle1])||m2name[name.toLowerCase()]||{};
     var reviewDate = pDate(r2['App review']||'');
     var liveDate   = pDate(r2['App live']||'');
     var deadDate   = pDate(r2['App dead']||'');
@@ -846,7 +876,8 @@ function merge(){
     var fdsIsDead=fds==='dead'||fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend')||fds.includes('remov');
 
     var appStatus;
-    if(vers.t==='dr'){
+    if(vers.t==='dr' && !liveDate && !deadDate && lifetimeRaw===''){
+      // Реально не залито: порожня версія і немає жодних дат
       appStatus='draft'; isAlive=false;
     } else if(deadDate||(lifetimeRaw!==''&&computedLife>=1)){
       // Є дата смерті або lifetime записаний → dead
@@ -869,7 +900,7 @@ function merge(){
     //    - або dead - live >= 1 день
     //    - або живий (isAlive = true) → вже живе >= 0 днів, вважаємо ок
     //    - або на модерації (є reviewDate, liveDate ще немає) → ще не вийшов але вже рахується
-    var isGrey = (vers.t === 'gp'); // ТІЛЬКИ без знаку ?
+    var isGrey = (vers.n >= 3); // версія >= 3 рахується в КПІ (і gp і gm — 4? означає що 3 вже була)
 
     // ── SURVIVED >= 1 ДЕНЬ ──
     var survived = false;
@@ -878,7 +909,7 @@ function merge(){
     else if(liveDate && deadDate && computedLife>=1)  survived = true; // dead-live >= 1
     // fdsIsDead без deadDate/lifetime — не рахуємо як dead, менеджер ще не підтвердив
     else if(isAlive && liveDate)                      survived = true; // живий зараз
-    else if(liveDate && vers.t==='gp' && !fdsIsDead)  survived = true; // gp залитий, живий
+    else if(liveDate && vers.n>=3 && !fdsIsDead)  survived = true; // залитий (gp або gm), живий
 
     ALL.push({
       name, acc, mgr,
@@ -901,7 +932,7 @@ function merge(){
 // KPI для конкретного тижня
 // Умови: версія >=3 БЕЗ ? (gp) + App live в тижні + lifetime >= 1 день
 function isKPI(row, wk){
-  if(row.vers.t !== 'gp') return false;
+  if(row.vers.n < 3) return false; // версія < 3 не КПІ
   if(!row.liveDate) return false;
   if(!row.isAlive && row.computedLife < 1) return false;
   if(wk==='all') return true;
@@ -1086,6 +1117,12 @@ function rActive(wk){
   document.getElementById('ac2cnt').textContent=thisWk.length;
   var d2=document.getElementById('ac2list');
   if(!thisWk.length){d2.innerHTML='<div class="empty"><div class="ei">📱</div><div class="et">Цього тижня нічого</div></div>';return;}
+  // Дедуп по імені в секції "Залиті"
+  var seen2={};
+  thisWk=thisWk.filter(function(r){
+    if(seen2[r.name.toLowerCase()]) return false;
+    seen2[r.name.toLowerCase()]=true; return true;
+  });
   d2.innerHTML=thisWk.map(function(r){
     var mgr=r.manager==='vlad'?'<span class="mg mv">🔥</span>':'<span class="mg ms">💎</span>';
     var st=r.appStatus==='dead'?'<span class="mg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)">DEAD</span>':'<span class="mg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">LIVE</span>';
