@@ -900,7 +900,8 @@ function merge(){
     //    - або dead - live >= 1 день
     //    - або живий (isAlive = true) → вже живе >= 0 днів, вважаємо ок
     //    - або на модерації (є reviewDate, liveDate ще немає) → ще не вийшов але вже рахується
-    var isGrey = (vers.n >= 3); // версія >= 3 рахується в КПІ (і gp і gm — 4? означає що 3 вже була)
+    // КПІ: версія 3 без ? (gp) АБО версія > 3 (4, 4?, 5, 5?...) — вже пройшла 3
+    var isGrey = (vers.t==='gp') || (vers.n > 3);
 
     // ── SURVIVED >= 1 ДЕНЬ ──
     var survived = false;
@@ -909,7 +910,7 @@ function merge(){
     else if(liveDate && deadDate && computedLife>=1)  survived = true; // dead-live >= 1
     // fdsIsDead без deadDate/lifetime — не рахуємо як dead, менеджер ще не підтвердив
     else if(isAlive && liveDate)                      survived = true; // живий зараз
-    else if(liveDate && vers.n>=3 && !fdsIsDead)  survived = true; // залитий (gp або gm), живий
+    else if(liveDate && isGrey && !fdsIsDead)  survived = true; // залитий сірий, живий
 
     ALL.push({
       name, acc, mgr,
@@ -932,7 +933,8 @@ function merge(){
 // KPI для конкретного тижня
 // Умови: версія >=3 БЕЗ ? (gp) + App live в тижні + lifetime >= 1 день
 function isKPI(row, wk){
-  if(row.vers.n < 3) return false; // версія < 3 не КПІ
+  // КПІ: версія 3 без ? АБО версія > 3 (4, 4?, 5, 5?...)
+  if(!row.isGrey) return false;
   if(!row.liveDate) return false;
   if(!row.isAlive && row.computedLife < 1) return false;
   if(wk==='all') return true;
