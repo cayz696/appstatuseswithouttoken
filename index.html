@@ -1396,30 +1396,11 @@ function rBan(){
 // Кожен платіж = expenses/paidWeeks, дата платежу = App live + (i+1)*7 днів
 function getExpensesInPeriod(row, from, to){
   if(!row.liveDate || !row.expenses) return 0;
-  // expenses = разова оплата за реліз + (paidWeeks × тижнева ставка)
-  // Загальна кількість платежів = paidWeeks + 1 (перший = реліз)
-  // Ставка за платіж = expenses / (paidWeeks + 1)
-  var pw = row.paidWeeks || 0;
-  var totalPayments = pw + 1; // разова + тижневі
-  var rate = row.expenses / totalPayments;
-  var total = 0;
-
-  // Платіж 0 = разова оплата за реліз (дата = App live)
+  // Простий підхід: якщо App live потрапляє в діапазон → весь expenses
   var ld = row.liveDate;
-  if((!from || ld>=from) && (!to || ld<=to)){
-    total += rate;
-  }
-
-  // Платежі 1..pw = тижневі оплати (дата = App live + i*7)
-  for(var i=1; i<=pw; i++){
-    var payDate = new Date(row.liveDate);
-    payDate.setDate(payDate.getDate() + i*7);
-    if(from && payDate<from) continue;
-    if(to && payDate>to) continue;
-    total += rate;
-  }
-
-  return total;
+  if(from && ld<from) return 0;
+  if(to && ld>to) return 0;
+  return row.expenses;
 }
 
 // ── Повертає [from,to] для поточного wk ──
