@@ -370,8 +370,8 @@ function chkPw(){
     <span class="wrange" id="wr">—</span>
     <div class="kpi-set">
       <label>КПІ ціль:</label>
-      <input type="number" class="kpi-in" id="kpiT" value="15" min="1" oninput="rAll()">
-      <span style="font-size:12px;color:var(--t3)">сірих / тиждень</span>
+      <input type="number" class="kpi-in" id="kpiT" value="60" min="1" oninput="rAll()">
+      <span style="font-size:12px;color:var(--t3)">сірих / місяць</span>
     </div>
   </div>
   <div class="wpills" id="wpills">
@@ -397,7 +397,7 @@ function chkPw(){
 <!-- KPI CARDS -->
 <div class="kg">
   <div class="kc kt">
-    <div class="kc-lbl">📦 КПІ тижня (сірих ≥ 1 день)</div>
+    <div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div>
     <div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div>
     <div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div>
     <div class="kc-m" id="km0">0% від цілі</div>
@@ -1157,13 +1157,13 @@ function rAll(){
 // KPI
 function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
-  var vt=Math.round(tgt*0.53), st=tgt-vt;
+  var vt=Math.round(tgt*50/60), st=tgt-vt; // Влад=50/60, Саня=10/60
   var ka=ALL.filter(function(r){return isKPI(r,wk);});
   var tot=ka.length;
   var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
   var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
   var pct=function(n,d){return Math.min(Math.round(n/Math.max(d,1)*100),100);};
-  var wlbl=wk==='all'?'Всі тижні від 01.03.26':wkLabel(wk);
+  var wlbl=wk==='all'?'Всі тижні від 01.03.26':wk==='custom'?(customRange?customRange.label:'custom'):wkLabel(wk);
 
   Q('kn0',tot); Q('ko0','/ '+tgt);
   document.getElementById('kp0').style.width=pct(tot,tgt)+'%';
@@ -1333,7 +1333,8 @@ function rTable(wk){
 // ════════════════════════════════════════
 // WEEKLY REPORT
 function rWkReport(){
-  var tgt=parseInt(document.getElementById('kpiT').value)||15;
+  var tgtMonth=parseInt(document.getElementById('kpiT').value)||60;
+  var tgt=Math.round(tgtMonth/4.33); // тижнева ціль = місячна / 4.33
   var body=document.getElementById('wkTb');
   if(!WEEKS.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';return;}
   body.innerHTML=WEEKS.slice().reverse().map(function(wk){
@@ -1487,7 +1488,7 @@ function rMgr(wk){
   var mt=document.getElementById('mgrTitle');
   if(mt) mt.textContent=wk==='all'?'👥 По менеджерах':wk==='custom'?'👥 По менеджерах: '+(customRange?customRange.label:'діапазон'):'👥 По менеджерах: '+wkLabel(wk);
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
-  var vt=Math.round(tgt*0.53), st=tgt-vt;
+  var vt=Math.round(tgt*50/60), st=tgt-vt; // Влад=50/60, Саня=10/60
   var defs=[{k:'vlad',l:'🔥 Влад',c:'mv'},{k:'sanya',l:'💎 Саня',c:'ms'},{k:'other',l:'⚪ Інший',c:'mo'}];
   var body=document.getElementById('mgrTb');
   var html=defs.map(function(d){
