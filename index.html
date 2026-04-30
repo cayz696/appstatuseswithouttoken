@@ -424,6 +424,18 @@ function chkPw(){
   <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
   <div class="sb"><div class="sb-l">💀 Dead (тиждень)</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
   <div class="sb"><div class="sb-l">📊 Всього (тиждень)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
+  <div class="sb"><div class="sb-l">💵 Сер. вартість КПІ</div><div class="sb-v" style="color:var(--Y)" id="s6">$0</div></div>
+</div>
+
+<!-- FUNNEL -->
+<div class="card" style="margin-top:18px;padding:20px 24px;">
+  <div class="sec-h" style="margin-bottom:14px">
+    <span class="sec-t" id="funnelTitle">🎯 Воронка релізу</span>
+    <span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="funnelBdg">—</span>
+  </div>
+  <div id="funnelBody" style="display:flex;flex-direction:column;gap:10px;">
+    <div class="empty"><div class="ei">🎯</div><div class="et">Завантаж дані</div></div>
+  </div>
 </div>
 
 <!-- ACTIVE NOW -->
@@ -1091,9 +1103,54 @@ function selW(wk){
 
 // ════════════════════════════════════════
 // RENDER ALL
+function rFunnel(wk){
+  // Фільтруємо записи по періоду (по liveDate)
+  var b=getWkBounds(wk), from=b[0], to=b[1];
+  var wa;
+  if(wk==='all') wa=ALL;
+  else if(wk==='custom') wa=ALL.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
+  else wa=ALL.filter(function(r){return r.liveWk===wk;});
+
+  // 1 етап: взяті акаунти — версія >= 2 (включно з 2?)
+  var s1=wa.filter(function(r){return r.vers.n>=2;}).length;
+  // 2 етап: білі релізи — vers.t === 'wp' (опубліковані 2)
+  var s2=wa.filter(function(r){return r.vers.t==='wp'||r.vers.t==='gp'||(r.vers.n>3);}).length;
+  // 3 етап: сірі релізи — isGrey
+  var s3=wa.filter(function(r){return r.isGrey;}).length;
+  // 4 етап: КПІ — сірі +1 день
+  var s4=wa.filter(function(r){return isKPI(r,wk);}).length;
+
+  var maxV=Math.max(s1,1);
+  var stages=[
+    {l:'🟢 1. Взято акаунтів (≥2 версія)',v:s1,c:'#22c55e',sub:'процес заливу почався'},
+    {l:'🔵 2. Білі релізи (опубліковані)',v:s2,c:'#3b82f6',sub:'версія 2+ опублікована'},
+    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'версія 3+ опублікована'},
+    {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'успішні + прожили день'}
+  ];
+
+  var html=stages.map(function(st,i){
+    var pct=Math.round(st.v/maxV*100);
+    var conv=i>0?(stages[i-1].v>0?Math.round(st.v/stages[i-1].v*100):0):100;
+    var convStr=i>0?' <span style="color:var(--t3);font-size:11px;font-weight:500">→ '+conv+'% з попереднього</span>':'';
+    return '<div style="display:flex;align-items:center;gap:14px">'
+      +'<div style="min-width:280px;font-size:13px;color:var(--t1);font-weight:600">'+st.l+convStr+'</div>'
+      +'<div style="flex:1;height:32px;background:var(--c3);border-radius:8px;overflow:hidden;position:relative">'
+      +'<div style="width:'+pct+'%;height:100%;background:'+st.c+';transition:width .4s;border-radius:8px"></div>'
+      +'<div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">'+st.v+'</div>'
+      +'</div>'
+      +'<div style="min-width:130px;font-size:11px;color:var(--t3)">'+st.sub+'</div>'
+      +'</div>';
+  }).join('');
+
+  document.getElementById('funnelBody').innerHTML=html;
+  document.getElementById('funnelBdg').textContent=s1+' → '+s4;
+  var ft=document.getElementById('funnelTitle');
+  if(ft) ft.textContent=wk==='all'?'🎯 Воронка релізу':wk==='custom'?'🎯 Воронка: '+(customRange?customRange.label:'діапазон'):'🎯 Воронка: '+wkLabel(wk);
+}
+
 function rAll(){
   var wk=selWk; // 'all', 'custom', або YYYY-MM-DD понеділка
-  rKPI(wk); rStats(wk); rActive(wk); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
+  rKPI(wk); rStats(wk); rFunnel(wk); rActive(wk); rTable(wk); rWkReport(); rBan(); rFin(wk); rMgr(wk); rDead();
 }
 
 // ════════════════════════════════════════
@@ -1134,6 +1191,12 @@ function rStats(wk){
   Q('s3',wkApps.filter(function(r){return r.vers.t==='wp';}).length);
   Q('s4',wkApps.filter(function(r){return r.appStatus==='dead';}).length); // dead цього тижня
   Q('s5',wkApps.length);
+  // Середня вартість одного КПІ за період
+  var bS=getWkBounds(wk);
+  var totEx=ALL.reduce(function(s,r){return s+getExpensesInPeriod(r,bS[0],bS[1]);},0);
+  var kpiCnt=ka.length;
+  var avgKpi=kpiCnt>0?Math.round(totEx/kpiCnt):0;
+  Q('s6','$'+avgKpi);
 }
 
 // ════════════════════════════════════════
@@ -1278,9 +1341,10 @@ function rWkReport(){
     var tot=ka.length;
     var vl=ka.filter(function(r){return r.manager==='vlad';}).length;
     var sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length; // wkReport завжди по тижнях (не custom)
+    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length;
     var wa=ALL.filter(function(r){return r.liveWk===wk;});
-    var exp=wa.reduce(function(s,r){return s+r.expenses;},0);
+    var bWR=[wkStart(wk),wkEnd(wk)];
+    var exp=Math.round(ALL.reduce(function(s,r){return s+getExpensesInPeriod(r,bWR[0],bWR[1]);},0));
     var br=tot>0?Math.round(dw/tot*100):0;
     var pct=Math.min(Math.round(tot/tgt*100),200);
     var isCur=(wk===selWk);
@@ -1326,20 +1390,74 @@ function rBan(){
 
 // ════════════════════════════════════════
 // FINANCE
+// ── Розраховує суму платежів додатку що ВПАДАЮТЬ в [from..to] ──
+// Логіка: тижневі платежі починаються з App live + 7 днів (перша оплата)
+// Кожен платіж = expenses/paidWeeks, дата платежу = App live + (i+1)*7 днів
+function getExpensesInPeriod(row, from, to){
+  if(!row.liveDate || !row.expenses || row.paidWeeks<=0) return 0;
+  var weeklyRate = row.expenses / row.paidWeeks;
+  var total = 0;
+  for(var i=0; i<row.paidWeeks; i++){
+    // дата i-ї оплати = liveDate + (i+1)*7 днів
+    var payDate = new Date(row.liveDate);
+    payDate.setDate(payDate.getDate() + (i+1)*7);
+    if(from && payDate<from) continue;
+    if(to && payDate>to) continue;
+    total += weeklyRate;
+  }
+  return total;
+}
+
+// ── Повертає [from,to] для поточного wk ──
+function getWkBounds(wk){
+  if(wk==='all') return [null, null];
+  if(wk==='custom' && customRange) return [customRange.from, customRange.to];
+  if(wk!=='all'){
+    return [wkStart(wk), wkEnd(wk)];
+  }
+  return [null, null];
+}
+
 function rFin(wk){
+  var b=getWkBounds(wk);
+  var from=b[0], to=b[1];
+
+  // Витрати рахуються по ДАТІ ОПЛАТИ (App live + N*7) що попадають в період
+  var tot=0, vl=0, sa=0;
+  ALL.forEach(function(r){
+    var ex=getExpensesInPeriod(r, from, to);
+    if(ex<=0) return;
+    tot+=ex;
+    if(r.manager==='vlad') vl+=ex;
+    else if(r.manager==='sanya') sa+=ex;
+  });
+  tot=Math.round(tot); vl=Math.round(vl); sa=Math.round(sa);
+
+  // Решта статистики — по додатках з liveDate в період
   var wa;
   if(wk==='all') wa=ALL;
   else if(wk==='custom') wa=ALL.filter(function(r){return r.liveDate&&inRange(r.liveDate);});
   else wa=ALL.filter(function(r){return r.liveWk===wk;});
-  var tot=wa.reduce(function(s,r){return s+r.expenses;},0);
-  var vl=wa.filter(function(r){return r.manager==='vlad';}).reduce(function(s,r){return s+r.expenses;},0);
-  var sa=wa.filter(function(r){return r.manager==='sanya';}).reduce(function(s,r){return s+r.expenses;},0);
-  var pw=wa.reduce(function(s,r){return s+r.paidWeeks;},0);
+
+  // Кількість тижнів оплат що впали в період
+  var pw=0;
+  ALL.forEach(function(r){
+    if(!r.liveDate||r.paidWeeks<=0) return;
+    for(var i=0;i<r.paidWeeks;i++){
+      var pd=new Date(r.liveDate); pd.setDate(pd.getDate()+(i+1)*7);
+      if(from&&pd<from) continue;
+      if(to&&pd>to) continue;
+      pw++;
+    }
+  });
+
   var alive=wa.filter(function(r){return r.isAlive&&r.computedLife>0;}).map(function(r){return r.computedLife;});
   var al=alive.length?Math.round(alive.reduce(function(a,b){return a+b;})/alive.length):0;
-  var we=wa.filter(function(r){return r.expenses>0;}).length;
-  var ae=we?Math.round(tot/we):0;
+
+  // Сер. expenses / КПІ — ділимо на УСПІШНО опубліковані сірі +1 день
   var ka=wa.filter(function(r){return isKPI(r,wk);}).length;
+  var ae=ka>0?Math.round(tot/ka):0;
+
   var dw=wa.filter(function(r){return r.appStatus==='dead';}).length;
   var br=ka>0?Math.round(dw/ka*100):0;
   Q('f0','$'+tot); Q('f1','$'+vl); Q('f2','$'+sa);
@@ -1374,7 +1492,9 @@ function rMgr(wk){
     var alive=allMgrApps.filter(function(r){return r.isAlive;}).length; // живих — завжди всі
     var tot=apps.length;
     var br=ka>0?Math.round(dead/ka*100):0;
-    var ex=apps.reduce(function(s,r){return s+r.expenses;},0); // витрати тільки вибраного тижня
+    // Витрати = платежі менеджера що впали в період
+    var b_=getWkBounds(wk);
+    var ex=Math.round(allMgrApps.reduce(function(s,r){return s+getExpensesInPeriod(r,b_[0],b_[1]);},0));
     var ks=d.k==='vlad'?vt:d.k==='sanya'?st:0;
     var kp=ks?Math.min(Math.round(ka/ks*100),200):0;
     var pc=kp>=100?'var(--G)':kp>=60?'var(--Y)':'var(--R)';
