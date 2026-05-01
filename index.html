@@ -765,13 +765,17 @@ async function loadData(silent){
 // ════════════════════════════════════════
 // HELPERS
 function pDate(s){
-  if(!s||!s.trim())return null; s=s.trim();
+  if(!s||!s.trim())return null;
+  s=s.trim().replace(/\.\./g,'.').replace(/\s+/g,''); // fix подвійні крапки і пробіли
+  if(s==='?'||s==='-'||s==='')return null;
   var m;
   m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
   if(m)return new Date(+m[3],+m[2]-1,+m[1]);
-  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if(m)return new Date(+m[1],+m[2]-1,+m[3]);
-  return null;
+  // Спроба через Date.parse як fallback
+  var d=new Date(s);
+  return isNaN(d.getTime())?null:d;
 }
 function dayDiff(a,b){return Math.round((b-a)/864e5);}
 
