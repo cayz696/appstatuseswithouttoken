@@ -1116,7 +1116,11 @@ function rFunnel(wk){
   else wa=ALL.filter(function(r){return r.liveWk===wk;});
 
   // 1 етап: взяті акаунти — версія >= 2 (включно з 2?)
-  var s1=wa.filter(function(r){return r.vers.n>=2;}).length;
+  // 1 етап: всі записи де App review потрапляє в період
+  var s1;
+  if(wk==='all') s1=ALL.filter(function(r){return r.reviewDate;}).length;
+  else if(wk==='custom') s1=ALL.filter(function(r){return r.reviewDate&&inRange(r.reviewDate);}).length;
+  else s1=ALL.filter(function(r){return r.reviewWk===wk;}).length;
   // 2 етап: білі релізи — vers.t === 'wp' (опубліковані 2)
   var s2=wa.filter(function(r){return r.vers.t==='wp'||r.vers.t==='gp'||(r.vers.n>3);}).length;
   // 3 етап: сірі релізи — isGrey
@@ -1126,8 +1130,8 @@ function rFunnel(wk){
 
   var maxV=Math.max(s1,1);
   var stages=[
-    {l:'🟢 1. Взято акаунтів (≥2 версія)',v:s1,c:'#22c55e',sub:'процес заливу почався'},
-    {l:'🔵 2. Білі релізи (опубліковані)',v:s2,c:'#3b82f6',sub:'версія 2+ опублікована'},
+    {l:'🟢 1. Взято в роботу (App review)',v:s1,c:'#22c55e',sub:'є App review дата'},
+    {l:'🔵 2. Білі релізи (версія 1+ без ?)',v:s2,c:'#3b82f6',sub:'версія 1+ опублікована'},
     {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'версія 3+ опублікована'},
     {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'успішні + прожили день'}
   ];
@@ -1147,7 +1151,7 @@ function rFunnel(wk){
   }).join('');
 
   document.getElementById('funnelBody').innerHTML=html;
-  document.getElementById('funnelBdg').textContent=s1+' → '+s4;
+  document.getElementById('funnelBdg').textContent=s1+' → '+s4+' ('+Math.round(s4/Math.max(s1,1)*100)+'%)';
   var ft=document.getElementById('funnelTitle');
   if(ft) ft.textContent=wk==='all'?'🎯 Воронка релізу':wk==='custom'?'🎯 Воронка: '+(customRange?customRange.label:'діапазон'):'🎯 Воронка: '+wkLabel(wk);
 }
