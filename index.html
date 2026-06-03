@@ -792,7 +792,9 @@ function rStats(wk){
   Q('s5',wkApps.length);
   var bS=getWkBounds(wk);
   var totEx=ALL.reduce(function(s,r){return s+getExpensesInPeriod(r,bS[0],bS[1]);},0);
-  Q('s6','$'+(ka.length>0?Math.round(totEx/ka.length):0));
+  // Середнє тільки по орендних КПІ (self не впливає на середнє)
+  var kaPaid=ka.filter(function(r){return!r.isSelf;}).length;
+  Q('s6','$'+(kaPaid>0?Math.round(totEx/kaPaid):0));
 }
 function rFunnel(wk){
   var wa;
@@ -1033,8 +1035,11 @@ function rFin(wk){
   });
   var alive=wa.filter(function(r){return r.isAlive&&r.computedLife>0;}).map(function(r){return r.computedLife;});
   var al=alive.length?Math.round(alive.reduce(function(a,b){return a+b;})/alive.length):0;
-  var ka=wa.filter(function(r){return isKPI(r,wk);}).length;
-  var ae=ka>0?Math.round(tot/ka):0;
+  var kaAll=wa.filter(function(r){return isKPI(r,wk);});
+  var ka=kaAll.length;
+  // Середнє expenses тільки по орендних КПІ (без self)
+  var kaPaid=kaAll.filter(function(r){return!r.isSelf;}).length;
+  var ae=kaPaid>0?Math.round(tot/kaPaid):0;
   var dw=wa.filter(function(r){return r.appStatus==='dead';}).length;
   var br=ka>0?Math.round(dw/ka*100):0;
   Q('f0','$'+tot);Q('f1','$'+vl);Q('f2','$'+sa);Q('f3',pw);Q('f4','$'+ae);Q('f5',al+' дн.');
