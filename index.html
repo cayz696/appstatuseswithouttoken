@@ -597,7 +597,7 @@ function getMgr(acc){
 function merge(){
   var m1={};
   S1.forEach(function(row){
-    var bundle=(row['Bundle ID']||row['Bundle']||'').trim().toLowerCase();
+    var bundle=(row['Bundle id']||row['Bundle']||'').trim().toLowerCase();
     var name=(row['Name']||'').trim().toLowerCase();
     var k=bundle||name;if(!k)return;
     if(!m1[k]){m1[k]=row;return;}
@@ -608,7 +608,7 @@ function merge(){
   var S1dedup=Object.values(m1);
   var m2bundle={},m2name={};
   S2.forEach(function(row){
-    var bundle=(row['Bundle ID']||row['Bundle']||'').trim().toLowerCase();
+    var bundle=(row['Bundle id']||row['Bundle']||'').trim().toLowerCase();
     var name=(row['App name']||row['Name']||'').trim().toLowerCase();
     if(bundle){
       if(!m2bundle[bundle])m2bundle[bundle]=row;
@@ -630,7 +630,7 @@ function merge(){
     var mgr=getMgr(acc);
     var isSelf=isSelfAcc(acc);
     // Дані з другої таблиці
-    var bundle1=(r1['Bundle ID']||r1['Bundle']||'').trim().toLowerCase();
+    var bundle1=(r1['Bundle id']||r1['Bundle']||'').trim().toLowerCase();
     var r2=(bundle1&&m2bundle[bundle1])||m2name[name.toLowerCase()]||{};
     var reviewDate=pDate(r2['App review']||'');
     var liveDate  =pDate(r2['App live']||'');
