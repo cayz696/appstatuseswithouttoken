@@ -319,6 +319,10 @@ function chkPw(){
   <div class="sb"><div class="sb-l">💀 Dead (період)</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
   <div class="sb"><div class="sb-l">📊 Всього (період)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
   <div class="sb"><div class="sb-l">💵 Сер. вартість КПІ</div><div class="sb-v" style="color:var(--Y)" id="s6">$0</div></div>
+  <div class="sb"><div class="sb-l">📦 Rental (всього)</div><div class="sb-v" style="color:var(--t2)" id="s7">0</div></div>
+  <div class="sb"><div class="sb-l">⭐ Rental (КПІ)</div><div class="sb-v" style="color:var(--G)" id="s8">0</div></div>
+  <div class="sb"><div class="sb-l">🏠 Self (всього)</div><div class="sb-v" style="color:var(--C)" id="s9">0</div></div>
+  <div class="sb"><div class="sb-l">⭐ Self (КПІ)</div><div class="sb-v" style="color:var(--C)" id="s10">0</div></div>
 </div>
 <div class="card" style="margin-top:18px;padding:20px 24px;">
   <div class="sec-h" style="margin-bottom:14px"><span class="sec-t" id="funnelTitle">🎯 Воронка релізу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="funnelBdg">—</span></div>
@@ -795,6 +799,10 @@ function rStats(wk){
   // Середнє тільки по орендних КПІ (self не впливає на середнє)
   var kaPaid=ka.filter(function(r){return!r.isSelf;}).length;
   Q('s6','$'+(kaPaid>0?Math.round(totEx/kaPaid):0));
+  Q('s7',wkApps.filter(function(r){return!r.isSelf;}).length);
+  Q('s8',ka.filter(function(r){return!r.isSelf;}).length);
+  Q('s9',wkApps.filter(function(r){return r.isSelf;}).length);
+  Q('s10',ka.filter(function(r){return r.isSelf;}).length);
 }
 function rFunnel(wk){
   var wa;
