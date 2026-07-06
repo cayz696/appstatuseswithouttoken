@@ -767,7 +767,7 @@ function selW(wk){
   renderPills();rAll();
 }
 // ── RENDER ALL ──
-function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rFunnel(wk);rActive(wk);rTable(wk);rWkReport();rBan();rFin(wk);rMgr(wk);rDead();}
+function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rFunnel(wk);rTable(wk);rActive(wk);rWkReport();rBan();rFin(wk);rMgr(wk);rDead();}
 function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*50/60),st=tgt-vt;
@@ -910,7 +910,7 @@ function rTable(wk){
   var mt=document.getElementById('mainTitle');
   if(mt)mt.textContent=wk==='all'?'📱 Всі додатки':wk==='custom'?'📱 Додатки: '+(customRange?customRange.label:'діапазон'):'📱 Додатки: '+wkLabel(wk);
   var rows=getVis(wk);
-  document.getElementById('bcnt').textContent=rows.length+' записів';
+  var __sc=rows.filter(function(r){return r.isSelf;}).length;document.getElementById('bcnt').textContent=rows.length+' записів  ·  🏠 Self: '+__sc+'  |  📦 Rental: '+(rows.length-__sc);
   var body=document.getElementById('mainTb');
   if(!rows.length){body.innerHTML='<tr><td colspan="13"><div class="empty"><div class="ei">🔍</div><div class="et">Нічого не знайдено</div></div></td></tr>';return;}
   body.innerHTML=rows.map(function(r,i){
