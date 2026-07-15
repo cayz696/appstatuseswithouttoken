@@ -20,7 +20,7 @@
   --C:#06b6d4;--Cb:rgba(6,182,212,.13);--Cbo:rgba(6,182,212,.28);
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;}
-#ls{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
+#ls{position:fixed;inset:0;background:rgba(15,17,23,.88);z-index:9999;display:none;align-items:center;justify-content:center;}
 .lb{background:var(--c1);border:1.5px solid var(--Gbo);border-radius:20px;padding:48px 44px;width:360px;text-align:center;box-shadow:0 0 80px rgba(34,197,94,.07);}
 .ll{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:4px;}
 .ll em{color:var(--G);font-style:normal;}
@@ -208,6 +208,20 @@ tr.td{opacity:.7;}tr.td:hover{opacity:1;}
 .empty{padding:48px 24px;text-align:center;color:var(--t3);}
 .ei{font-size:40px;margin-bottom:12px;}
 .et{font-size:14px;}
+.rtag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;margin-right:4px;border:1px solid var(--tc);color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);white-space:nowrap;vertical-align:middle;}
+.rowtags{display:flex;flex-wrap:wrap;gap:3px;align-items:center;margin-top:4px;max-width:190px;}
+.tadd{width:22px;height:22px;border-radius:6px;border:1.5px dashed var(--b2);background:transparent;color:var(--t3);cursor:pointer;font-size:13px;vertical-align:middle;line-height:1;}
+.tadd:hover{border-color:var(--G);color:var(--G);}
+.chip.tagc.on{border-color:var(--tc);color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);font-weight:600;}
+#tagPop{display:none;position:absolute;z-index:999;background:var(--c2);border:1.5px solid var(--b2);border-radius:10px;padding:6px;min-width:190px;max-width:260px;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+.tpr{padding:7px 10px;border-radius:7px;font-size:13px;color:var(--t2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tpr:hover{background:var(--c3);}
+.tpr.on{color:var(--tc);font-weight:600;}
+.sw{display:inline-block;width:18px;height:18px;border-radius:5px;margin-right:4px;cursor:pointer;border:2px solid transparent;vertical-align:middle;}
+.sw.on{border-color:#fff;}
+#repPage .chip.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
+#repPage .chip.tagc.on{border-color:var(--tc);color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);}
+@media print{.topbar,#repCtrl{display:none!important;}body{background:#fff;}}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:var(--c1);}
 ::-webkit-scrollbar-thumb{background:var(--c3);border-radius:3px;}
@@ -215,35 +229,37 @@ tr.td{opacity:.7;}tr.td:hover{opacity:1;}
 </style>
 </head>
 <body>
-<div id="ls">
+<div id="ls" onclick="if(event.target===this)closeAdm()">
   <div class="lb">
     <div class="ll">APP<em>TRACK</em></div>
-    <div class="ls2" id="ls2txt">WEEKLY KPI DASHBOARD</div>
+    <div class="ls2" id="ls2txt">АДМІН-РЕЖИМ</div>
     <input class="li" type="password" id="pwi" placeholder="Пароль" onkeydown="if(event.key==='Enter')chkPw()">
     <button class="lbtn" onclick="chkPw()">Увійти →</button>
     <div class="lerr" id="pwe"></div>
-    <div class="lhint">Пароль зберігається в браузері</div>
+    <div class="lhint">Esc — закрити</div>
   </div>
 </div>
 <script>
-var _PW=null;
-function getPW(){try{return sessionStorage.getItem('_atpw')||localStorage.getItem('_atpwh');}catch(e){return null;}}
-function setPW(p){try{localStorage.setItem('_atpwh',p);alert('Пароль збережено!');}catch(e){}}
+var _isAdm=false;
+var ADM_PW='AdminM3';
+function getPW(){return ADM_PW;}
+function openAdm(){
+  document.getElementById('ls').style.display='flex';
+  document.getElementById('ls2txt').textContent='ВХІД В АДМІН-РЕЖИМ';
+  document.getElementById('pwi').focus();
+}
+function closeAdm(){document.getElementById('ls').style.display='none';document.getElementById('pwi').value='';document.getElementById('pwe').textContent='';}
+function admOk(entered){
+  try{sessionStorage.setItem('_atpw',entered);sessionStorage.setItem('_atadm','1');}catch(e){}
+  closeAdm();
+  if(window.setAdmin)setAdmin(true);
+}
 function chkPw(){
-  var stored=getPW(),entered=document.getElementById('pwi').value;
-  if(!stored){
-    if(entered.length>=4){setPW(entered);try{sessionStorage.setItem('_atpw',entered);}catch(e){}document.getElementById('ls').style.display='none';}
-    else document.getElementById('pwe').textContent='Мін. 4 символи';
-    return;
-  }
-  if(entered===stored){try{sessionStorage.setItem('_atpw',entered);}catch(e){}document.getElementById('ls').style.display='none';}
+  var entered=document.getElementById('pwi').value;
+  if(entered===ADM_PW)admOk(entered);
   else{document.getElementById('pwe').textContent='Невірний пароль';document.getElementById('pwi').value='';setTimeout(function(){document.getElementById('pwe').textContent='';},2500);}
 }
-(function(){
-  var stored=getPW();
-  if(!stored){document.getElementById('ls2txt').textContent='ВСТАНОВИ ПАРОЛЬ (перший вхід)';}
-  else{try{if(sessionStorage.getItem('_atpw')===stored)document.getElementById('ls').style.display='none';}catch(e){}}
-})();
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm();});
 </script>
 <div class="wrap">
 <div class="topbar">
@@ -256,9 +272,12 @@ function chkPw(){
         <option value="10">10 хв</option><option value="30">30 хв</option>
       </select>
     </label>
+    <button class="btn-o" onclick="openRep()">📊 Звіт</button>
+    <button class="btn-o" id="admbtn" onclick="admBtn()">🔑 Адмін</button>
     <button class="btn-o" onclick="toggleSetup()" id="stgl">⚙ Налаштування</button>
   </div>
 </div>
+<div id="dashMain">
 <div id="setupEl" class="setup">
   <h2>⚙ Підключення Google Sheets</h2>
   <div class="inp2">
@@ -359,10 +378,22 @@ function chkPw(){
   <div class="fsec">
     <button class="chip kpi" onclick="setF('kpi',this)">⭐ КПІ тижня</button>
     <button class="chip self_" onclick="setF('self_',this)">🏠 Self</button>
+    <span id="tagChips" style="display:contents"></span>
     <button class="chip reset" onclick="resetF()">✕ Скинути</button>
   </div>
   <input class="srch-inp" placeholder="🔍 Пошук..." id="srch" oninput="doSearch()">
 </div>
+<div class="sec" id="admSec" style="display:none">
+  <div class="sec-h"><span class="sec-t">🔧 Адмін: теги</span><span class="bdg" style="background:var(--Pb);color:var(--P);border:1px solid rgba(168,85,247,.28)" id="admCnt">0 тегів</span></div>
+  <div style="padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--b1)">
+    <input class="ti" style="width:210px" id="ntName" placeholder="Назва нового тега" onkeydown="if(event.key==='Enter')addTag()">
+    <input class="ti" style="width:260px" id="ntDesc" placeholder="Опис (видно при наведенні на тег)" onkeydown="if(event.key==='Enter')addTag()">
+    <span id="ntPal"></span>
+    <button class="btn-green" onclick="addTag()">+ Додати тег</button>
+  </div>
+  <div id="admList"></div>
+</div>
+<div id="tagPop"></div>
 <div class="sec">
   <div class="sec-h"><span class="sec-t" id="mainTitle">📱 Всі додатки</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)" id="bcnt">0 записів</span></div>
   <div class="tw"><table>
@@ -429,6 +460,59 @@ function chkPw(){
   </table></div>
 </div>
 </div>
+<div id="repPage" style="display:none">
+<div class="sec" id="repCtrl">
+  <div class="sec-h"><span class="sec-t">📊 Звіт — вибери критерії</span>
+    <span style="display:flex;gap:8px">
+      <button class="btn-o" onclick="window.print()">🖨 Друк / PDF</button>
+      <button class="btn-o" onclick="closeRep()">← Дашборд</button>
+    </span>
+  </div>
+  <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
+    <div class="fsec"><span class="flbl">Період:</span>
+      <input type="date" id="repFrom" class="wi" style="padding:5px 10px;font-size:12px" onchange="repRender()">
+      <span class="cdr-lbl">—</span>
+      <input type="date" id="repTo" class="wi" style="padding:5px 10px;font-size:12px" onchange="repRender()">
+      <button class="chip" data-g="q" onclick="repQuick('all',this)">Всі</button>
+      <button class="chip" data-g="q" onclick="repQuick('tw',this)">Цей тиждень</button>
+      <button class="chip" data-g="q" onclick="repQuick('lw',this)">Минулий тиждень</button>
+      <button class="chip" data-g="q" onclick="repQuick('tm',this)">Цей місяць</button>
+      <button class="chip" data-g="q" onclick="repQuick('lm',this)">Минулий місяць</button>
+    </div>
+    <div class="fsec"><span class="flbl">Менеджер:</span>
+      <button class="chip" data-g="mgr" data-v="vlad" onclick="repTog(this)">🔥 Влад</button>
+      <button class="chip" data-g="mgr" data-v="sanya" onclick="repTog(this)">💎 Саня</button>
+      <button class="chip" data-g="mgr" data-v="other" onclick="repTog(this)">⚪ Інший</button>
+    </div>
+    <div class="fsec"><span class="flbl">Версія:</span>
+      <button class="chip" data-g="ver" data-v="gp" onclick="repTog(this)">✅ Сіра LIVE</button>
+      <button class="chip" data-g="ver" data-v="gm" onclick="repTog(this)">⏳ Сіра MOD</button>
+      <button class="chip" data-g="ver" data-v="wp" onclick="repTog(this)">🟦 Біла LIVE</button>
+      <button class="chip" data-g="ver" data-v="wm" onclick="repTog(this)">🔶 Біла MOD</button>
+      <button class="chip" data-g="ver" data-v="dr" onclick="repTog(this)">📝 Не залито</button>
+    </div>
+    <div class="fsec"><span class="flbl">Статус:</span>
+      <button class="chip" data-g="st" data-v="live" onclick="repTog(this)">🟢 LIVE</button>
+      <button class="chip" data-g="st" data-v="dead" onclick="repTog(this)">💀 DEAD</button>
+      <button class="chip" data-g="st" data-v="draft" onclick="repTog(this)">📝 Draft</button>
+      <button class="chip" data-g="st" data-v="unknown" onclick="repTog(this)">— Невідомо</button>
+    </div>
+    <div class="fsec"><span class="flbl">Тип:</span>
+      <button class="chip" data-g="typ" data-v="rental" onclick="repTog(this)">📦 Rental</button>
+      <button class="chip" data-g="typ" data-v="self" onclick="repTog(this)">🏠 Self</button>
+      <button class="chip" data-g="kpi" data-v="1" onclick="repTog(this)">⭐ Тільки КПІ</button>
+    </div>
+    <div class="fsec"><span class="flbl">Теги:</span><span id="repTagChips" style="display:contents"></span><span id="repNoTags" style="font-size:12px;color:var(--t3)">немає тегів</span></div>
+    <div class="fsec"><span class="flbl">Comments:</span>
+      <input class="ti" id="repCmtQ" style="width:190px;padding:6px 10px" placeholder="🔍 містить текст..." oninput="repRender()">
+      <span id="repCmtChips" style="display:contents"></span>
+    </div>
+    <div class="fsec"><button class="chip reset" onclick="repReset()">✕ Скинути все</button></div>
+  </div>
+</div>
+<div id="repOut"></div>
+</div>
+</div>
 <script>
 // ── КОНФІГ ──
 var CUT = new Date(2026, 2, 1);      // 01.03.2026
@@ -439,21 +523,10 @@ var curF='all',curQ='',sortC='',sortD=1;
 var selWk='all';
 var customRange=null;
 var autoT=null,setupOpen=true;
-// ── INIT ──
-(function(){
-  var wp=document.getElementById('wkPick');
-  var now=new Date();
-  var day=now.getDay();
-  var mon=new Date(now);mon.setDate(now.getDate()+((day===0)?-6:1-day));mon.setHours(0,0,0,0);
-  wp.value=mon.getFullYear()+'-W'+pad(isoWk(mon));
-  upWR();
-  wp.addEventListener('change',function(){upWR();rAll();});
-  var u1=gl('u1'),u2=gl('u2');
-  if(u1)document.getElementById('u1').value=u1;
-  if(u2)document.getElementById('u2').value=u2;
-  setAuto();
-  if(u1){document.getElementById('lst').innerHTML='<span class="spin"></span>Автозавантаження...';setTimeout(function(){loadData(true);},300);}
-})();
+// ── TAGS STATE ──
+var TAGS={tags:[],assignments:{}};
+var TAG_COLORS=['#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#94a3b8'];
+var ntColor=TAG_COLORS[0],popKey=null;
 function pad(n){return String(n).padStart(2,'0');}
 function gl(k){try{return localStorage.getItem('at5_'+k)||'';}catch(e){return'';}}
 function sl(k,v){try{localStorage.setItem('at5_'+k,v);}catch(e){}}
@@ -548,13 +621,16 @@ async function loadData(silent){
   try{
     var t1=await fetchCSV(u1v),t2=u2v?await fetchCSV(u2v):'';
     S1=parseCSV(t1);S2=u2v?parseCSV(t2):[];
-    merge();buildWeeks();renderPills();initMonthBtns();rAll();
+    merge();buildWeeks();renderPills();initMonthBtns();
+    try{await loadTags();}catch(e){}
+    rAll();
     var now=new Date();
     document.getElementById('lupd').textContent='Оновлено '+now.toLocaleTimeString('uk-UA');
     document.getElementById('rdot').className='ldot on';
     var skipped=S1.length-ALL.length;
     document.getElementById('lst').innerHTML='✅ <b>'+ALL.length+'</b> записів'+(skipped?' <span style="color:var(--t3)">· відсіяно: '+skipped+'</span>':'');
     sl('u1',u1v);if(u2v)sl('u2',u2v);
+    saveCache();saveConfig();
     if(setupOpen)toggleSetup();
   }catch(ex){
     if(!silent)showErr('Помилка: '+ex.message);
@@ -674,6 +750,7 @@ function merge(){
     else if(isAlive&&liveDate)survived=true;
     else if(liveDate&&isGrey&&!fdsIsDead)survived=true;
     ALL.push({
+      rowKey:bundle1||name.toLowerCase(),
       name,acc,mgr,manager:mgr,isSelf,
       vers,vnum:vers.n,
       brand:(r1['Brand']||'').trim(),
@@ -896,6 +973,7 @@ function getVis(wk){
     else if(curF==='sanya') mf=r.manager==='sanya';
     else if(curF==='kpi')   mf=kpi;
     else if(curF==='self_') mf=r.isSelf;
+    else if(curF.slice(0,4)==='tag:')mf=(TAGS.assignments[r.rowKey]||[]).indexOf(curF.slice(4))>=0;
     return ms&&mf;
   }).sort(function(a,b){
     if(!sortC)return 0;
@@ -934,7 +1012,7 @@ function rTable(wk){
     var expColor=r.isSelf?'var(--C)':r.expenses?'var(--Y)':'var(--t3)';
     var expVal=r.isSelf?'self':r.expenses?'$'+r.expenses:'—';
     return'<tr class="'+(r.appStatus==='dead'?'td':'')+'"><td style="color:var(--t3);font-size:12px">'+(i+1)+'</td>'
-      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div></td>'
+      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div>'+rowTagsHtml(r)+'</td>'
       +'<td><span class="vb '+vt.cls+'">'+vt.ic+' '+e(r.vers.lbl)+'</span></td>'
       +'<td>'+(kpi?'<span class="ktick">✓</span>':'<span style="color:var(--t3)">—</span>')+'</td>'
       +'<td>'+st+'</td>'
@@ -947,6 +1025,160 @@ function rTable(wk){
       +'<td style="font-size:13px;font-weight:600;color:'+expColor+'">'+expVal+'</td>'
       +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--t3)">—</span>')+'</td></tr>';
   }).join('');
+}
+// ── TAGS ──
+function tagById(id){for(var i=0;i<TAGS.tags.length;i++)if(TAGS.tags[i].id===id)return TAGS.tags[i];return null;}
+function rowTagsHtml(r){
+  var pills=(TAGS.assignments[r.rowKey]||[]).map(function(id){var t=tagById(id);return t?'<span class="rtag" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'">'+e(t.name)+'</span>':'';}).join('');
+  var add=_isAdm?'<button class="tadd" data-k="'+e(r.rowKey)+'" onclick="openTagPop(event,this)">+</button>':'';
+  var inner=pills+add;
+  return inner?'<div class="rowtags">'+inner+'</div>':'';
+}
+// ── CACHE (миттєвий старт з localStorage, свіжі дані довантажуються фоном) ──
+function saveCache(){
+  try{localStorage.setItem('at5_cache',JSON.stringify({S1:S1,S2:S2,TAGS:TAGS,ts:Date.now()}));}catch(e){}
+}
+function restoreCache(){
+  try{
+    var c=JSON.parse(localStorage.getItem('at5_cache')||'null');
+    if(!c||!Array.isArray(c.S1)||!c.S1.length)return false;
+    S1=c.S1;S2=Array.isArray(c.S2)?c.S2:[];
+    if(c.TAGS&&Array.isArray(c.TAGS.tags))TAGS={tags:c.TAGS.tags,assignments:c.TAGS.assignments||{}};
+    merge();buildWeeks();renderPills();initMonthBtns();renderTagChips();rAll();
+    var d=new Date(c.ts);
+    document.getElementById('lupd').textContent='кеш від '+d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    return true;
+  }catch(e){return false;}
+}
+// ── CONFIG (CSV-лінки на бекенді: глядачі отримують автоматично, зберігає тільки адмін) ──
+async function loadConfig(){
+  try{
+    var r=await fetch('/api/config',{cache:'no-cache'});
+    if(r.ok){
+      var j=await r.json();
+      if(j&&(j.u1||j.u2)){
+        if(j.u1)document.getElementById('u1').value=j.u1;
+        if(j.u2)document.getElementById('u2').value=j.u2;
+        return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+async function saveConfig(){
+  if(!_isAdm)return;
+  try{
+    await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':sessionStorage.getItem('_atpw')||''},body:JSON.stringify({u1:document.getElementById('u1').value.trim(),u2:document.getElementById('u2').value.trim()})});
+  }catch(e){}
+}
+async function loadTags(){
+  try{
+    var r=await fetch('/api/tags',{cache:'no-cache'});
+    if(r.ok){var j=await r.json();if(j&&Array.isArray(j.tags))TAGS={tags:j.tags,assignments:j.assignments||{}};}
+  }catch(e){}
+  renderTagChips();if(_isAdm)renderAdmTags();
+}
+async function saveTags(){
+  try{
+    var r=await fetch('/api/tags',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':sessionStorage.getItem('_atpw')||''},body:JSON.stringify(TAGS)});
+    if(!r.ok)throw new Error(r.status===401?'невірний пароль (перевір ADMIN_PASSWORD на сервері)':'HTTP '+r.status);
+    hideErr();return true;
+  }catch(ex){showErr('Теги не збережено: '+ex.message+'. Зміни лишаються локально (в кеші) до перезавантаження бекенду.');return false;}
+}
+function renderTagChips(){
+  var c=document.getElementById('tagChips');if(!c)return;
+  c.innerHTML=TAGS.tags.map(function(t){
+    return'<button class="chip tagc'+(curF==='tag:'+t.id?' on':'')+'" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'" onclick="setF(\'tag:'+t.id+'\',this)">🏷 '+e(t.name)+'</button>';
+  }).join('');
+}
+function renderAdmTags(){
+  var pal=document.getElementById('ntPal');if(!pal)return;
+  pal.innerHTML=TAG_COLORS.map(function(c){return'<span class="sw'+(c===ntColor?' on':'')+'" style="background:'+c+'" onclick="ntColor=\''+c+'\';renderAdmTags()"></span>';}).join('');
+  document.getElementById('admCnt').textContent=TAGS.tags.length+' тегів';
+  var list=document.getElementById('admList');
+  if(!TAGS.tags.length){list.innerHTML='<div class="empty" style="padding:20px"><div class="et">Тегів ще немає — додай перший вище</div></div>';return;}
+  list.innerHTML=TAGS.tags.map(function(t){
+    var used=Object.keys(TAGS.assignments).filter(function(k){return TAGS.assignments[k].indexOf(t.id)>=0;}).length;
+    return'<div class="ar" style="gap:10px;flex-wrap:wrap">'
+      +'<span class="rtag" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'">'+e(t.name)+'</span>'
+      +'<input class="ti" style="width:170px;padding:6px 10px" value="'+e(t.name)+'" onchange="renTag(\''+t.id+'\',this.value)">'
+      +'<input class="ti" style="width:220px;padding:6px 10px" value="'+e(t.desc||'')+'" placeholder="Опис (тултіп)..." onchange="descTag(\''+t.id+'\',this.value)">'
+      +'<span>'+TAG_COLORS.map(function(c){return'<span class="sw'+(c===t.color?' on':'')+'" style="background:'+c+'" onclick="colTag(\''+t.id+'\',\''+c+'\')"></span>';}).join('')+'</span>'
+      +'<span style="font-size:12px;color:var(--t3);margin-left:auto">'+used+' записів</span>'
+      +'<button class="btn-o" style="padding:4px 10px" onclick="delTag(\''+t.id+'\')">✕</button></div>';
+  }).join('');
+}
+function addTag(){
+  var n=document.getElementById('ntName').value.trim();
+  if(!n)return;
+  if(TAGS.tags.some(function(t){return t.name.toLowerCase()===n.toLowerCase();})){showErr('Тег "'+n+'" вже існує');return;}
+  TAGS.tags.push({id:'t'+Date.now().toString(36),name:n,color:ntColor,desc:document.getElementById('ntDesc').value.trim()});
+  document.getElementById('ntName').value='';document.getElementById('ntDesc').value='';
+  afterTagChange();
+}
+function renTag(id,name){var t=tagById(id);if(t&&name.trim()){t.name=name.trim();afterTagChange();}}
+function descTag(id,v){var t=tagById(id);if(t){t.desc=v.trim();afterTagChange();}}
+function colTag(id,c){var t=tagById(id);if(t){t.color=c;afterTagChange();}}
+function delTag(id){
+  var t=tagById(id);if(!t)return;
+  if(!confirm('Видалити тег "'+t.name+'"? Він зніметься з усіх записів.'))return;
+  TAGS.tags=TAGS.tags.filter(function(x){return x.id!==id;});
+  Object.keys(TAGS.assignments).forEach(function(k){
+    TAGS.assignments[k]=TAGS.assignments[k].filter(function(x){return x!==id;});
+    if(!TAGS.assignments[k].length)delete TAGS.assignments[k];
+  });
+  if(curF==='tag:'+id)resetF();
+  afterTagChange();
+}
+function afterTagChange(){saveTags();saveCache();renderAdmTags();renderTagChips();if(ALL.length)rTable(selWk);}
+function popContent(){
+  var p=document.getElementById('tagPop');
+  if(!TAGS.tags.length){p.innerHTML='<div style="font-size:12px;color:var(--t3);padding:6px 8px">Немає тегів — створи в 🔧 Адмін: теги</div>';return;}
+  p.innerHTML=TAGS.tags.map(function(t){
+    var on=(TAGS.assignments[popKey]||[]).indexOf(t.id)>=0;
+    return'<div class="tpr'+(on?' on':'')+'" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'" onclick="togTag(\''+t.id+'\')">'+(on?'✓ ':'&nbsp;&nbsp;&nbsp;')+e(t.name)+'</div>';
+  }).join('');
+}
+function openTagPop(ev,btn){
+  ev.stopPropagation();
+  var key=btn.getAttribute('data-k');
+  var p=document.getElementById('tagPop');
+  if(popKey===key&&p.style.display==='block'){closeTagPop();return;}
+  popKey=key;popContent();
+  var r=btn.getBoundingClientRect();
+  p.style.display='block';
+  p.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+document.documentElement.clientWidth-270))+'px';
+  p.style.top=(r.bottom+window.scrollY+4)+'px';
+}
+function closeTagPop(){var p=document.getElementById('tagPop');if(p)p.style.display='none';popKey=null;}
+function togTag(id){
+  if(!popKey)return;
+  var a=TAGS.assignments[popKey]||(TAGS.assignments[popKey]=[]);
+  var i=a.indexOf(id);
+  if(i>=0){a.splice(i,1);if(!a.length)delete TAGS.assignments[popKey];}
+  else a.push(id);
+  saveTags();saveCache();rTable(selWk);popContent();
+}
+document.addEventListener('click',function(ev){
+  var p=document.getElementById('tagPop');
+  if(p&&p.style.display==='block'&&!p.contains(ev.target))closeTagPop();
+});
+function setAdmin(v){
+  _isAdm=v;
+  var b=document.getElementById('admbtn');if(b)b.textContent=v?'🔓 Вийти':'🔑 Адмін';
+  var s=document.getElementById('admSec');if(s)s.style.display=v?'block':'none';
+  var g=document.getElementById('stgl');if(g)g.style.display=v?'':'none';
+  if(!v){
+    if(setupOpen)toggleSetup();
+    document.getElementById('setupEl').style.display='none';
+  }
+  if(v)renderAdmTags();
+  closeTagPop();
+  if(ALL.length)rTable(selWk);
+}
+function admBtn(){
+  if(_isAdm){sessionStorage.removeItem('_atadm');setAdmin(false);}
+  else openAdm();
 }
 // ── WEEKLY REPORT ──
 function rWkReport(){
@@ -1150,6 +1382,148 @@ function rDead(){
       +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--t3)">—</span>')+'</td></tr>';
   }).join('');
 }
+// ── REPORT PAGE ──
+function openRep(){
+  document.getElementById('dashMain').style.display='none';
+  document.getElementById('repPage').style.display='block';
+  renderRepTagChips();renderRepCmtChips();repRender();window.scrollTo(0,0);
+}
+function closeRep(){
+  document.getElementById('repPage').style.display='none';
+  document.getElementById('dashMain').style.display='block';
+}
+function renderRepTagChips(){
+  var c=document.getElementById('repTagChips');
+  var sel={};c.querySelectorAll('.chip.on').forEach(function(b){sel[b.getAttribute('data-v')]=1;});
+  c.innerHTML=TAGS.tags.map(function(t){
+    return'<button class="chip tagc'+(sel[t.id]?' on':'')+'" data-g="tag" data-v="'+t.id+'" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'" onclick="repTog(this)">🏷 '+e(t.name)+'</button>';
+  }).join('');
+  document.getElementById('repNoTags').style.display=TAGS.tags.length?'none':'';
+}
+function cmtParts(s){return s?s.split(/[,;\/\n]+/).map(function(x){return x.trim();}).filter(function(x){return x&&x!=='—';}):[];}
+function renderRepCmtChips(){
+  var c=document.getElementById('repCmtChips');
+  var sel={};c.querySelectorAll('.chip.on').forEach(function(b){sel[b.getAttribute('data-v')]=1;});
+  var cnt={};
+  ALL.forEach(function(r){cmtParts(r.comments).forEach(function(p){cnt[p]=(cnt[p]||0)+1;});});
+  var sorted=Object.entries(cnt).sort(function(a,b){return b[1]-a[1];}).slice(0,25);
+  c.innerHTML=sorted.map(function(x){
+    return'<button class="chip'+(sel[x[0]]?' on':'')+'" data-g="cmt" data-v="'+e(x[0])+'" title="'+e(x[0])+'" onclick="repTog(this)">'+e(x[0].length>32?x[0].slice(0,32)+'…':x[0])+' <span style="opacity:.6">×'+x[1]+'</span></button>';
+  }).join('');
+}
+function repTog(btn){btn.classList.toggle('on');repRender();}
+function repReset(){
+  document.querySelectorAll('#repPage .chip').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('repFrom').value='';document.getElementById('repTo').value='';
+  document.getElementById('repCmtQ').value='';
+  repRender();
+}
+function repQuick(kind,btn){
+  document.querySelectorAll('#repPage .chip[data-g="q"]').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  var f='',t='';var now=new Date();
+  var iso=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
+  if(kind==='tw'){var m=thisMonday();f=iso(m);var s=new Date(m);s.setDate(m.getDate()+6);t=iso(s);}
+  else if(kind==='lw'){var m2=thisMonday();m2.setDate(m2.getDate()-7);f=iso(m2);var s2=new Date(m2);s2.setDate(m2.getDate()+6);t=iso(s2);}
+  else if(kind==='tm'){f=iso(new Date(now.getFullYear(),now.getMonth(),1));t=iso(now);}
+  else if(kind==='lm'){f=iso(new Date(now.getFullYear(),now.getMonth()-1,1));t=iso(new Date(now.getFullYear(),now.getMonth(),0));}
+  document.getElementById('repFrom').value=f;document.getElementById('repTo').value=t;
+  repRender();
+}
+function repSel(g){var r={},n=0;document.querySelectorAll('#repPage .chip[data-g="'+g+'"].on').forEach(function(b){r[b.getAttribute('data-v')]=1;n++;});r._n=n;return r;}
+function repDates(){
+  var f=document.getElementById('repFrom').value,t=document.getElementById('repTo').value;
+  return[f?new Date(f+'T00:00:00'):null,t?new Date(t+'T23:59:59'):null];
+}
+function repIsKPI(r,from,to){
+  if(!r.isGrey||!r.liveDate)return false;
+  if(!r.isAlive&&r.computedLife<1)return false;
+  if(from&&r.liveDate<from)return false;
+  if(to&&r.liveDate>to)return false;
+  return true;
+}
+function repRows(from,to){
+  var mgr=repSel('mgr'),ver=repSel('ver'),st=repSel('st'),typ=repSel('typ'),tg=repSel('tag'),cmt=repSel('cmt');
+  var cq=(document.getElementById('repCmtQ').value||'').trim().toLowerCase();
+  var kpiOnly=!!document.querySelector('#repPage .chip[data-g="kpi"].on');
+  return ALL.filter(function(r){
+    var fd=r.liveDate||r.reviewDate;
+    if(from&&(!fd||fd<from))return false;
+    if(to&&(!fd||fd>to))return false;
+    if(mgr._n&&!mgr[r.manager])return false;
+    if(ver._n&&!ver[r.vers.t])return false;
+    if(st._n&&!st[r.appStatus])return false;
+    if(typ._n&&!typ[r.isSelf?'self':'rental'])return false;
+    if(kpiOnly&&!repIsKPI(r,from,to))return false;
+    if(tg._n){var a=TAGS.assignments[r.rowKey]||[];var hit=false;for(var id in tg){if(id!=='_n'&&a.indexOf(id)>=0){hit=true;break;}}if(!hit)return false;}
+    if(cmt._n){var ps=cmtParts(r.comments);var hitC=false;for(var k in cmt){if(k!=='_n'&&ps.indexOf(k)>=0){hitC=true;break;}}if(!hitC)return false;}
+    if(cq&&(!r.comments||r.comments.toLowerCase().indexOf(cq)<0))return false;
+    return true;
+  }).sort(function(a,b){return(b.liveDate||b.reviewDate||0)-(a.liveDate||a.reviewDate||0);});
+}
+function repPills(r){
+  var p=(TAGS.assignments[r.rowKey]||[]).map(function(id){var t=tagById(id);return t?'<span class="rtag" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'">'+e(t.name)+'</span>':'';}).join('');
+  return p?'<div class="rowtags">'+p+'</div>':'';
+}
+function repRender(){
+  var out=document.getElementById('repOut');
+  if(!ALL.length){out.innerHTML='<div class="sec"><div class="empty"><div class="ei">📊</div><div class="et">Немає даних — завантаж їх на дашборді</div></div></div>';return;}
+  var d=repDates(),from=d[0],to=d[1];
+  var rows=repRows(from,to);
+  var kpiN=rows.filter(function(r){return repIsKPI(r,from,to);}).length;
+  var alive=rows.filter(function(r){return r.isAlive;}).length;
+  var dead=rows.filter(function(r){return r.appStatus==='dead';}).length;
+  var vl=rows.filter(function(r){return r.manager==='vlad';}).length;
+  var sa=rows.filter(function(r){return r.manager==='sanya';}).length;
+  var selfN=rows.filter(function(r){return r.isSelf;}).length;
+  var ex=Math.round(rows.reduce(function(s,r){return s+getExpensesInPeriod(r,from,to);},0));
+  var lts=rows.filter(function(r){return r.computedLife>0;}).map(function(r){return r.computedLife;});
+  var al=lts.length?Math.round(lts.reduce(function(a,b){return a+b;})/lts.length):0;
+  var br=kpiN?Math.round(dead/kpiN*100):0;
+  var lf=function(x){return x?x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):null;};
+  var plbl=(from||to)?((lf(from)||'…')+' – '+(lf(to)||'…')):'весь період';
+  var tile=function(l,v,c){return'<div class="sb"><div class="sb-l">'+l+'</div><div class="sb-v" style="color:'+c+'">'+v+'</div></div>';};
+  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Підсумок · '+plbl+'</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">'+rows.length+' записів</span></div></div>';
+  html+='<div class="sr">'
+    +tile('📊 Всього',rows.length,'var(--t2)')
+    +tile('⭐ КПІ',kpiN,'var(--G)')
+    +tile('🟢 Живих',alive,'var(--G)')
+    +tile('💀 Dead',dead,'var(--R)')
+    +tile('🔥 Влад',vl,'var(--O)')
+    +tile('💎 Саня',sa,'var(--B)')
+    +tile('🏠 Self',selfN,'var(--C)')
+    +tile('💵 Expenses','$'+ex,'var(--Y)')
+    +tile('📉 Бан-рейт',br+'%',br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')
+    +tile('⏱ Сер. lifetime',al+' дн.','var(--t2)')
+    +'</div>';
+  html+='<div class="sec"><div class="tw"><table><thead><tr><th style="width:38px">#</th><th>Назва</th><th>Версія</th><th>КПІ?</th><th>Статус</th><th>Менеджер</th><th>Акаунт</th><th>App Review</th><th>App Live</th><th>App Dead</th><th>Lifetime</th><th>Expenses</th><th>Comments</th></tr></thead><tbody>';
+  if(!rows.length)html+='<tr><td colspan="13"><div class="empty"><div class="ei">🔍</div><div class="et">Нічого не підходить під критерії</div></div></td></tr>';
+  else html+=rows.map(function(r,i){
+    var vt=VT[r.vers.t]||VT.dr;
+    var kpi=repIsKPI(r,from,to);
+    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
+    var st=r.appStatus==='live'?'<span class="st st-l"><span class="dot dg"></span>LIVE</span>':r.appStatus==='dead'?'<span class="st st-d"><span class="dot dr_"></span>DEAD</span>':r.appStatus==='draft'?'<span class="st st-u">📝 draft</span>':'<span class="st st-u">—</span>';
+    var lfc=r.computedLife<=3?'ls_':r.computedLife<=14?'lm':'ll';
+    var lhd=r.computedLife>0?('<span class="lf '+lfc+'">'+r.computedLife+(r.isAlive?' дн. ↑':' дн.')+'</span>'):'<span style="color:var(--t3)">—</span>';
+    var expColor=r.isSelf?'var(--C)':r.expenses?'var(--Y)':'var(--t3)';
+    var expVal=r.isSelf?'self':r.expenses?'$'+r.expenses:'—';
+    return'<tr class="'+(r.appStatus==='dead'?'td':'')+'"><td style="color:var(--t3);font-size:12px">'+(i+1)+'</td>'
+      +'<td><div class="aname" title="'+e(r.name)+'">'+e(r.name)+'</div>'+repPills(r)+'</td>'
+      +'<td><span class="vb '+vt.cls+'">'+vt.ic+' '+e(r.vers.lbl)+'</span></td>'
+      +'<td>'+(kpi?'<span class="ktick">✓</span>':'<span style="color:var(--t3)">—</span>')+'</td>'
+      +'<td>'+st+'</td>'
+      +'<td>'+mgr+'</td>'
+      +'<td><div class="acnt" title="'+e(r.acc)+'">'+e(r.acc)+(r.isSelf?'<span class="self-tag">self</span>':'')+'</div></td>'
+      +'<td><span class="dc" style="color:var(--Y)">'+e(r.reviewRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--G)">'+e(r.liveRaw||'—')+'</span></td>'
+      +'<td><span class="dc" style="color:var(--R)">'+e(r.deadRaw||'—')+'</span></td>'
+      +'<td>'+lhd+'</td>'
+      +'<td style="font-size:13px;font-weight:600;color:'+expColor+'">'+expVal+'</td>'
+      +'<td>'+(r.comments?'<span class="ctag" title="'+e(r.comments)+'">'+e(r.comments)+'</span>':'<span style="color:var(--t3)">—</span>')+'</td></tr>';
+  }).join('');
+  html+='</tbody></table></div></div>';
+  out.innerHTML=html;
+}
 // ── FILTER / SORT / SEARCH ──
 function setF(f,btn){curF=f;document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');rTable(selWk);}
 function resetF(){
@@ -1165,6 +1539,30 @@ function srt(col,el){
 }
 function Q(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ── INIT (в кінці скрипта — щоб усі var-стани вже були присвоєні) ──
+(function(){
+  var wp=document.getElementById('wkPick');
+  var now=new Date();
+  var day=now.getDay();
+  var mon=new Date(now);mon.setDate(now.getDate()+((day===0)?-6:1-day));mon.setHours(0,0,0,0);
+  wp.value=mon.getFullYear()+'-W'+pad(isoWk(mon));
+  upWR();
+  wp.addEventListener('change',function(){upWR();rAll();});
+  var u1=gl('u1'),u2=gl('u2');
+  if(u1)document.getElementById('u1').value=u1;
+  if(u2)document.getElementById('u2').value=u2;
+  var st=getPW();
+  if(st&&sessionStorage.getItem('_atpw')===st&&sessionStorage.getItem('_atadm')==='1')_isAdm=true;
+  var cached=restoreCache();
+  setAdmin(_isAdm);
+  setAuto();
+  loadConfig().then(function(){
+    if(document.getElementById('u1').value.trim()){
+      document.getElementById('lst').innerHTML='<span class="spin"></span>'+(cached?'Оновлення у фоні...':'Автозавантаження...');
+      loadData(true);
+    }
+  });
+})();
 </script>
 </body>
 </html>

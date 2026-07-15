@@ -1,0 +1,12 @@
+{
+  "name": "apptrack",
+  "version": "1.0.0",
+  "description": "AppTrack dashboard + tags backend (single Railway service)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
