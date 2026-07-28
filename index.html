@@ -281,7 +281,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 <div id="setupEl" class="setup">
   <h2>⚙ Підключення Google Sheets</h2>
   <div class="inp2">
-    <div class="ig"><label>📋 "Apps" — CSV URL</label><input class="ti" id="u1" placeholder=""><div class="hint">Name, Account, Vers, Brand...</div></div>
+    <div class="ig"><label>📋 "Apps" — CSV URL</label><input class="ti" id="u1" placeholder=""><div class="hint">Name, Account, Vers, Brand, Offer on/off, Text G, Graph G...</div></div>
     <div class="ig"><label>💰 "Rental" — CSV URL</label><input class="ti" id="u2" placeholder=""><div class="hint">App review, App live, App dead, Expenses, Lifetime...</div></div>
   </div>
   <div class="steps">
@@ -516,7 +516,6 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 <script>
 // ── КОНФІГ ──
 var CUT = new Date(2026, 2, 1);      // 01.03.2026
-var G1_START = new Date(2026, 4, 8); // 08.05.2026 — Sprint G1, grey >= 2
 // ── STATE ──
 var S1=[],S2=[],ALL=[],WEEKS=[];
 var curF='all',curQ='',sortC='',sortD=1;
@@ -603,13 +602,18 @@ function spl(line){
   r.push(c.replace(/^"|"$/g,''));return r;
 }
 async function fetchCSV(url){
-  var us=[url,'https://corsproxy.io/?'+encodeURIComponent(url)];
+  var us=[
+    url,
+    'https://corsproxy.io/?'+encodeURIComponent(url),
+    'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
+    'https://cors-anywhere.herokuapp.com/'+url
+  ];
   var last;
   for(var i=0;i<us.length;i++){
     try{var r=await fetch(us[i],{cache:'no-cache'});if(r.ok){var t=await r.text();if(t.length>30&&t.includes(','))return t;}}
     catch(ex){last=ex;}
   }
-  throw last||new Error('Не вдалось завантажити CSV');
+  throw last||new Error('Не вдалось завантажити CSV. Спробуй відкрити через GitHub Pages або перевір URL.');
 }
 // ── LOAD ──
 async function loadData(silent){
@@ -649,28 +653,37 @@ function pDate(s){
 }
 function dayDiff(a,b){return Math.round((b-a)/864e5);}
 
-// pVers: anchorDate визначає поріг сірої версії
-// до G1_START (08.05.26): grey >= 3 | від G1_START: grey >= 2
-function pVers(raw,anchorDate){
+// pVers: тип версії
+// 3+          → сіра (як раніше)
+// 1-2 + Offer on/off ✅  → сіра опублікована (КПІ)
+// 2? + Text G ✅ + Graph G ✅ → сіра на модерації
+function pVers(raw,offerOn,greyMod){
   var s=(raw||'').trim();
   if(s==='')return{t:'dr',lbl:'не залито',n:0};
   if(s==='-')return{t:'dash',lbl:'-',n:0};
   var mod=s.endsWith('?'),n=parseFloat(s.replace(/\?/g,''));
   if(isNaN(n))return{t:'dash',lbl:s,n:0};
-  var greyThresh=(anchorDate&&anchorDate>=G1_START)?2:3;
-  if(n>=greyThresh)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
-  if(n>=1)return mod?{t:'wm',lbl:s,n:n}:{t:'wp',lbl:s,n:n};
+  if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
+  if(n>=1){
+    if(mod)return greyMod?{t:'gm',lbl:s+'☑',n:n}:{t:'wm',lbl:s,n:n};
+    return offerOn?{t:'gp',lbl:s+'☑',n:n}:{t:'wp',lbl:s,n:n};
+  }
   return{t:'dash',lbl:s,n:0};
 }
+// chkG: прапорець-галочка у CSV (Offer on/off, Text G, Graph G)
+function chkG(v){v=(v||'').toString().trim().toLowerCase();return v==='true'||v==='1'||v==='on'||v==='yes'||v==='✓'||v==='✅';}
 
 // isSelf: акаунт з (self) — власний, без орендної плати
 function isSelfAcc(acc){return /\(self\)/i.test(acc||'');}
 
 function getMgr(acc){
   if(!acc)return'other';
-  if(/^\(O\)/i.test(acc))return'other';
-  // (V)... або V(self)... → Влад
-  if(/^\(V\)/i.test(acc)||/^V\(self\)/i.test(acc))return'vlad';
+  var a=acc.trim();
+  // Влад: (V)... або V(...)... — починається саме з літери V
+  if(/^\(V\)/i.test(a)||/^V\(/i.test(a))return'vlad';
+  // Other: (O)... або O(...)
+  if(/^\(O\)/i.test(a)||/^O\(/i.test(a))return'other';
+  // Все інше — (Self)..., (W)..., (P)... = Саня
   return'sanya';
 }
 // ── MERGE ──
@@ -703,7 +716,7 @@ function merge(){
   S1dedup.forEach(function(r1){
     var name=(r1['Name']||'').trim();
     if(!name)return;
-    // Версія рядку (не парсимо ще — потрібна дата для порогу)
+    // Версія рядку (парсимо нижче — потрібні прапорці Offer/Text G/Graph G)
     var versRaw=(r1['Vers']||'').trim();
     // Акаунт і менеджер
     var acc=(r1['Account']||'').trim();
@@ -724,8 +737,10 @@ function merge(){
     var anchor=reviewDate||liveDate;
     if(!anchor)return;
     if(anchor<CUT)return;
-    // Версія визначається з урахуванням дати (G1: grey>=2, до G1: grey>=3)
-    var vers=pVers(versRaw,anchor);
+    // Offer on/off + Text G + Graph G роблять версію 1-2 сірою
+    var offerOn=chkG(r1['Offer on/off']||r1['Offer']);
+    var greyMod=chkG(r1['Text G'])&&chkG(r1['Graph G']);
+    var vers=pVers(versRaw,offerOn,greyMod);
     // Lifetime
     var computedLife=0,isAlive=false;
     if(lifetimeRaw!==''){computedLife=parseInt(lifetimeRaw)||0;isAlive=false;}
@@ -740,7 +755,7 @@ function merge(){
     else if(fdsIsDead&&(deadDate||lifetimeRaw!=='')){appStatus='dead';isAlive=false;}
     else if(isAlive||liveDate){appStatus='live';}
     else{appStatus='unknown';}
-    // isGrey: поріг вже врахований у pVers по даті (G1: >=2, до G1: >=3)
+    // isGrey: сіра опублікована (3+, або 1-2 з Offer on)
     var isGrey=vers.t==='gp';
     // Survived >= 1 день
     var survived=false;
@@ -867,8 +882,8 @@ function rStats(wk){
   else if(wk==='custom')wkApps=ALL.filter(function(r){var fd=r.liveDate||r.reviewDate;return fd&&inRange(fd);});
   else wkApps=ALL.filter(function(r){return r.liveWk===wk;});
   Q('s0',ka.length);Q('s1',ALL.filter(function(r){return r.isAlive;}).length);
-  Q('s2',wkApps.filter(function(r){return r.vers.t==='gm';}).length);
-  Q('s3',wkApps.filter(function(r){return r.vers.t==='wp';}).length);
+  Q('s2',wkApps.filter(function(r){return r.vers.t==='gm'&&r.appStatus!=='dead';}).length);
+  Q('s3',wkApps.filter(function(r){return r.vers.t==='wp'&&r.appStatus!=='dead';}).length);
   Q('s4',wkApps.filter(function(r){return r.appStatus==='dead';}).length);
   Q('s5',wkApps.length);
   var bS=getWkBounds(wk);
@@ -896,8 +911,8 @@ function rFunnel(wk){
   var maxV=Math.max(s1,1);
   var stages=[
     {l:'🟢 1. Взято в роботу (App review)',v:s1,c:'#22c55e',sub:'є App review дата'},
-    {l:'🔵 2. Опубліковано',v:s2,c:'#3b82f6',sub:'версія 1+ без ?'},
-    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'версія 2+/3+ опублікована'},
+    {l:'🔵 2. Білі релізи (версія 1+ без ?)',v:s2,c:'#3b82f6',sub:'версія 1+ опублікована'},
+    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'3+ або 1-2 з Offer'},
     {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'успішні + прожили день'}
   ];
   var html=stages.map(function(st,i){
