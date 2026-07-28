@@ -727,13 +727,18 @@ function spl(line){
   return r;
 }
 async function fetchCSV(url){
-  var us=[url,'https://corsproxy.io/?'+encodeURIComponent(url)];
+  var us=[
+    url,
+    'https://corsproxy.io/?'+encodeURIComponent(url),
+    'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
+    'https://cors-anywhere.herokuapp.com/'+url
+  ];
   var last;
   for(var i=0;i<us.length;i++){
     try{var r=await fetch(us[i],{cache:'no-cache'});if(r.ok){var t=await r.text();if(t.length>30&&t.includes(','))return t;}}
     catch(ex){last=ex;}
   }
-  throw last||new Error('Не вдалось завантажити CSV');
+  throw last||new Error('Не вдалось завантажити CSV. Спробуй відкрити через GitHub Pages або перевір URL.');
 }
 
 // ════════════════════════════════════════
@@ -802,8 +807,12 @@ function pVers(raw, offerOn, greyMod){
 }
 function getMgr(acc){
   if(!acc)return'other';
-  if(/^\(O\)/i.test(acc))return'other';
-  if(/^\(V\)/i.test(acc))return'vlad';
+  var a=acc.trim();
+  // Влад: (V)... або V(...)... — починається саме з літери V
+  if(/^\(V\)/i.test(a) || /^V\(/i.test(a)) return 'vlad';
+  // Other: (O)... або O(...)
+  if(/^\(O\)/i.test(a) || /^O\(/i.test(a)) return 'other';
+  // Все інше — (Self)..., (W)..., (P)... = Саня
   return'sanya';
 }
 
