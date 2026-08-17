@@ -68,6 +68,38 @@ app.post('/api/config', (req, res) => {
   }
 });
 
+const SELF_TRACKER_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTxO8V7iTxVL9SXui__9xNJG6Fk6LxTNr0RJhqQonfA8aR6MWCD-w37ooi3iH4C0KlN6WbCIGXNTJj-/pub?output=csv';
+function fetchUrl(url, hops) {
+  const https = require('https');
+  const http = require('http');
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https:') ? https : http;
+    lib.get(url, { headers: { 'User-Agent': 'AppTrack/1.0' } }, (res) => {
+      const loc = res.headers.location;
+      if (res.statusCode >= 300 && res.statusCode < 400 && loc && hops > 0) {
+        const next = loc.startsWith('http') ? loc : new URL(loc, url).href;
+        res.resume();
+        return resolve(fetchUrl(next, hops - 1));
+      }
+      let data = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { data += c; });
+      res.on('end', () => {
+        if (res.statusCode >= 400) reject(new Error('HTTP ' + res.statusCode));
+        else resolve(data);
+      });
+    }).on('error', reject);
+  });
+}
+app.get('/api/self-tracker', (req, res) => {
+  fetchUrl(SELF_TRACKER_CSV, 5).then((t) => {
+    res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.send(t);
+  }).catch((e) => {
+    res.status(502).json({ error: 'tracker fetch failed: ' + e.message });
+  });
+});
+
 // Статика: сам дашборд (index.html) з кореня репозиторію
 app.use(express.static(path.join(__dirname, '..')));
 

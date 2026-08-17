@@ -44,6 +44,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);font-si
 select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);border-radius:8px;padding:6px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;}
 .btn-o{background:transparent;border:1.5px solid var(--b1);color:var(--t2);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;}
 .btn-o:hover{border-color:var(--G);color:var(--G);}
+.btn-o.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
+.self-al{border-radius:12px;padding:12px 16px;border:1.5px solid;margin-bottom:8px;font-size:13px;line-height:1.45;}
+.self-al b{font-weight:700;}
+.self-al .al-list{margin-top:6px;color:var(--t2);font-size:12px;}
+.self-al.r{background:var(--Rb);border-color:var(--Rbo);color:#fca5a5;}
+.self-al.y{background:var(--Yb);border-color:var(--Ybo);color:#fcd34d;}
+.self-al.g{background:var(--Gb);border-color:var(--Gbo);color:var(--G);}
+.tier{display:inline-flex;align-items:center;padding:4px 10px;border-radius:7px;font-size:12px;font-weight:700;white-space:nowrap;}
+.tier-fresh{background:var(--Cb);color:var(--C);border:1px solid var(--Cbo);}
+.tier-proven{background:var(--Gb);color:var(--G);border:1px solid var(--Gbo);}
+.tier-declining{background:var(--Ob);color:var(--O);border:1px solid rgba(249,115,22,.28);}
+.tier-burned{background:var(--Rb);color:var(--R);border:1px solid var(--Rbo);}
+.tier-active{background:var(--Bb);color:var(--B);border:1px solid var(--Bbo);}
+.tier-moder{background:var(--Yb);color:var(--Y);border:1px solid var(--Ybo);}
+.tier-bought{background:var(--c3);color:var(--t3);border:1px solid var(--b1);}
+.tier-warm{background:var(--Pb);color:var(--P);border:1px solid rgba(168,85,247,.28);}
+#selfPage .chip.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
 .btn-green{background:var(--G);color:#000;border:none;border-radius:8px;padding:9px 20px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;}
 .btn-green:hover{background:#16a34a;color:#fff;}
 .btn-green.ld{background:var(--c3);color:var(--t3);cursor:not-allowed;}
@@ -221,7 +238,7 @@ tr.td{opacity:.7;}tr.td:hover{opacity:1;}
 .sw.on{border-color:#fff;}
 #repPage .chip.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
 #repPage .chip.tagc.on{border-color:var(--tc);color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);}
-@media print{.topbar,#repCtrl{display:none!important;}body{background:#fff;}}
+@media print{.topbar,#repCtrl,#selfCtrl{display:none!important;}body{background:#fff;}}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:var(--c1);}
 ::-webkit-scrollbar-thumb{background:var(--c3);border-radius:3px;}
@@ -263,7 +280,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.0</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -272,7 +289,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
         <option value="10">10 хв</option><option value="30">30 хв</option>
       </select>
     </label>
-    <button class="btn-o" onclick="openRep()">📊 Звіт</button>
+    <button class="btn-o" id="navSelf" onclick="openSelf()">🏠 Self-акаунти</button>
+    <button class="btn-o" id="navRep" onclick="openRep()">📊 Звіт</button>
     <button class="btn-o" id="admbtn" onclick="admBtn()">🔑 Адмін</button>
     <button class="btn-o" onclick="toggleSetup()" id="stgl">⚙ Налаштування</button>
   </div>
@@ -512,16 +530,43 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </div>
 <div id="repOut"></div>
 </div>
+<div id="selfPage" style="display:none">
+<div class="sec" id="selfCtrl">
+  <div class="sec-h"><span class="sec-t">🏠 Self-акаунти — прогрів і робота після релізу</span>
+    <span style="display:flex;gap:8px">
+      <button class="btn-green" onclick="selfLoadNow()">▶ Завантажити</button>
+      <button class="btn-o" onclick="window.print()">🖨 Друк / PDF</button>
+      <button class="btn-o" onclick="closeSelf()">← Дашборд</button>
+    </span>
+  </div>
+  <div style="padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <span class="flbl">Фільтр:</span>
+    <button class="chip on" data-sf="all" onclick="selfFilt('all',this)">Всі</button>
+    <button class="chip" data-sf="p2" onclick="selfFilt('p2',this)">Фаза 2</button>
+    <button class="chip" data-sf="alerts" onclick="selfFilt('alerts',this)">Тільки алерти</button>
+    <button class="chip" data-sf="burned" onclick="selfFilt('burned',this)">Burned</button>
+    <button class="chip" data-sf="declining" onclick="selfFilt('declining',this)">Declining</button>
+    <button class="chip" data-sf="proven" onclick="selfFilt('proven',this)">Proven</button>
+    <button class="chip" data-sf="fresh" onclick="selfFilt('fresh',this)">Fresh</button>
+    <span id="selfMeta" style="margin-left:auto;font-size:12px;color:var(--t3)"></span>
+  </div>
+</div>
+<div id="selfAlerts"></div>
+<div id="selfFunnel"></div>
+<div id="selfTable"></div>
+</div>
 </div>
 <script>
 // ── КОНФІГ ──
 var CUT = new Date(2026, 2, 1);      // 01.03.2026
 // ── STATE ──
-var S1=[],S2=[],ALL=[],WEEKS=[];
+var S1=[],S2=[],S3=[],ALL=[],WEEKS=[],SELF_ACC=[];
 var curF='all',curQ='',sortC='',sortD=1;
 var selWk='all';
 var customRange=null;
 var autoT=null,setupOpen=true;
+var SELF_CAP=15,selfF='all',selfSortC='idle',selfSortD=-1;
+var SELF_TRACKER_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vTxO8V7iTxVL9SXui__9xNJG6Fk6LxTNr0RJhqQonfA8aR6MWCD-w37ooi3iH4C0KlN6WbCIGXNTJj-/pub?output=csv';
 // ── TAGS STATE ──
 var TAGS={tags:[],assignments:{}};
 var TAG_COLORS=['#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#94a3b8'];
@@ -568,6 +613,13 @@ function setAuto(){
   if(autoT){clearInterval(autoT);autoT=null;}
   var m=+document.getElementById('aref').value;
   if(m>0)autoT=setInterval(function(){loadData(true);},m*60000);
+}
+function showDash(){
+  document.getElementById('dashMain').style.display='block';
+  document.getElementById('repPage').style.display='none';
+  document.getElementById('selfPage').style.display='none';
+  var ns=document.getElementById('navSelf'),nr=document.getElementById('navRep');
+  if(ns)ns.classList.remove('on');if(nr)nr.classList.remove('on');
 }
 function toggleSetup(){
   setupOpen=!setupOpen;
@@ -1400,12 +1452,18 @@ function rDead(){
 // ── REPORT PAGE ──
 function openRep(){
   document.getElementById('dashMain').style.display='none';
+  document.getElementById('selfPage').style.display='none';
   document.getElementById('repPage').style.display='block';
+  var ns=document.getElementById('navSelf'),nr=document.getElementById('navRep');
+  if(ns)ns.classList.remove('on');if(nr)nr.classList.add('on');
   renderRepTagChips();renderRepCmtChips();repRender();window.scrollTo(0,0);
 }
 function closeRep(){
   document.getElementById('repPage').style.display='none';
+  document.getElementById('selfPage').style.display='none';
   document.getElementById('dashMain').style.display='block';
+  var ns=document.getElementById('navSelf'),nr=document.getElementById('navRep');
+  if(ns)ns.classList.remove('on');if(nr)nr.classList.remove('on');
 }
 function renderRepTagChips(){
   var c=document.getElementById('repTagChips');
@@ -1539,12 +1597,310 @@ function repRender(){
   html+='</tbody></table></div></div>';
   out.innerHTML=html;
 }
+// ── SELF ACCOUNTS PAGE ──
+function pickCol(row, names){
+  var keys=Object.keys(row||{});
+  function nk(k){return String(k||'').replace(/\s+/g,' ').trim().toLowerCase();}
+  var i,j,want;
+  for(i=0;i<names.length;i++){
+    want=nk(names[i]);
+    for(j=0;j<keys.length;j++){if(nk(keys[j])===want)return String(row[keys[j]]||'').trim();}
+  }
+  for(i=0;i<names.length;i++){
+    want=nk(names[i]);
+    for(j=0;j<keys.length;j++){if(nk(keys[j]).indexOf(want)>=0)return String(row[keys[j]]||'').trim();}
+  }
+  return '';
+}
+function normAcc(s){
+  var t=String(s||'');
+  t=t.replace(/^\s*v?\s*\(\s*self\s*\)\s*/i,'');
+  t=t.replace(/\(\s*self\s*\)/gi,'');
+  t=t.replace(/^\s*\(\s*[vwo]\s*\)\s*/i,'');
+  return t.replace(/\s+/g,' ').trim().toLowerCase();
+}
+function parseSt(raw){
+  var s=(raw||'').trim().toLowerCase();
+  if(!s)return '';
+  if(/(ban|бан|dead|killed|terminat|термін|забан|invalid)/.test(s))return 'ban';
+  if(/(moder|мод|pending|на перевір)/.test(s))return 'moder';
+  if(/(live|жив|active|ok|work)/.test(s))return 'live';
+  return s;
+}
+function commentBan(c){
+  return /(ban|бан|забан|killed|terminat|акаунт мертв|account dead)/i.test(c||'');
+}
+function appLiveAt(r, at){
+  if(!r.liveDate||r.liveDate>at)return false;
+  if(r.deadDate&&r.deadDate<=at)return false;
+  return true;
+}
+function dispAcc(s){
+  return String(s||'').replace(/\(\s*self\s*\)/ig,'').replace(/^\s*[vV]\(\s*self\s*\)\s*/i,'').replace(/\s+/g,' ').trim()||s;
+}
+function buildSelfAcc(){
+  var appsBy={};
+  ALL.filter(function(r){return r.isSelf;}).forEach(function(r){
+    var k=normAcc(r.acc);if(!k)return;
+    (appsBy[k]=appsBy[k]||[]).push(r);
+  });
+  var now=new Date();
+  var weekAgo=new Date(now.getTime()-7*864e5);
+  var map={};
+  function ensure(key, display){
+    if(!map[key])map[key]={key:key,name:dispAcc(display||key),uploadDate:null,releaseDate:null,status:'',comments:'',fromTracker:false,apps:appsBy[key]||[]};
+    return map[key];
+  }
+  S3.forEach(function(row){
+    var acc=pickCol(row,['Назва акаунта','Account','Акаунт','Account name','Name','Назва']);
+    if(!acc||/^\s*(нова\s+)?парті/i.test(acc))return;
+    var key=normAcc(acc);if(!key)return;
+    var a=ensure(key, acc);
+    a.fromTracker=true;
+    a.uploadDate=pDate(pickCol(row,['Дата заливу','Upload','App review','Залив','Submitted','Fill date','Дата залива']))||a.uploadDate;
+    a.releaseDate=pDate(pickCol(row,['Дата релізу','Release','App live','Реліз','Live date','Дата релиза','Дата релізу додатку']))||a.releaseDate;
+    var st=parseSt(pickCol(row,['Status','Статус','Account status','Стан','State']));
+    if(!st)st=parseSt(row['']||'');
+    if(!st){
+      var vals=Object.keys(row).map(function(k){return String(row[k]||'').trim().toLowerCase();});
+      if(vals.indexOf('ban')>=0)st='ban';
+      else if(vals.indexOf('moder')>=0)st='moder';
+      else if(vals.indexOf('live')>=0)st='live';
+    }
+    var c1=pickCol(row,['COMMENT','Comments','Comment','Коментар','Причина','Reason','Ban reason','Коментарі']);
+    var c2=pickCol(row,['комент','Комент']);
+    var comments=[c1,c2].filter(Boolean).join(' · ');
+    if(comments)a.comments=comments;
+    if(!st&&commentBan(a.comments))st='ban';
+    if(!st&&/(moder|модерац)/i.test(a.comments))st='moder';
+    if(st)a.status=st;
+  });
+  Object.keys(appsBy).forEach(function(k){
+    var a=ensure(k, appsBy[k][0].acc);
+    if(!a.releaseDate){
+      var lives=appsBy[k].map(function(r){return r.liveDate;}).filter(Boolean).sort(function(x,y){return x-y;});
+      if(lives[0])a.releaseDate=lives[0];
+    }
+    if(!a.uploadDate){
+      var revs=appsBy[k].map(function(r){return r.reviewDate||r.liveDate;}).filter(Boolean).sort(function(x,y){return x-y;});
+      if(revs[0])a.uploadDate=revs[0];
+    }
+  });
+  SELF_ACC=Object.keys(map).map(function(k){
+    var a=map[k];
+    var apps=a.apps||[];
+    var uploaded=apps.length;
+    var live=apps.filter(function(r){return r.isAlive||r.appStatus==='live';}).length;
+    var dead=apps.filter(function(r){return r.appStatus==='dead';}).length;
+    var pending=apps.filter(function(r){return (r.vers&&(r.vers.t==='gm'||r.vers.t==='wm'))||r.appStatus==='draft';}).length;
+    var liveRate=uploaded?Math.round(live/uploaded*100):0;
+    var liveWeek=apps.filter(function(r){return appLiveAt(r,weekAgo);}).length;
+    var rateWeek=uploaded?Math.round(liveWeek/uploaded*100):0;
+    var last=null;
+    apps.forEach(function(r){
+      var d=r.reviewDate||r.liveDate;
+      if(d&&(!last||d>last))last=d;
+    });
+    if(a.uploadDate&&(!last||a.uploadDate>last))last=a.uploadDate;
+    var born=a.uploadDate||a.releaseDate||last;
+    var age=born?Math.max(0,dayDiff(born,now)):0;
+    var idle=last?Math.max(0,dayDiff(last,now)):9999;
+    var banned=a.status==='ban'||commentBan(a.comments);
+    var phase;
+    if(a.releaseDate)phase=banned?'p2dead':'p2live';
+    else if(a.status==='ban'||banned)phase='p1dead';
+    else if(a.status==='moder')phase='p1mod';
+    else if(!a.uploadDate&&!a.status)phase='p0';
+    else phase='p1warm';
+    var tier='active',alertIdle=false,alertDrop=false,alertReady=false;
+    if(phase==='p2dead')tier='burned';
+    else if(phase==='p2live'){
+      if(liveRate<30&&rateWeek>liveRate)tier='declining';
+      else if(liveRate>=50&&uploaded>=4)tier='proven';
+      else if(uploaded<=2&&age<14)tier='fresh';
+      else tier='active';
+      alertIdle=idle>5;
+      alertDrop=liveRate<rateWeek;
+      alertReady=tier==='proven'&&uploaded<SELF_CAP;
+    }
+    return {
+      key:k,name:a.name,phase:phase,tier:tier,
+      uploaded:uploaded,live:live,dead:dead,pending:pending,
+      liveRate:liveRate,rateWeek:rateWeek,age:age,idle:idle,last:last,
+      comments:a.comments,status:a.status,fromTracker:a.fromTracker,
+      alertIdle:alertIdle,alertDrop:alertDrop,alertReady:alertReady
+    };
+  });
+}
+function openSelf(){
+  document.getElementById('dashMain').style.display='none';
+  document.getElementById('repPage').style.display='none';
+  document.getElementById('selfPage').style.display='block';
+  var ns=document.getElementById('navSelf'),nr=document.getElementById('navRep');
+  if(ns)ns.classList.add('on');if(nr)nr.classList.remove('on');
+  window.scrollTo(0,0);
+  if(S3.length){buildSelfAcc();selfRender();}
+  else selfLoadNow();
+}
+function closeSelf(){
+  showDash();
+}
+function isTrackerCSV(t){
+  return !!t && t.indexOf('Назва акаунта')>=0;
+}
+async function fetchSelfCSV(){
+  var tries=[
+    '/api/self-tracker',
+    'https://corsproxy.io/?'+encodeURIComponent(SELF_TRACKER_CSV),
+    'https://corsproxy.io/?url='+encodeURIComponent(SELF_TRACKER_CSV),
+    SELF_TRACKER_CSV
+  ];
+  var last='немає відповіді';
+  for(var i=0;i<tries.length;i++){
+    try{
+      var r=await fetch(tries[i],{cache:'no-cache',mode:'cors'});
+      if(!r.ok){last='HTTP '+r.status+' @ '+tries[i];continue;}
+      var t=await r.text();
+      if(isTrackerCSV(t))return t;
+      last='не той формат @ '+tries[i];
+    }catch(ex){last=(ex&&ex.message)||String(ex);}
+  }
+  throw new Error(last+'. Відкрий дашборд через сервер: npm start → http://localhost:3000 (браузер блокує прямий CSV з Google).');
+}
+async function selfLoadNow(){
+  var meta=document.getElementById('selfMeta');
+  var funnel=document.getElementById('selfFunnel');
+  if(meta)meta.textContent='завантаження…';
+  if(funnel&&!S3.length)funnel.innerHTML='<div class="sec"><div class="empty"><div class="ei">🏠</div><div class="et">Тягнемо account-tracker…</div></div></div>';
+  try{
+    var t=await fetchSelfCSV();
+    S3=parseCSV(t);
+    buildSelfAcc();
+    selfRender();
+  }catch(ex){
+    if(meta)meta.textContent='помилка';
+    document.getElementById('selfAlerts').innerHTML='<div class="self-al r"><b>Не вдалось завантажити tracker.</b> '+e(ex.message)+'</div>';
+    if(funnel)funnel.innerHTML='<div class="sec"><div class="empty"><div class="ei">🏠</div><div class="et">Помилка завантаження. Спробуй ▶ Завантажити ще раз.</div><div style="margin-top:16px"><button class="btn-green" onclick="selfLoadNow()">▶ Повторити</button></div></div></div>';
+  }
+}
+function selfFilt(f,btn){
+  selfF=f;
+  document.querySelectorAll('#selfPage .chip[data-sf]').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  selfRender();
+}
+function selfSrt(col,el){
+  if(selfSortC===col)selfSortD*=-1;else{selfSortC=col;selfSortD=1;}
+  document.querySelectorAll('#selfTable thead th').forEach(function(th){th.classList.remove('asc','desc');});
+  if(el)el.classList.add(selfSortD===1?'asc':'desc');
+  selfRender();
+}
+function tierHtml(t){
+  var map={fresh:['tier-fresh','Fresh'],proven:['tier-proven','Proven'],declining:['tier-declining','Declining'],burned:['tier-burned','Burned'],active:['tier-active','Active'],moder:['tier-moder','Moder'],bought:['tier-bought','Куплений'],warm:['tier-warm','Прогрів']};
+  var x=map[t]||['tier-active',t];
+  return '<span class="tier '+x[0]+'">'+x[1]+'</span>';
+}
+function selfVis(){
+  return SELF_ACC.filter(function(a){
+    if(selfF==='all')return true;
+    if(selfF==='p2')return a.phase==='p2live'||a.phase==='p2dead';
+    if(selfF==='alerts')return a.alertIdle||a.alertDrop||a.alertReady;
+    return a.tier===selfF;
+  }).slice().sort(function(a,b){
+    var av=a[selfSortC],bv=b[selfSortC];
+    if(av instanceof Date)av=av.getTime();if(bv instanceof Date)bv=bv.getTime();
+    if(typeof av==='string'){av=av.toLowerCase();bv=(bv||'').toLowerCase();}
+    av=av==null?0:av;bv=bv==null?0:bv;
+    return av<bv?-selfSortD:av>bv?selfSortD:0;
+  });
+}
+function selfRender(){
+  var alerts=document.getElementById('selfAlerts');
+  var funnel=document.getElementById('selfFunnel');
+  var table=document.getElementById('selfTable');
+  var meta=document.getElementById('selfMeta');
+  if(!S3.length&&!ALL.some(function(r){return r.isSelf;})){
+    if(meta)meta.textContent='';
+    alerts.innerHTML='';
+    funnel.innerHTML='<div class="sec"><div class="empty"><div class="ei">🏠</div><div class="et">Тягнемо account-tracker…</div><div style="margin-top:16px"><button class="btn-green" onclick="selfLoadNow()">▶ Завантажити</button></div></div></div>';
+    table.innerHTML='';
+    return;
+  }
+  if(!S3.length){
+    alerts.innerHTML='<div class="self-al y"><b>⏳ Tracker ще не підтягнувся.</b> Натисни ▶ Завантажити. Нижче — лише self-акаунти з уже завантаженого дашборда (Фаза 2).</div>';
+  } else alerts.innerHTML='';
+  var n=SELF_ACC.length||1;
+  var p1dead=SELF_ACC.filter(function(a){return a.phase==='p1dead';});
+  var p2dead=SELF_ACC.filter(function(a){return a.phase==='p2dead';});
+  var p2live=SELF_ACC.filter(function(a){return a.phase==='p2live';});
+  var p1mod=SELF_ACC.filter(function(a){return a.phase==='p1mod';});
+  var p0=SELF_ACC.filter(function(a){return a.phase==='p0';});
+  var p1warm=SELF_ACC.filter(function(a){return a.phase==='p1warm';});
+  var pct=function(x){return Math.round(x.length/n*100);};
+  var idleA=p2live.filter(function(a){return a.alertIdle;});
+  var dropA=p2live.filter(function(a){return a.alertDrop;});
+  var readyA=p2live.filter(function(a){return a.alertReady;});
+  function names(arr){return arr.slice(0,12).map(function(a){return e(a.name);}).join(', ')+(arr.length>12?'…':'');}
+  var ah='';
+  if(idleA.length)ah+='<div class="self-al r"><b>🔴 Без нового заливу понад 5 днів — '+idleA.length+'</b><div class="al-list">'+names(idleA)+'</div></div>';
+  if(dropA.length)ah+='<div class="self-al y"><b>🟡 Live-rate впав за тиждень — '+dropA.length+'</b><div class="al-list">'+names(dropA)+'</div></div>';
+  if(readyA.length)ah+='<div class="self-al g"><b>🟢 Готові під новий залив (Proven, є ємність) — '+readyA.length+'</b><div class="al-list">'+names(readyA)+'</div></div>';
+  alerts.innerHTML=(alerts.innerHTML||'')+ah;
+  var stages=[
+    {l:'☠️ Загинули на прогріві (Фаза 1, до релізу)',v:p1dead.length,c:'var(--R)',sub:pct(p1dead)+'% від усіх — головна точка втрат'},
+    {l:'☠️ Загинули після релізу (Фаза 2, термінований)',v:p2dead.length,c:'var(--O)',sub:pct(p2dead)+'%'},
+    {l:'✅ Живі, в роботі',v:p2live.length,c:'var(--G)',sub:pct(p2live)+'%'},
+    {l:'🟡 На модерації (Фаза 1, ще не релізнуті)',v:p1mod.length,c:'var(--Y)',sub:pct(p1mod)+'%'},
+    {l:'⚪ Куплені, ще не запущені',v:p0.length,c:'var(--t3)',sub:pct(p0)+'%'},
+    {l:'🔥 На прогріві (залив є, релізу ще немає)',v:p1warm.length,c:'var(--P)',sub:pct(p1warm)+'%'}
+  ];
+  var maxV=Math.max(SELF_ACC.length,1);
+  var fhtml='<div class="card" style="margin-bottom:22px;padding:20px 24px;background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;">'
+    +'<div class="sec-h" style="margin-bottom:14px;padding:0;border:none;background:transparent"><span class="sec-t">🎯 Воронка self-акаунтів</span><span class="bdg" style="background:var(--Cb);color:var(--C);border:1px solid var(--Cbo)">всього '+SELF_ACC.length+'</span></div>';
+  fhtml+=stages.map(function(st){
+    var w=Math.round(st.v/maxV*100);
+    return'<div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">'
+      +'<div style="min-width:280px;font-size:13px;color:var(--t1);font-weight:600">'+st.l+'</div>'
+      +'<div style="flex:1;height:32px;background:var(--c3);border-radius:8px;overflow:hidden;position:relative">'
+      +'<div style="width:'+w+'%;height:100%;background:'+st.c+';transition:width .4s;border-radius:8px"></div>'
+      +'<div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">'+st.v+'</div>'
+      +'</div>'
+      +'<div style="min-width:150px;font-size:11px;color:var(--t3)">'+st.sub+'</div></div>';
+  }).join('');
+  fhtml+='</div>';
+  funnel.innerHTML=fhtml;
+  if(meta)meta.textContent=(S3.length?S3.length+' рядків tracker · ':'')+SELF_ACC.length+' акаунтів';
+  var p2rows=selfVis().filter(function(a){return a.phase==='p2live'||a.phase==='p2dead';});
+  var th=function(col,label){return '<th onclick="selfSrt(\''+col+'\',this)"'+(selfSortC===col?' class="'+(selfSortD===1?'asc':'desc')+'"':'')+'>'+label+'</th>';};
+  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Акаунти Фази 2</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">'+p2rows.length+'</span></div>'
+    +'<div class="tw"><table><thead><tr>'
+    +th('name','Акаунт')+th('tier','Ярус')+th('uploaded','Додатків залито')+th('live','Live')+th('dead','Dead')+th('pending','Pending')+th('liveRate','Live-rate')+th('age','Вік (днів)')+th('last','Останній залив')
+    +'</tr></thead><tbody>';
+  if(!p2rows.length)html+='<tr><td colspan="9"><div class="empty"><div class="ei">🔍</div><div class="et">Немає акаунтів Фази 2 під цей фільтр</div></div></td></tr>';
+  else html+=p2rows.map(function(a){
+    var last=a.last?a.last.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+    var rc=a.liveRate>=50?'var(--G)':a.liveRate>=30?'var(--Y)':'var(--R)';
+    var idleMark=a.alertIdle?' <span style="color:var(--R);font-size:11px">'+a.idle+'д простою</span>':'';
+    return '<tr class="'+(a.tier==='burned'?'td':'')+'">'
+      +'<td><div class="aname" title="'+e(a.name)+'">'+e(a.name)+'</div>'+(a.comments?'<div style="font-size:11px;color:var(--t3);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+e(a.comments)+'">'+e(a.comments)+'</div>':'')+'</td>'
+      +'<td>'+tierHtml(a.tier)+'</td>'
+      +'<td>'+a.uploaded+'</td>'
+      +'<td style="color:var(--G);font-weight:600">'+a.live+'</td>'
+      +'<td style="color:var(--R);font-weight:600">'+a.dead+'</td>'
+      +'<td style="color:var(--Y)">'+a.pending+'</td>'
+      +'<td style="font-family:Space Grotesk,sans-serif;font-weight:700;color:'+rc+'">'+a.liveRate+'%'+(a.alertDrop?' <span style="color:var(--Y);font-size:11px;font-weight:600">↓'+a.rateWeek+'%</span>':'')+'</td>'
+      +'<td>'+(a.age||'—')+'</td>'
+      +'<td><span class="dc">'+last+'</span>'+idleMark+'</td></tr>';
+  }).join('');
+  html+='</tbody></table></div></div>';
+  table.innerHTML=html;
+}
 // ── FILTER / SORT / SEARCH ──
-function setF(f,btn){curF=f;document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');rTable(selWk);}
+function setF(f,btn){curF=f;document.querySelectorAll('#dashMain .fbar .chip').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');rTable(selWk);}
 function resetF(){
   curF='all';curQ='';document.getElementById('srch').value='';
-  document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});
-  document.querySelector('.chip.all').classList.add('on');rTable(selWk);
+  document.querySelectorAll('#dashMain .fbar .chip').forEach(function(b){b.classList.remove('on');});
+  document.querySelector('#dashMain .chip.all').classList.add('on');rTable(selWk);
 }
 function doSearch(){curQ=document.getElementById('srch').value;rTable(selWk);}
 function srt(col,el){
