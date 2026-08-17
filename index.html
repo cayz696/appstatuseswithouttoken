@@ -61,6 +61,8 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 .tier-bought{background:var(--c3);color:var(--t3);border:1px solid var(--b1);}
 .tier-warm{background:var(--Pb);color:var(--P);border:1px solid rgba(168,85,247,.28);}
 #selfPage .chip.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
+#selfTable .tw{max-height:70vh;overflow:auto;}
+#selfTable thead th{position:sticky;top:0;z-index:2;background:var(--c2);}
 .btn-green{background:var(--G);color:#000;border:none;border-radius:8px;padding:9px 20px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;}
 .btn-green:hover{background:#16a34a;color:#fff;}
 .btn-green.ld{background:var(--c3);color:var(--t3);cursor:not-allowed;}
@@ -280,7 +282,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.0</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.1</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -549,6 +551,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
     <button class="chip" data-sf="proven" onclick="selfFilt('proven',this)">Proven</button>
     <button class="chip" data-sf="fresh" onclick="selfFilt('fresh',this)">Fresh</button>
     <span id="selfMeta" style="margin-left:auto;font-size:12px;color:var(--t3)"></span>
+    <span style="font-size:11px;color:var(--t3)">клік по колонці — сортування</span>
   </div>
 </div>
 <div id="selfAlerts"></div>
@@ -565,7 +568,8 @@ var curF='all',curQ='',sortC='',sortD=1;
 var selWk='all';
 var customRange=null;
 var autoT=null,setupOpen=true;
-var SELF_CAP=15,selfF='all',selfSortC='idle',selfSortD=-1;
+var SELF_CAP=15,selfF='all',selfSortC='tier',selfSortD=1;
+var TIER_RANK={declining:1,burned:2,fresh:3,proven:4,active:5,moder:6,warm:7,bought:8};
 var SELF_TRACKER_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vTxO8V7iTxVL9SXui__9xNJG6Fk6LxTNr0RJhqQonfA8aR6MWCD-w37ooi3iH4C0KlN6WbCIGXNTJj-/pub?output=csv';
 // ── TAGS STATE ──
 var TAGS={tags:[],assignments:{}};
@@ -1702,9 +1706,10 @@ function buildSelfAcc(){
       if(d&&(!last||d>last))last=d;
     });
     if(a.uploadDate&&(!last||a.uploadDate>last))last=a.uploadDate;
+    if(a.releaseDate&&(!last||a.releaseDate>last))last=a.releaseDate;
     var born=a.uploadDate||a.releaseDate||last;
     var age=born?Math.max(0,dayDiff(born,now)):0;
-    var idle=last?Math.max(0,dayDiff(last,now)):9999;
+    var idle=last?Math.max(0,dayDiff(last,now)):null;
     var banned=a.status==='ban'||commentBan(a.comments);
     var phase;
     if(a.releaseDate)phase=banned?'p2dead':'p2live';
@@ -1719,8 +1724,8 @@ function buildSelfAcc(){
       else if(liveRate>=50&&uploaded>=4)tier='proven';
       else if(uploaded<=2&&age<14)tier='fresh';
       else tier='active';
-      alertIdle=idle>5;
-      alertDrop=liveRate<rateWeek;
+      alertIdle=idle!=null&&idle>5;
+      alertDrop=uploaded>0&&liveRate<rateWeek;
       alertReady=tier==='proven'&&uploaded<SELF_CAP;
     }
     return {
@@ -1807,12 +1812,21 @@ function selfVis(){
     if(selfF==='alerts')return a.alertIdle||a.alertDrop||a.alertReady;
     return a.tier===selfF;
   }).slice().sort(function(a,b){
-    var av=a[selfSortC],bv=b[selfSortC];
-    if(av instanceof Date)av=av.getTime();if(bv instanceof Date)bv=bv.getTime();
-    if(typeof av==='string'){av=av.toLowerCase();bv=(bv||'').toLowerCase();}
-    av=av==null?0:av;bv=bv==null?0:bv;
-    return av<bv?-selfSortD:av>bv?selfSortD:0;
+    var av=selfSortVal(a,selfSortC),bv=selfSortVal(b,selfSortC);
+    if(av<bv)return -selfSortD;
+    if(av>bv)return selfSortD;
+    var ar=TIER_RANK[a.tier]||99,br=TIER_RANK[b.tier]||99;
+    return ar-br;
   });
+}
+function selfSortVal(a,col){
+  if(col==='tier')return TIER_RANK[a.tier]||99;
+  if(col==='last')return a.last?a.last.getTime():-1;
+  if(col==='idle')return a.idle==null?1e12:a.idle;
+  var v=a[col];
+  if(v instanceof Date)return v.getTime();
+  if(typeof v==='string')return v.toLowerCase();
+  return v==null?0:v;
 }
 function selfRender(){
   var alerts=document.getElementById('selfAlerts');
@@ -1849,10 +1863,9 @@ function selfRender(){
   var stages=[
     {l:'☠️ Загинули на прогріві (Фаза 1, до релізу)',v:p1dead.length,c:'var(--R)',sub:pct(p1dead)+'% від усіх — головна точка втрат'},
     {l:'☠️ Загинули після релізу (Фаза 2, термінований)',v:p2dead.length,c:'var(--O)',sub:pct(p2dead)+'%'},
-    {l:'✅ Живі, в роботі',v:p2live.length,c:'var(--G)',sub:pct(p2live)+'%'},
-    {l:'🟡 На модерації (Фаза 1, ще не релізнуті)',v:p1mod.length,c:'var(--Y)',sub:pct(p1mod)+'%'},
-    {l:'⚪ Куплені, ще не запущені',v:p0.length,c:'var(--t3)',sub:pct(p0)+'%'},
-    {l:'🔥 На прогріві (залив є, релізу ще немає)',v:p1warm.length,c:'var(--P)',sub:pct(p1warm)+'%'}
+    {l:'✅ Живі, в роботі (Фаза 2)',v:p2live.length,c:'var(--G)',sub:pct(p2live)+'% · таблиця нижче: живі + терміновані'},
+    {l:'🟡 Фаза 1, ще без релізу',v:p1mod.length+p1warm.length,c:'var(--Y)',sub:pct(p1mod.concat(p1warm))+'%'},
+    {l:'⚪ Куплені, ще не запущені',v:p0.length,c:'var(--t3)',sub:pct(p0)+'%'}
   ];
   var maxV=Math.max(SELF_ACC.length,1);
   var fhtml='<div class="card" style="margin-bottom:22px;padding:20px 24px;background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;">'
@@ -1872,15 +1885,15 @@ function selfRender(){
   if(meta)meta.textContent=(S3.length?S3.length+' рядків tracker · ':'')+SELF_ACC.length+' акаунтів';
   var p2rows=selfVis().filter(function(a){return a.phase==='p2live'||a.phase==='p2dead';});
   var th=function(col,label){return '<th onclick="selfSrt(\''+col+'\',this)"'+(selfSortC===col?' class="'+(selfSortD===1?'asc':'desc')+'"':'')+'>'+label+'</th>';};
-  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Акаунти Фази 2</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">'+p2rows.length+'</span></div>'
+  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Акаунти Фази 2</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">'+p2live.length+' живих · '+p2dead.length+' термінованих · '+p2rows.length+' разом</span></div>'
     +'<div class="tw"><table><thead><tr>'
     +th('name','Акаунт')+th('tier','Ярус')+th('uploaded','Додатків залито')+th('live','Live')+th('dead','Dead')+th('pending','Pending')+th('liveRate','Live-rate')+th('age','Вік (днів)')+th('last','Останній залив')
     +'</tr></thead><tbody>';
   if(!p2rows.length)html+='<tr><td colspan="9"><div class="empty"><div class="ei">🔍</div><div class="et">Немає акаунтів Фази 2 під цей фільтр</div></div></td></tr>';
   else html+=p2rows.map(function(a){
-    var last=a.last?a.last.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+    var last=a.last?a.last.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'немає дати';
     var rc=a.liveRate>=50?'var(--G)':a.liveRate>=30?'var(--Y)':'var(--R)';
-    var idleMark=a.alertIdle?' <span style="color:var(--R);font-size:11px">'+a.idle+'д простою</span>':'';
+    var idleMark=a.idle==null?' <span style="color:var(--t3);font-size:11px">немає заливу</span>':(a.alertIdle?' <span style="color:var(--R);font-size:11px">'+a.idle+'д простою</span>':'');
     return '<tr class="'+(a.tier==='burned'?'td':'')+'">'
       +'<td><div class="aname" title="'+e(a.name)+'">'+e(a.name)+'</div>'+(a.comments?'<div style="font-size:11px;color:var(--t3);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+e(a.comments)+'">'+e(a.comments)+'</div>':'')+'</td>'
       +'<td>'+tierHtml(a.tier)+'</td>'
