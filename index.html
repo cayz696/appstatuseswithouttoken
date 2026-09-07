@@ -108,6 +108,11 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 .wpill{padding:5px 13px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--b1);color:var(--t2);background:transparent;font-family:'Inter',sans-serif;transition:all .14s;white-space:nowrap;}
 .wpill:hover{border-color:var(--b2);color:var(--t1);}
 .wpill.on{border-color:var(--G);color:var(--G);background:var(--Gb);font-weight:600;}
+.wpager{display:inline-flex;align-items:center;gap:6px;margin-left:4px;}
+.wpnav{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:16px;line-height:1;font-family:'Inter',sans-serif;}
+.wpnav:hover:not(:disabled){border-color:var(--G);color:var(--G);}
+.wpnav:disabled{opacity:.35;cursor:default;}
+.wpnum{font-size:11px;color:var(--t3);min-width:36px;text-align:center;}
 .kg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
 @media(max-width:650px){.kg{grid-template-columns:1fr;}}
 .kc{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
@@ -135,17 +140,6 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 .sb{background:var(--c1);border:1.5px solid var(--b1);border-radius:12px;padding:16px 18px;}
 .sb-l{font-size:11px;color:var(--t3);margin-bottom:7px;}
 .sb-v{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;line-height:1;}
-.active-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px;}
-@media(max-width:900px){.active-grid{grid-template-columns:1fr;}}
-.ac{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;overflow:hidden;}
-.ac-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--b1);background:var(--c2);}
-.ac-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;}
-.ac-badge{font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
-.ac-row{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid var(--b1);transition:background .12s;}
-.ac-row:last-child{border-bottom:none;}
-.ac-row:hover{background:var(--c2);}
-.ac-name{flex:1;font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ac-days{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap;}
 .fbar{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .fsec{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .flbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;}
@@ -282,7 +276,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.1</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.2</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -351,12 +345,12 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
   <div class="kc ks"><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
 </div>
 <div class="sr">
+  <div class="sb"><div class="sb-l">📊 Всього (період)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
   <div class="sb"><div class="sb-l">⭐ КПІ (сірих ≥1д)</div><div class="sb-v" style="color:var(--G)" id="s0">0</div></div>
   <div class="sb"><div class="sb-l">🟢 Живих зараз</div><div class="sb-v" style="color:var(--G)" id="s1">0</div></div>
   <div class="sb"><div class="sb-l">⏳ Сірих на модерації</div><div class="sb-v" style="color:var(--Y)" id="s2">0</div></div>
   <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
   <div class="sb"><div class="sb-l">💀 Dead (період)</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
-  <div class="sb"><div class="sb-l">📊 Всього (період)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
   <div class="sb"><div class="sb-l">💵 Сер. вартість КПІ</div><div class="sb-v" style="color:var(--Y)" id="s6">$0</div></div>
   <div class="sb"><div class="sb-l">📦 Rental (всього)</div><div class="sb-v" style="color:var(--t2)" id="s7">0</div></div>
   <div class="sb"><div class="sb-l">⭐ Rental (КПІ)</div><div class="sb-v" style="color:var(--G)" id="s8">0</div></div>
@@ -366,16 +360,6 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 <div class="card" style="margin-top:18px;padding:20px 24px;">
   <div class="sec-h" style="margin-bottom:14px"><span class="sec-t" id="funnelTitle">🎯 Воронка релізу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="funnelBdg">—</span></div>
   <div id="funnelBody" style="display:flex;flex-direction:column;gap:10px;"><div class="empty"><div class="ei">🎯</div><div class="et">Завантаж дані</div></div></div>
-</div>
-<div class="active-grid">
-  <div class="ac">
-    <div class="ac-head"><span class="ac-title">🟢 Живуть прямо зараз</span><span class="ac-badge" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)" id="ac1cnt">0</span></div>
-    <div id="ac1list"><div class="empty"><div class="ei">🌱</div><div class="et">Завантаж дані</div></div></div>
-  </div>
-  <div class="ac">
-    <div class="ac-head"><span class="ac-title" id="ac2title">📅 Залиті цього тижня</span><span class="ac-badge" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="ac2cnt">0</span></div>
-    <div id="ac2list"><div class="empty"><div class="ei">📱</div><div class="et">Завантаж дані</div></div></div>
-  </div>
 </div>
 <div class="fbar">
   <div class="fsec">
@@ -433,13 +417,6 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
       <th>Comments</th>
     </tr></thead>
     <tbody id="mainTb"><tr><td colspan="13"><div class="empty"><div class="ei">📊</div><div class="et">Підключи таблиці і завантаж дані</div></div></td></tr></tbody>
-  </table></div>
-</div>
-<div class="sec">
-  <div class="sec-h"><span class="sec-t">📅 Тижневі звіти (авто)</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="bwks">0 тижнів</span></div>
-  <div class="tw"><table>
-    <thead><tr><th>Тиждень</th><th>КПІ ✅</th><th>Влад</th><th>Саня</th><th>Dead цього тижня</th><th>Expenses</th><th>Бан-рейт</th><th>% цілі</th></tr></thead>
-    <tbody id="wkTb"><tr><td colspan="8"><div class="empty" style="padding:32px">Завантаж дані</div></td></tr></tbody>
   </table></div>
 </div>
 <div class="two">
@@ -566,6 +543,7 @@ var CUT = new Date(2026, 2, 1);      // 01.03.2026
 var S1=[],S2=[],S3=[],ALL=[],WEEKS=[],SELF_ACC=[];
 var curF='all',curQ='',sortC='',sortD=1;
 var selWk='all';
+var wpPage=0,WP_SIZE=8;
 var customRange=null;
 var autoT=null,setupOpen=true;
 var SELF_CAP=15,selfF='all',selfSortC='tier',selfSortD=1;
@@ -710,9 +688,9 @@ function pDate(s){
 function dayDiff(a,b){return Math.round((b-a)/864e5);}
 
 // pVers: тип версії
-// 3+          → сіра (як раніше)
-// 1-2 + Offer on/off ✅  → сіра опублікована (КПІ)
-// 2? + Text G ✅ + Graph G ✅ → сіра на модерації
+// 3+ без ? → сіра LIVE; 3+ з ? → сіра MOD
+// 1–2 без ? + Offer + Text G + Graph G → сіра LIVE
+// 1–2 з ? + Text G + Graph G → сіра MOD
 function pVers(raw,offerOn,greyMod){
   var s=(raw||'').trim();
   if(s==='')return{t:'dr',lbl:'не залито',n:0};
@@ -722,7 +700,7 @@ function pVers(raw,offerOn,greyMod){
   if(n>=3)return mod?{t:'gm',lbl:s,n:n}:{t:'gp',lbl:s,n:n};
   if(n>=1){
     if(mod)return greyMod?{t:'gm',lbl:s+'☑',n:n}:{t:'wm',lbl:s,n:n};
-    return offerOn?{t:'gp',lbl:s+'☑',n:n}:{t:'wp',lbl:s,n:n};
+    return (offerOn&&greyMod)?{t:'gp',lbl:s+'☑',n:n}:{t:'wp',lbl:s,n:n};
   }
   return{t:'dash',lbl:s,n:0};
 }
@@ -811,7 +789,7 @@ function merge(){
     else if(fdsIsDead&&(deadDate||lifetimeRaw!=='')){appStatus='dead';isAlive=false;}
     else if(isAlive||liveDate){appStatus='live';}
     else{appStatus='unknown';}
-    // isGrey: сіра опублікована (3+, або 1-2 з Offer on)
+    // isGrey: сіра опублікована (3+, або 1–2 з Offer+Text G+Graph G)
     var isGrey=vers.t==='gp';
     // Survived >= 1 день
     var survived=false;
@@ -848,13 +826,34 @@ function isKPI(row,wk){
 // ── WEEKS / PILLS ──
 function buildWeeks(){var ws={};ALL.forEach(function(r){if(r.liveWk)ws[r.liveWk]=true;});WEEKS=Object.keys(ws).sort();}
 function getSelWk(){if(selWk!=='all')return selWk;var v=document.getElementById('wkPick').value;return v?pickerToWkKey(v):'all';}
+function weeksNewest(){return WEEKS.slice().reverse();}
+function clampWpPage(){
+  var pages=Math.max(1,Math.ceil(WEEKS.length/WP_SIZE));
+  if(wpPage>pages-1)wpPage=pages-1;
+  if(wpPage<0)wpPage=0;
+}
+function wpPageOf(wk){
+  var i=weeksNewest().indexOf(wk);
+  return i<0?0:Math.floor(i/WP_SIZE);
+}
+function wpFlip(d){wpPage+=d;renderPills();}
 function renderPills(){
   var div=document.getElementById('wpills');
+  clampWpPage();
+  var newest=weeksNewest();
+  var pages=Math.max(1,Math.ceil(newest.length/WP_SIZE));
+  var slice=newest.slice(wpPage*WP_SIZE,(wpPage+1)*WP_SIZE);
   var html='<span class="wlbl">Тижні:</span>';
   html+='<button class="wpill'+(selWk==='all'?' on':'')+'" onclick="selW(\'all\')">Всі</button>';
-  WEEKS.slice().reverse().forEach(function(wk){html+='<button class="wpill'+(selWk===wk?' on':'')+'" onclick="selW(\''+wk+'\')">'+wkLabel(wk)+'</button>';});
+  slice.forEach(function(wk){html+='<button class="wpill'+(selWk===wk?' on':'')+'" onclick="selW(\''+wk+'\')">'+wkLabel(wk)+'</button>';});
+  if(newest.length>WP_SIZE){
+    html+='<span class="wpager">';
+    html+='<button type="button" class="wpnav"'+(wpPage<=0?' disabled':'')+' onclick="wpFlip(-1)">‹</button>';
+    html+='<span class="wpnum">'+(wpPage+1)+'/'+pages+'</span>';
+    html+='<button type="button" class="wpnav"'+(wpPage>=pages-1?' disabled':'')+' onclick="wpFlip(1)">›</button>';
+    html+='</span>';
+  }
   div.innerHTML=html;
-  document.getElementById('bwks').textContent=WEEKS.length+' тижнів';
 }
 var MONTHS_UK=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
 function initMonthBtns(){
@@ -915,11 +914,12 @@ function selW(wk){
   customRange=null;document.getElementById('cdrActive').style.display='none';
   document.getElementById('mpill-cur').classList.remove('on');document.getElementById('mpill-prev').classList.remove('on');
   selWk=wk;
+  if(wk!=='all'&&wk!=='custom')wpPage=wpPageOf(wk);
   if(wk!=='all'){var p=wk.split('-');var mon=new Date(+p[0],+p[1]-1,+p[2]);document.getElementById('wkPick').value=mon.getFullYear()+'-W'+pad(isoWk(mon));upWR();}
   renderPills();rAll();
 }
 // ── RENDER ALL ──
-function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rFunnel(wk);rTable(wk);rActive(wk);rWkReport();rBan();rFin(wk);rMgr(wk);rDead();}
+function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rFunnel(wk);rTable(wk);rBan();rFin(wk);rMgr(wk);rDead();}
 function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*50/60),st=tgt-vt;
@@ -968,8 +968,8 @@ function rFunnel(wk){
   var stages=[
     {l:'🟢 1. Взято в роботу (App review)',v:s1,c:'#22c55e',sub:'є App review дата'},
     {l:'🔵 2. Білі релізи (версія 1+ без ?)',v:s2,c:'#3b82f6',sub:'версія 1+ опублікована'},
-    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'3+ або 1-2 з Offer'},
-    {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'успішні + прожили день'}
+    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'3+ або 1–2 без ? з Offer+Text G+Graph G'},
+    {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'сірі LIVE + lifetime ≥ 1 день'}
   ];
   var html=stages.map(function(st,i){
     var pct=Math.round(st.v/maxV*100);
@@ -987,40 +987,6 @@ function rFunnel(wk){
   document.getElementById('funnelBdg').textContent=s1+' → '+s4+' ('+Math.round(s4/Math.max(s1,1)*100)+'%)';
   var ft=document.getElementById('funnelTitle');
   if(ft)ft.textContent=wk==='all'?'🎯 Воронка релізу':wk==='custom'?'🎯 Воронка: '+(customRange?customRange.label:'діапазон'):'🎯 Воронка: '+wkLabel(wk);
-}
-function rActive(wk){
-  var alive=ALL.filter(function(r){return r.isAlive;}).sort(function(a,b){return b.computedLife-a.computedLife;});
-  document.getElementById('ac1cnt').textContent=alive.length;
-  var d1=document.getElementById('ac1list');
-  if(!alive.length){d1.innerHTML='<div class="empty"><div class="ei">🌱</div><div class="et">Живих немає</div></div>';return;}
-  d1.innerHTML=alive.slice(0,20).map(function(r){
-    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥</span>':'<span class="mg ms">💎</span>';
-    var days=r.computedLife,dc='ls_';if(days>7)dc='lm';if(days>21)dc='ll';
-    var selfTag=r.isSelf?'<span class="self-tag">self</span>':'';
-    return'<div class="ac-row">'+mgr+'<div class="ac-name" title="'+e(r.name)+'">'+e(r.name)+selfTag+'</div>'
-      +'<span class="ac-days lf '+dc+'">'+days+' дн.</span>'
-      +'<span class="dc" style="color:var(--G);margin-left:8px">↑ '+e(r.liveRaw)+'</span></div>';
-  }).join('');
-  var thisWk;
-  if(wk==='custom'){thisWk=ALL.filter(function(r){return (r.liveDate||r.reviewDate)&&inRange(r.liveDate||r.reviewDate);});}
-  else if(wk==='all'){var mon=thisMonday();thisWk=ALL.filter(function(r){return r.liveDate&&r.liveDate>=mon;});}
-  else{thisWk=ALL.filter(function(r){return r.liveWk===wk;});}
-  thisWk=thisWk.sort(function(a,b){return b.liveDate-a.liveDate;});
-  var ac2t=document.getElementById('ac2title');
-  if(ac2t){ac2t.textContent=wk==='all'?'📅 Залиті цього тижня (Пн–Сьогодні)':wk==='custom'?'📅 Залиті: '+(customRange?customRange.label:'діапазон'):'📅 Залиті тижня '+wkLabel(wk);}
-  document.getElementById('ac2cnt').textContent=thisWk.length;
-  var d2=document.getElementById('ac2list');
-  if(!thisWk.length){d2.innerHTML='<div class="empty"><div class="ei">📱</div><div class="et">Цього тижня нічого</div></div>';return;}
-  var seen2={};
-  thisWk=thisWk.filter(function(r){if(seen2[r.name.toLowerCase()])return false;seen2[r.name.toLowerCase()]=true;return true;});
-  d2.innerHTML=thisWk.map(function(r){
-    var mgr=r.manager==='vlad'?'<span class="mg mv">🔥</span>':'<span class="mg ms">💎</span>';
-    var st=r.appStatus==='dead'?'<span class="mg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)">DEAD</span>':'<span class="mg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">LIVE</span>';
-    var selfTag=r.isSelf?'<span class="self-tag">self</span>':'';
-    return'<div class="ac-row">'+mgr+'<div class="ac-name" title="'+e(r.name)+'">'+e(r.name)+selfTag+'</div>'+st
-      +'<span class="dc" style="color:var(--G);margin-left:8px">'+e(r.liveRaw)+'</span>'
-      +(r.deadRaw?'<span class="dc" style="color:var(--R);margin-left:6px">→ dead '+e(r.deadRaw)+'</span>':'')+'</div>';
-  }).join('');
 }
 // ── MAIN TABLE ──
 function getVis(wk){
@@ -1250,33 +1216,6 @@ function setAdmin(v){
 function admBtn(){
   if(_isAdm){sessionStorage.removeItem('_atadm');setAdmin(false);}
   else openAdm();
-}
-// ── WEEKLY REPORT ──
-function rWkReport(){
-  var tgtMonth=parseInt(document.getElementById('kpiT').value)||60;
-  var tgt=Math.round(tgtMonth/4.33);
-  var body=document.getElementById('wkTb');
-  if(!WEEKS.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';return;}
-  body.innerHTML=WEEKS.slice().reverse().map(function(wk){
-    var ka=ALL.filter(function(r){return isKPI(r,wk);});
-    var tot=ka.length,vl=ka.filter(function(r){return r.manager==='vlad';}).length,sa=ka.filter(function(r){return r.manager==='sanya';}).length;
-    var dw=ALL.filter(function(r){return r.liveWk===wk&&r.appStatus==='dead';}).length;
-    var bWR=[wkStart(wk),wkEnd(wk)];
-    var exp=Math.round(ALL.reduce(function(s,r){return s+getExpensesInPeriod(r,bWR[0],bWR[1]);},0));
-    var br=tot>0?Math.round(dw/tot*100):0;
-    var pct=Math.min(Math.round(tot/tgt*100),200);
-    var isCur=(wk===selWk);
-    var pc=pct>=100?'var(--G)':pct>=60?'var(--Y)':'var(--R)';
-    return'<tr style="'+(isCur?'background:rgba(34,197,94,.05)':'')+'">'
-      +'<td style="font-weight:600;color:'+(isCur?'var(--G)':'var(--t1)')+'">'+(isCur?'▶ ':'')+wkLabel(wk)+'</td>'
-      +'<td><b style="font-size:15px;color:var(--G)">'+tot+'</b> <span style="color:var(--t3);font-size:12px">/ '+tgt+'</span></td>'
-      +'<td style="color:var(--O);font-weight:600">'+vl+'</td>'
-      +'<td style="color:var(--B);font-weight:600">'+sa+'</td>'
-      +'<td style="color:'+(dw>0?'var(--R)':'var(--t3)')+';font-weight:600">'+dw+'</td>'
-      +'<td style="color:'+(exp?'var(--Y)':'var(--t3)')+';font-weight:500">'+(exp?'$'+exp:'—')+'</td>'
-      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+';font-weight:600">'+br+'%</td>'
-      +'<td><b style="font-size:14px;color:'+pc+'">'+pct+'%</b></td></tr>';
-  }).join('');
 }
 // ── BAN ──
 function rBan(){
