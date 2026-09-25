@@ -276,7 +276,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.5</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.6</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -356,8 +356,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 <div class="sec" id="cohortSec">
   <div class="sec-h"><span class="sec-t" title="Реальна конверсія заливу по тижнях: серед додатків, залитих у тижні (за App Review), скільки СТАЛИ сірими станом на сьогодні. Дозріває з лагом. Статус «фінально» = тижню ≥21 день, модерка завершилась; «дозріває» = ще можуть додатись сірі.">📈 Когортна ефективність заливу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">self · 6 тижнів</span></div>
   <div class="tw"><table>
-    <thead><tr><th>Тиждень заливу</th><th>Взято</th><th>Стало сірими</th><th>Конверсія</th><th>Ще на модерації</th><th>Статус</th></tr></thead>
-    <tbody id="cohortTb"><tr><td colspan="6"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
+    <thead><tr><th>Тиждень заливу</th><th>Взято</th><th>Стало сірими</th><th>Мертві</th><th>Ще на модерації</th><th>Конверсія в сіру</th><th>Смертність</th><th>Статус</th></tr></thead>
+    <tbody id="cohortTb"><tr><td colspan="8"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
   </table></div>
 </div>
 <div class="fbar">
@@ -783,6 +783,7 @@ function merge(){
     else if(liveDate&&deadDate){computedLife=Math.max(0,dayDiff(liveDate,deadDate));isAlive=false;}
     // App status
     var fds=(r1['App status (FDs)']||r1['FDs']||r1['App status']||'').trim().toLowerCase();
+    var sheetDead=fds==='dead';
     var fdsIsDead=fds==='dead'||fds.includes('invalid')||fds.includes('missing')||fds.includes('suspend')||fds.includes('remov');
     var appStatus;
     if(vers.t==='dr'&&!liveDate&&!deadDate&&lifetimeRaw===''){appStatus='draft';isAlive=false;}
@@ -812,7 +813,7 @@ function merge(){
       reviewWk:reviewDate?wkKey(reviewDate):null,
       liveWk:  liveDate  ?wkKey(liveDate)  :null,
       deadWk:  deadDate  ?wkKey(deadDate)  :null,
-      isGrey,survived,offerOn:offerOn,textG:textG,graphG:graphG,hasQ:hasQ
+      isGrey,survived,offerOn:offerOn,textG:textG,graphG:graphG,hasQ:hasQ,sheetDead:sheetDead
     });
   });
 }
@@ -956,26 +957,35 @@ function rStats(wk){
   var sub=document.getElementById('cohortSub');
   if(sub)sub.textContent='картки станів — за датою App Review · КПІ зверху — за датою App Live';
 }
+function isCohortDead(r){return !!(r.deadDate||r.sheetDead);}
 function rCohort(){
   var body=document.getElementById('cohortTb');
   if(!body)return;
   var ws={};
   ALL.forEach(function(r){if(r.isSelf&&r.reviewWk)ws[r.reviewWk]=true;});
   var weeks=Object.keys(ws).sort().slice(-6).reverse();
-  if(!weeks.length){body.innerHTML='<tr><td colspan="6"><div class="empty" style="padding:28px">Немає self-заливів</div></td></tr>';return;}
+  if(!weeks.length){body.innerHTML='<tr><td colspan="8"><div class="empty" style="padding:28px">Немає self-заливів</div></td></tr>';return;}
   var now=new Date();
   body.innerHTML=weeks.map(function(wk){
     var taken=ALL.filter(function(r){return r.isSelf&&r.reviewWk===wk;});
-    var grey=taken.filter(isConfirmedGrey).length;
-    var mod=taken.filter(function(r){return r.hasQ;}).length;
-    var conv=taken.length?Math.round(grey/taken.length*100):0;
+    var grey=0,dead=0,mod=0;
+    taken.forEach(function(r){
+      if(isConfirmedGrey(r))grey++;
+      else if(isCohortDead(r))dead++;
+      else mod++;
+    });
+    var n=taken.length;
+    var conv=n?Math.round(grey/n*100):0;
+    var mort=n?Math.round(dead/n*100):0;
     var age=dayDiff(wkStart(wk),now);
     var st=age<21?'дозріває':'фінально';
     return'<tr><td style="font-weight:600">'+wkLabel(wk)+'</td>'
-      +'<td>'+taken.length+'</td>'
+      +'<td>'+n+'</td>'
       +'<td style="color:var(--G);font-weight:600">'+grey+'</td>'
-      +'<td style="font-weight:700">'+conv+'%</td>'
+      +'<td style="color:var(--R);font-weight:600">'+dead+'</td>'
       +'<td style="color:var(--Y)">'+mod+'</td>'
+      +'<td style="font-weight:700">'+conv+'%</td>'
+      +'<td style="font-weight:700;color:var(--R)">'+mort+'%</td>'
       +'<td style="color:'+(age<21?'var(--Y)':'var(--t2)')+'">'+st+'</td></tr>';
   }).join('');
 }
