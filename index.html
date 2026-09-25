@@ -276,7 +276,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.4</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.5</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -340,21 +340,21 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
   </div>
 </div>
 <div class="kg">
-  <div class="kc kt" title="App Live у вибраному тижні, версія без ?, усі три галочки Offer + Text G + Graph G, і додаток прожив ≥ 1 день (немає App Dead або від live до dead минув щонайменше день). Дата заливу може бути раніше."><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
-  <div class="kc kv" title="КПІ Влада за той самий період: сірі з App live у цьому тижні, прожили ≥ 1 день. Акаунт починається з (V) або V(."><div class="kc-lbl">🔥 Влад (V...)</div><div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div><div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div><div class="kc-m" id="km1">сірих ≥ 1 день</div></div>
-  <div class="kc ks" title="КПІ Сані за той самий період. Усі акаунти, крім Влада і позначки (O)."><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
+  <div class="kc kt" title="Сірі додатки, підтверджені за вибраний тиждень (за датою App Live). Умова: версія без «?», усі 3 галочки (Offer, Text G, Graph G), прожили ≥1 день. Рахується по даті підтвердження сірої, а не заливу — тому число не змінюється заднім числом."><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
+  <div class="kc kv" title="Скільки з КПІ періоду зроблено на акаунтах Влада (префікс V у назві акаунта)."><div class="kc-lbl">🔥 Влад (V...)</div><div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div><div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div><div class="kc-m" id="km1">сірих ≥ 1 день</div></div>
+  <div class="kc ks" title="Скільки з КПІ періоду зроблено на решті акаунтів (без префікса V)."><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
 </div>
 <div class="sr">
-  <div class="sb" title="App Review у вибраному тижні. Усі додатки, взяті в роботу. Не ділиться на КПІ."><div class="sb-l">Взято в роботу</div><div class="sb-v" style="color:var(--t2)" id="cTaken">0</div></div>
-  <div class="sb" title="App Review у тижні, версія з ?, немає App Live, App Dead і Lifetime."><div class="sb-l">Біла на модерації</div><div class="sb-v" style="color:var(--Y)" id="cWhiteMod">0</div></div>
-  <div class="sb" title="App Review у тижні, версія з ?, App Live уже є, Text G і Graph G стоять, App Dead і Lifetime порожні."><div class="sb-l">Сіра на модерації</div><div class="sb-v" style="color:var(--O)" id="cGreyMod">0</div></div>
-  <div class="sb" title="App Review у тижні, App Live є, версія без ?, App Dead порожній, Text G і Graph G стоять не всі."><div class="sb-l">Біла LIVE</div><div class="sb-v" style="color:var(--B)" id="cWhiteLive">0</div></div>
-  <div class="sb" title="App Review у тижні і в Rental стоїть дата App Dead."><div class="sb-l">Відхилені</div><div class="sb-v" style="color:var(--R)" id="cRej">0</div></div>
-  <div class="sb" title="Живі зараз по всіх тижнях від 01.03.2026. Вибраний тиждень на це число не впливає."><div class="sb-l">Живі зараз</div><div class="sb-v" style="color:var(--G)" id="cAlive">0</div></div>
+  <div class="sb" title="Усі self-додатки, залиті за вибраний тиждень (за датою App Review). Це обсяг нової роботи — не плутати з КПІ, який рахується по іншій даті."><div class="sb-l">Взято в роботу</div><div class="sb-v" style="color:var(--t2)" id="cTaken">0</div></div>
+  <div class="sb" title="Залиті в періоді, версія ще з «?», App Live порожній — додаток ще не вийшов навіть білим, чекає первинної модерації."><div class="sb-l">Біла на модерації</div><div class="sb-v" style="color:var(--Y)" id="cWhiteMod">0</div></div>
+  <div class="sb" title="Залиті в періоді, версія ще з «?», але App Live вже є і галочки Text G + Graph G стоять — біла вже вийшла, сіру мету/графіку подали, чекає підтвердження."><div class="sb-l">Сіра на модерації</div><div class="sb-v" style="color:var(--O)" id="cGreyMod">0</div></div>
+  <div class="sb" title="App Live є, версія без «?», сірі галочки ще не всі стоять — біла версія живе в сторі, сіру ще не подавали."><div class="sb-l">Біла LIVE (у сторі)</div><div class="sb-v" style="color:var(--B)" id="cWhiteLive">0</div></div>
+  <div class="sb" title="Додатки, що відлетіли в періоді (є дата App Dead)."><div class="sb-l">Відхилені (Dead)</div><div class="sb-v" style="color:var(--R)" id="cRej">0</div></div>
+  <div class="sb" title="Усі self-додатки зі статусом Live прямо зараз, незалежно від тижня й від того, білі вони чи сірі."><div class="sb-l">Живі зараз</div><div class="sb-v" style="color:var(--G)" id="cAlive">0</div></div>
 </div>
 <div id="cohortSub" style="margin:-8px 0 18px;font-size:12px;color:var(--t3)"></div>
 <div class="sec" id="cohortSec">
-  <div class="sec-h"><span class="sec-t">📈 Когортна ефективність заливу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">self · 6 тижнів</span></div>
+  <div class="sec-h"><span class="sec-t" title="Реальна конверсія заливу по тижнях: серед додатків, залитих у тижні (за App Review), скільки СТАЛИ сірими станом на сьогодні. Дозріває з лагом. Статус «фінально» = тижню ≥21 день, модерка завершилась; «дозріває» = ще можуть додатись сірі.">📈 Когортна ефективність заливу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">self · 6 тижнів</span></div>
   <div class="tw"><table>
     <thead><tr><th>Тиждень заливу</th><th>Взято</th><th>Стало сірими</th><th>Конверсія</th><th>Ще на модерації</th><th>Статус</th></tr></thead>
     <tbody id="cohortTb"><tr><td colspan="6"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
@@ -943,19 +943,18 @@ function cohortApps(wk){
 function isRejectedApp(r){return !!r.deadDate;}
 function isConfirmedGrey(r){return !r.hasQ&&r.offerOn&&r.textG&&r.graphG;}
 function rStats(wk){
-  var apps=cohortApps(wk);
-  var whiteMod=0,greyMod=0,whiteLive=0,rej=0,selfN=0,rentN=0;
+  var apps=cohortApps(wk).filter(function(r){return r.isSelf;});
+  var whiteMod=0,greyMod=0,whiteLive=0,rej=0;
   apps.forEach(function(r){
-    if(r.isSelf)selfN++;else rentN++;
     if(r.deadDate){rej++;return;}
     if(r.hasQ&&!r.lifeSet&&!r.liveDate){whiteMod++;return;}
     if(r.hasQ&&!r.lifeSet&&r.liveDate&&r.textG&&r.graphG){greyMod++;return;}
     if(r.liveDate&&!r.hasQ&&!(r.textG&&r.graphG))whiteLive++;
   });
   Q('cTaken',apps.length);Q('cWhiteMod',whiteMod);Q('cGreyMod',greyMod);Q('cWhiteLive',whiteLive);Q('cRej',rej);
-  Q('cAlive',ALL.filter(function(r){return r.isAlive;}).length);
+  Q('cAlive',ALL.filter(function(r){return r.isSelf&&r.appStatus==='live';}).length);
   var sub=document.getElementById('cohortSub');
-  if(sub)sub.textContent='картки станів — за датою App Review · self '+selfN+' · оренда '+rentN+' · КПІ зверху — за датою App Live';
+  if(sub)sub.textContent='картки станів — за датою App Review · КПІ зверху — за датою App Live';
 }
 function rCohort(){
   var body=document.getElementById('cohortTb');
@@ -1211,7 +1210,7 @@ function admBtn(){
 }
 // ── BAN ──
 function rBan(){
-  var dead=cohortApps(selWk).filter(isRejectedApp);
+  var dead=cohortApps(selWk).filter(function(r){return r.isSelf&&isRejectedApp(r);});
   document.getElementById('bban').textContent=dead.length;
   var cnt={};
   dead.forEach(function(r){
@@ -1327,7 +1326,7 @@ function rDead(){
   var wk=selWk;
   var dt=document.getElementById('deadTitle');
   if(dt)dt.textContent=wk==='all'?'💀 Відхилені — деталі':wk==='custom'?'💀 Відхилені: '+(customRange?customRange.label:'діапазон'):'💀 Відхилені: '+wkLabel(wk);
-  var dead=cohortApps(wk).filter(isRejectedApp).sort(function(a,b){
+  var dead=cohortApps(wk).filter(function(r){return r.isSelf&&isRejectedApp(r);}).sort(function(a,b){
     if(deadSortC){
       var dateMapD={reviewRaw:'reviewDate',liveRaw:'liveDate',deadRaw:'deadDate'};
       var rc=dateMapD[deadSortC]||deadSortC;
