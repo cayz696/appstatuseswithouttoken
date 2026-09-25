@@ -276,7 +276,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.3</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.4</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -340,19 +340,26 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
   </div>
 </div>
 <div class="kg">
-  <div class="kc kt" title="Сірі додатки, у яких App live потрапляє у вибраний період і які прожили щонайменше 1 день. Це ціль, не рядок «взято в роботу»."><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
+  <div class="kc kt" title="App Live у вибраному тижні, версія без ?, усі три галочки Offer + Text G + Graph G, і додаток прожив ≥ 1 день (немає App Dead або від live до dead минув щонайменше день). Дата заливу може бути раніше."><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
   <div class="kc kv" title="КПІ Влада за той самий період: сірі з App live у цьому тижні, прожили ≥ 1 день. Акаунт починається з (V) або V(."><div class="kc-lbl">🔥 Влад (V...)</div><div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div><div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div><div class="kc-m" id="km1">сірих ≥ 1 день</div></div>
   <div class="kc ks" title="КПІ Сані за той самий період. Усі акаунти, крім Влада і позначки (O)."><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
 </div>
 <div class="sr">
-  <div class="sb" title="Додатки, у яких дата App review потрапляє у вибраний тиждень. Це база для карток поруч."><div class="sb-l">Взято в роботу</div><div class="sb-v" style="color:var(--t2)" id="cTaken">0</div></div>
-  <div class="sb" title="З узятих у роботу: у версії стоїть ?, дати App dead немає, Lifetime порожній, App live ще немає."><div class="sb-l">На модерації</div><div class="sb-v" style="color:var(--Y)" id="cMod">0</div></div>
-  <div class="sb" title="З узятих у роботу: у Rental є дата App dead або Lifetime від 1 дня. Колонка App Dead у таблиці лишається."><div class="sb-l">Відхилені</div><div class="sb-v" style="color:var(--R)" id="cRej">0</div></div>
-  <div class="sb" title="З узятих у роботу: є App live, немає App dead і Lifetime не заповнений."><div class="sb-l">У сторі</div><div class="sb-v" style="color:var(--B)" id="cStore">0</div></div>
-  <div class="sb" title="З тих, що у сторі: сіра версія (3+ або 1–2 без ? і три галочки Offer, Text G, Graph G) і прожила ≥ 1 день."><div class="sb-l">КПІ з взятих</div><div class="sb-v" style="color:var(--G)" id="cKpi">0</div></div>
-  <div class="sb" title="Живі зараз по всіх тижнях від 01.03.2026: є App live, немає App dead, Lifetime порожній. Вибраний тиждень на це число не впливає."><div class="sb-l">Живі зараз</div><div class="sb-v" style="color:var(--G)" id="cAlive">0</div></div>
+  <div class="sb" title="App Review у вибраному тижні. Усі додатки, взяті в роботу. Не ділиться на КПІ."><div class="sb-l">Взято в роботу</div><div class="sb-v" style="color:var(--t2)" id="cTaken">0</div></div>
+  <div class="sb" title="App Review у тижні, версія з ?, немає App Live, App Dead і Lifetime."><div class="sb-l">Біла на модерації</div><div class="sb-v" style="color:var(--Y)" id="cWhiteMod">0</div></div>
+  <div class="sb" title="App Review у тижні, версія з ?, App Live уже є, Text G і Graph G стоять, App Dead і Lifetime порожні."><div class="sb-l">Сіра на модерації</div><div class="sb-v" style="color:var(--O)" id="cGreyMod">0</div></div>
+  <div class="sb" title="App Review у тижні, App Live є, версія без ?, App Dead порожній, Text G і Graph G стоять не всі."><div class="sb-l">Біла LIVE</div><div class="sb-v" style="color:var(--B)" id="cWhiteLive">0</div></div>
+  <div class="sb" title="App Review у тижні і в Rental стоїть дата App Dead."><div class="sb-l">Відхилені</div><div class="sb-v" style="color:var(--R)" id="cRej">0</div></div>
+  <div class="sb" title="Живі зараз по всіх тижнях від 01.03.2026. Вибраний тиждень на це число не впливає."><div class="sb-l">Живі зараз</div><div class="sb-v" style="color:var(--G)" id="cAlive">0</div></div>
 </div>
 <div id="cohortSub" style="margin:-8px 0 18px;font-size:12px;color:var(--t3)"></div>
+<div class="sec" id="cohortSec">
+  <div class="sec-h"><span class="sec-t">📈 Когортна ефективність заливу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)">self · 6 тижнів</span></div>
+  <div class="tw"><table>
+    <thead><tr><th>Тиждень заливу</th><th>Взято</th><th>Стало сірими</th><th>Конверсія</th><th>Ще на модерації</th><th>Статус</th></tr></thead>
+    <tbody id="cohortTb"><tr><td colspan="6"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
+  </table></div>
+</div>
 <div class="fbar">
   <div class="fsec">
     <span class="flbl">Версія:</span>
@@ -764,7 +771,10 @@ function merge(){
     if(anchor<CUT)return;
     // Offer on/off + Text G + Graph G роблять версію 1-2 сірою
     var offerOn=chkG(r1['Offer on/off']||r1['Offer']);
-    var greyMod=chkG(r1['Text G'])&&chkG(r1['Graph G']);
+    var textG=chkG(r1['Text G']);
+    var graphG=chkG(r1['Graph G']);
+    var greyMod=textG&&graphG;
+    var hasQ=(versRaw||'').trim().endsWith('?');
     var vers=pVers(versRaw,offerOn,greyMod);
     // Lifetime
     var computedLife=0,isAlive=false;
@@ -802,16 +812,16 @@ function merge(){
       reviewWk:reviewDate?wkKey(reviewDate):null,
       liveWk:  liveDate  ?wkKey(liveDate)  :null,
       deadWk:  deadDate  ?wkKey(deadDate)  :null,
-      isGrey,survived
+      isGrey,survived,offerOn:offerOn,textG:textG,graphG:graphG,hasQ:hasQ
     });
   });
 }
 function isKPI(row,wk){
-  if(!row.isGrey)return false;
-  if(!row.liveDate)return false;
-  if(!row.isAlive&&row.computedLife<1)return false;
+  if(!row.liveDate||row.hasQ)return false;
+  if(!(row.offerOn&&row.textG&&row.graphG))return false;
+  if(row.deadDate&&dayDiff(row.liveDate,row.deadDate)<1)return false;
   if(wk==='all')return true;
-  if(wk==='custom')return customRange?inRange(row.liveDate):false;
+  if(wk==='custom')return !!(customRange&&row.liveDate>=customRange.from&&row.liveDate<=customRange.to);
   return row.liveWk===wk;
 }
 // ── WEEKS / PILLS ──
@@ -910,7 +920,7 @@ function selW(wk){
   renderPills();rAll();
 }
 // ── RENDER ALL ──
-function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rTable(wk);rBan();rFin(wk);rMgr(wk);rDead();}
+function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rCohort();rTable(wk);rBan();rFin(wk);rMgr(wk);rDead();}
 function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*50/60),st=tgt-vt;
@@ -922,10 +932,6 @@ function rKPI(wk){
   Q('kn1',vl);Q('ko1','/ ~'+vt);document.getElementById('kp1').style.width=pct(vl,vt)+'%';Q('km1',pct(vl,vt)+'% · '+vl+'/'+tot+' КПІ');
   Q('kn2',sa);Q('ko2','/ ~'+st);document.getElementById('kp2').style.width=pct(sa,st)+'%';Q('km2',pct(sa,st)+'% · '+sa+'/'+tot+' КПІ');
 }
-function isRejectedApp(r){return !!(r.deadDate||(r.lifeSet&&r.computedLife>=1));}
-function isModApp(r){return !isRejectedApp(r)&&!r.liveDate&&(r.vers.t==='gm'||r.vers.t==='wm');}
-function isInStoreApp(r){return !!(r.liveDate&&!isRejectedApp(r));}
-function isCohortKpi(r){return isInStoreApp(r)&&r.isGrey&&(r.isAlive||r.computedLife>=1);}
 function cohortApps(wk){
   return ALL.filter(function(r){
     if(!r.reviewDate)return false;
@@ -934,22 +940,45 @@ function cohortApps(wk){
     return r.reviewWk===wk;
   });
 }
-function splitCohort(apps){
-  var o={taken:apps.length,mod:0,rejected:0,store:0,kpi:0,self:0,rental:0};
-  apps.forEach(function(r){
-    if(r.isSelf)o.self++;else o.rental++;
-    if(isRejectedApp(r))o.rejected++;
-    else if(isModApp(r))o.mod++;
-    else if(isInStoreApp(r)){o.store++;if(isCohortKpi(r))o.kpi++;}
-  });
-  return o;
-}
+function isRejectedApp(r){return !!r.deadDate;}
+function isConfirmedGrey(r){return !r.hasQ&&r.offerOn&&r.textG&&r.graphG;}
 function rStats(wk){
-  var c=splitCohort(cohortApps(wk));
-  Q('cTaken',c.taken);Q('cMod',c.mod);Q('cRej',c.rejected);Q('cStore',c.store);Q('cKpi',c.kpi);
+  var apps=cohortApps(wk);
+  var whiteMod=0,greyMod=0,whiteLive=0,rej=0,selfN=0,rentN=0;
+  apps.forEach(function(r){
+    if(r.isSelf)selfN++;else rentN++;
+    if(r.deadDate){rej++;return;}
+    if(r.hasQ&&!r.lifeSet&&!r.liveDate){whiteMod++;return;}
+    if(r.hasQ&&!r.lifeSet&&r.liveDate&&r.textG&&r.graphG){greyMod++;return;}
+    if(r.liveDate&&!r.hasQ&&!(r.textG&&r.graphG))whiteLive++;
+  });
+  Q('cTaken',apps.length);Q('cWhiteMod',whiteMod);Q('cGreyMod',greyMod);Q('cWhiteLive',whiteLive);Q('cRej',rej);
   Q('cAlive',ALL.filter(function(r){return r.isAlive;}).length);
   var sub=document.getElementById('cohortSub');
-  if(sub)sub.textContent='з узятих у роботу: self '+c.self+' · оренда '+c.rental;
+  if(sub)sub.textContent='картки станів — за датою App Review · self '+selfN+' · оренда '+rentN+' · КПІ зверху — за датою App Live';
+}
+function rCohort(){
+  var body=document.getElementById('cohortTb');
+  if(!body)return;
+  var ws={};
+  ALL.forEach(function(r){if(r.isSelf&&r.reviewWk)ws[r.reviewWk]=true;});
+  var weeks=Object.keys(ws).sort().slice(-6).reverse();
+  if(!weeks.length){body.innerHTML='<tr><td colspan="6"><div class="empty" style="padding:28px">Немає self-заливів</div></td></tr>';return;}
+  var now=new Date();
+  body.innerHTML=weeks.map(function(wk){
+    var taken=ALL.filter(function(r){return r.isSelf&&r.reviewWk===wk;});
+    var grey=taken.filter(isConfirmedGrey).length;
+    var mod=taken.filter(function(r){return r.hasQ;}).length;
+    var conv=taken.length?Math.round(grey/taken.length*100):0;
+    var age=dayDiff(wkStart(wk),now);
+    var st=age<21?'дозріває':'фінально';
+    return'<tr><td style="font-weight:600">'+wkLabel(wk)+'</td>'
+      +'<td>'+taken.length+'</td>'
+      +'<td style="color:var(--G);font-weight:600">'+grey+'</td>'
+      +'<td style="font-weight:700">'+conv+'%</td>'
+      +'<td style="color:var(--Y)">'+mod+'</td>'
+      +'<td style="color:'+(age<21?'var(--Y)':'var(--t2)')+'">'+st+'</td></tr>';
+  }).join('');
 }
 // ── MAIN TABLE ──
 function getVis(wk){
@@ -1396,9 +1425,10 @@ function repDates(){
   return[f?new Date(f+'T00:00:00'):null,t?new Date(t+'T23:59:59'):null];
 }
 function repIsKPI(r,from,to){
-  if(!isCohortKpi(r)||!r.reviewDate)return false;
-  if(from&&r.reviewDate<from)return false;
-  if(to&&r.reviewDate>to)return false;
+  if(!r.isGrey||!r.liveDate)return false;
+  if(!r.isAlive&&r.computedLife<1)return false;
+  if(from&&r.liveDate<from)return false;
+  if(to&&r.liveDate>to)return false;
   return true;
 }
 function repRows(from,to){
@@ -1406,19 +1436,19 @@ function repRows(from,to){
   var cq=(document.getElementById('repCmtQ').value||'').trim().toLowerCase();
   var kpiOnly=!!document.querySelector('#repPage .chip[data-g="kpi"].on');
   return ALL.filter(function(r){
-    if(!r.reviewDate)return false;
-    if(from&&r.reviewDate<from)return false;
-    if(to&&r.reviewDate>to)return false;
+    var fd=r.liveDate||r.reviewDate;
+    if(from&&(!fd||fd<from))return false;
+    if(to&&(!fd||fd>to))return false;
     if(mgr._n&&!mgr[r.manager])return false;
     if(ver._n&&!ver[r.vers.t])return false;
     if(st._n&&!st[r.appStatus])return false;
     if(typ._n&&!typ[r.isSelf?'self':'rental'])return false;
-    if(kpiOnly&&!isCohortKpi(r))return false;
+    if(kpiOnly&&!repIsKPI(r,from,to))return false;
     if(tg._n){var a=TAGS.assignments[r.rowKey]||[];var hit=false;for(var id in tg){if(id!=='_n'&&a.indexOf(id)>=0){hit=true;break;}}if(!hit)return false;}
     if(cmt._n){var ps=cmtParts(r.comments);var hitC=false;for(var k in cmt){if(k!=='_n'&&ps.indexOf(k)>=0){hitC=true;break;}}if(!hitC)return false;}
     if(cq&&(!r.comments||r.comments.toLowerCase().indexOf(cq)<0))return false;
     return true;
-  }).sort(function(a,b){return(b.reviewDate||0)-(a.reviewDate||0);});
+  }).sort(function(a,b){return(b.liveDate||b.reviewDate||0)-(a.liveDate||a.reviewDate||0);});
 }
 function repPills(r){
   var p=(TAGS.assignments[r.rowKey]||[]).map(function(id){var t=tagById(id);return t?'<span class="rtag" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'">'+e(t.name)+'</span>':'';}).join('');
@@ -1429,19 +1459,31 @@ function repRender(){
   if(!ALL.length){out.innerHTML='<div class="sec"><div class="empty"><div class="ei">📊</div><div class="et">Немає даних — завантаж їх на дашборді</div></div></div>';return;}
   var d=repDates(),from=d[0],to=d[1];
   var rows=repRows(from,to);
-  var c=splitCohort(rows);
+  var kpiN=rows.filter(function(r){return repIsKPI(r,from,to);}).length;
+  var alive=rows.filter(function(r){return r.isAlive;}).length;
+  var dead=rows.filter(function(r){return r.appStatus==='dead';}).length;
+  var vl=rows.filter(function(r){return r.manager==='vlad';}).length;
+  var sa=rows.filter(function(r){return r.manager==='sanya';}).length;
+  var selfN=rows.filter(function(r){return r.isSelf;}).length;
   var ex=Math.round(rows.reduce(function(s,r){return s+getExpensesInPeriod(r,from,to);},0));
+  var lts=rows.filter(function(r){return r.computedLife>0;}).map(function(r){return r.computedLife;});
+  var al=lts.length?Math.round(lts.reduce(function(a,b){return a+b;})/lts.length):0;
+  var br=kpiN?Math.round(dead/kpiN*100):0;
   var lf=function(x){return x?x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):null;};
   var plbl=(from||to)?((lf(from)||'…')+' – '+(lf(to)||'…')):'весь період';
-  var tile=function(l,v,c,tip){return'<div class="sb" title="'+e(tip)+'"><div class="sb-l">'+l+'</div><div class="sb-v" style="color:'+c+'">'+v+'</div></div>';};
-  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Підсумок · '+plbl+'</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">'+c.taken+' взято · self '+c.self+' · оренда '+c.rental+'</span></div></div>';
+  var tile=function(l,v,c){return'<div class="sb"><div class="sb-l">'+l+'</div><div class="sb-v" style="color:'+c+'">'+v+'</div></div>';};
+  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Підсумок · '+plbl+'</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">'+rows.length+' записів</span></div></div>';
   html+='<div class="sr">'
-    +tile('Взято в роботу',c.taken,'var(--t2)','Додатки з App review у цьому періоді. Ті самі правила, що на дашборді.')
-    +tile('На модерації',c.mod,'var(--Y)','Версія з ?, немає App dead, Lifetime порожній, App live ще немає.')
-    +tile('Відхилені',c.rejected,'var(--R)','Є дата App dead або Lifetime від 1 дня.')
-    +tile('У сторі',c.store,'var(--B)','Є App live, немає App dead, Lifetime порожній.')
-    +tile('КПІ з взятих',c.kpi,'var(--G)','З тих, що у сторі: сіра версія і прожила ≥ 1 день.')
-    +tile('💵 Витрати','$'+ex,'var(--Y)','Оренда за цей період. Self не входить.')
+    +tile('📊 Всього',rows.length,'var(--t2)')
+    +tile('⭐ КПІ',kpiN,'var(--G)')
+    +tile('🟢 Живих',alive,'var(--G)')
+    +tile('💀 Dead',dead,'var(--R)')
+    +tile('🔥 Влад',vl,'var(--O)')
+    +tile('💎 Саня',sa,'var(--B)')
+    +tile('🏠 Self',selfN,'var(--C)')
+    +tile('💵 Expenses','$'+ex,'var(--Y)')
+    +tile('📉 Бан-рейт',br+'%',br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')
+    +tile('⏱ Сер. lifetime',al+' дн.','var(--t2)')
     +'</div>';
   html+='<div class="sec"><div class="tw"><table><thead><tr><th style="width:38px">#</th><th>Назва</th><th>Версія</th><th>КПІ?</th><th>Статус</th><th>Менеджер</th><th>Акаунт</th><th>App Review</th><th>App Live</th><th>App Dead</th><th>Lifetime</th><th>Expenses</th><th>Comments</th></tr></thead><tbody>';
   if(!rows.length)html+='<tr><td colspan="13"><div class="empty"><div class="ei">🔍</div><div class="et">Нічого не підходить під критерії</div></div></td></tr>';

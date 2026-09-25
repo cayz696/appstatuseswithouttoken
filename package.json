@@ -1,6 +1,6 @@
 {
   "name": "apptrack",
-  "version": "5.4.3",
+  "version": "5.4.4",
   "description": "AppTrack dashboard + tags backend (single Railway service)",
   "main": "server/index.js",
   "scripts": {
