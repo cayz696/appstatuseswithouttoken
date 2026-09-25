@@ -137,7 +137,7 @@ select.sel{background:var(--c2);border:1.5px solid var(--b1);color:var(--t2);bor
 .sr{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
 @media(max-width:1100px){.sr{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:550px){.sr{grid-template-columns:repeat(2,1fr);}}
-.sb{background:var(--c1);border:1.5px solid var(--b1);border-radius:12px;padding:16px 18px;}
+.sb{background:var(--c1);border:1.5px solid var(--b1);border-radius:12px;padding:16px 18px;cursor:help;}
 .sb-l{font-size:11px;color:var(--t3);margin-bottom:7px;}
 .sb-v{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;line-height:1;}
 .fbar{background:var(--c1);border:1.5px solid var(--b1);border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
@@ -276,7 +276,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </script>
 <div class="wrap">
 <div class="topbar">
-  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.2</div></div>
+  <div><div class="logo">APP<em>TRACK</em></div><div class="logo-sub">Weekly KPI Dashboard · v5.4.3</div></div>
   <div class="top-r">
     <div class="live-dot"><div class="ldot" id="rdot"></div><span id="lupd">не завантажено</span></div>
     <label style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px;">
@@ -340,27 +340,19 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
   </div>
 </div>
 <div class="kg">
-  <div class="kc kt"><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
-  <div class="kc kv"><div class="kc-lbl">🔥 Влад (V...)</div><div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div><div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div><div class="kc-m" id="km1">сірих ≥ 1 день</div></div>
-  <div class="kc ks"><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
+  <div class="kc kt" title="Сірі додатки, у яких App live потрапляє у вибраний період і які прожили щонайменше 1 день. Це ціль, не рядок «взято в роботу»."><div class="kc-lbl">📦 КПІ за період (сірих ≥ 1 день)</div><div class="kc-row"><div class="kc-n" id="kn0">0</div><div class="kc-of" id="ko0">/ 15</div></div><div class="pt"><div class="pf" id="kp0" style="width:0%"></div></div><div class="kc-m" id="km0">0% від цілі</div></div>
+  <div class="kc kv" title="КПІ Влада за той самий період: сірі з App live у цьому тижні, прожили ≥ 1 день. Акаунт починається з (V) або V(."><div class="kc-lbl">🔥 Влад (V...)</div><div class="kc-row"><div class="kc-n" id="kn1">0</div><div class="kc-of" id="ko1">/ ~8</div></div><div class="pt"><div class="pf" id="kp1" style="width:0%"></div></div><div class="kc-m" id="km1">сірих ≥ 1 день</div></div>
+  <div class="kc ks" title="КПІ Сані за той самий період. Усі акаунти, крім Влада і позначки (O)."><div class="kc-lbl">💎 Саня (решта)</div><div class="kc-row"><div class="kc-n" id="kn2">0</div><div class="kc-of" id="ko2">/ ~7</div></div><div class="pt"><div class="pf" id="kp2" style="width:0%"></div></div><div class="kc-m" id="km2">сірих ≥ 1 день</div></div>
 </div>
 <div class="sr">
-  <div class="sb"><div class="sb-l">📊 Всього (період)</div><div class="sb-v" style="color:var(--t2)" id="s5">0</div></div>
-  <div class="sb"><div class="sb-l">⭐ КПІ (сірих ≥1д)</div><div class="sb-v" style="color:var(--G)" id="s0">0</div></div>
-  <div class="sb"><div class="sb-l">🟢 Живих зараз</div><div class="sb-v" style="color:var(--G)" id="s1">0</div></div>
-  <div class="sb"><div class="sb-l">⏳ Сірих на модерації</div><div class="sb-v" style="color:var(--Y)" id="s2">0</div></div>
-  <div class="sb"><div class="sb-l">🟦 Білих LIVE</div><div class="sb-v" style="color:var(--B)" id="s3">0</div></div>
-  <div class="sb"><div class="sb-l">💀 Dead (період)</div><div class="sb-v" style="color:var(--R)" id="s4">0</div></div>
-  <div class="sb"><div class="sb-l">💵 Сер. вартість КПІ</div><div class="sb-v" style="color:var(--Y)" id="s6">$0</div></div>
-  <div class="sb"><div class="sb-l">📦 Rental (всього)</div><div class="sb-v" style="color:var(--t2)" id="s7">0</div></div>
-  <div class="sb"><div class="sb-l">⭐ Rental (КПІ)</div><div class="sb-v" style="color:var(--G)" id="s8">0</div></div>
-  <div class="sb"><div class="sb-l">🏠 Self (всього)</div><div class="sb-v" style="color:var(--C)" id="s9">0</div></div>
-  <div class="sb"><div class="sb-l">⭐ Self (КПІ)</div><div class="sb-v" style="color:var(--C)" id="s10">0</div></div>
+  <div class="sb" title="Додатки, у яких дата App review потрапляє у вибраний тиждень. Це база для карток поруч."><div class="sb-l">Взято в роботу</div><div class="sb-v" style="color:var(--t2)" id="cTaken">0</div></div>
+  <div class="sb" title="З узятих у роботу: у версії стоїть ?, дати App dead немає, Lifetime порожній, App live ще немає."><div class="sb-l">На модерації</div><div class="sb-v" style="color:var(--Y)" id="cMod">0</div></div>
+  <div class="sb" title="З узятих у роботу: у Rental є дата App dead або Lifetime від 1 дня. Колонка App Dead у таблиці лишається."><div class="sb-l">Відхилені</div><div class="sb-v" style="color:var(--R)" id="cRej">0</div></div>
+  <div class="sb" title="З узятих у роботу: є App live, немає App dead і Lifetime не заповнений."><div class="sb-l">У сторі</div><div class="sb-v" style="color:var(--B)" id="cStore">0</div></div>
+  <div class="sb" title="З тих, що у сторі: сіра версія (3+ або 1–2 без ? і три галочки Offer, Text G, Graph G) і прожила ≥ 1 день."><div class="sb-l">КПІ з взятих</div><div class="sb-v" style="color:var(--G)" id="cKpi">0</div></div>
+  <div class="sb" title="Живі зараз по всіх тижнях від 01.03.2026: є App live, немає App dead, Lifetime порожній. Вибраний тиждень на це число не впливає."><div class="sb-l">Живі зараз</div><div class="sb-v" style="color:var(--G)" id="cAlive">0</div></div>
 </div>
-<div class="card" style="margin-top:18px;padding:20px 24px;">
-  <div class="sec-h" style="margin-bottom:14px"><span class="sec-t" id="funnelTitle">🎯 Воронка релізу</span><span class="bdg" style="background:var(--Bb);color:var(--B);border:1px solid var(--Bbo)" id="funnelBdg">—</span></div>
-  <div id="funnelBody" style="display:flex;flex-direction:column;gap:10px;"><div class="empty"><div class="ei">🎯</div><div class="et">Завантаж дані</div></div></div>
-</div>
+<div id="cohortSub" style="margin:-8px 0 18px;font-size:12px;color:var(--t3)"></div>
 <div class="fbar">
   <div class="fsec">
     <span class="flbl">Версія:</span>
@@ -421,7 +413,7 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
 </div>
 <div class="two">
   <div class="sec" style="margin:0">
-    <div class="sec-h"><span class="sec-t">🚫 Причини бану</span><span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bban">0</span></div>
+    <div class="sec-h"><span class="sec-t">🚫 Причини відхилення</span><span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bban">0</span></div>
     <div id="banDiv"><div class="empty"><div class="ei">✅</div><div class="et">Немає даних</div></div></div>
   </div>
   <div class="sec" style="margin:0">
@@ -432,19 +424,18 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeAdm()
     <div class="fr"><span class="fl">Paid weeks</span><span class="fv" style="color:var(--Y)" id="f3">0</span></div>
     <div class="fr"><span class="fl">Сер. expenses / КПІ</span><span class="fv" id="f4">$0</span></div>
     <div class="fr"><span class="fl">Сер. lifetime (живих)</span><span class="fv" id="f5">0 дн.</span></div>
-    <div class="fr"><span class="fl">Бан-рейт</span><span class="fv" id="f6">0%</span></div>
   </div>
 </div>
 <div style="margin-bottom:22px"></div>
 <div class="sec">
   <div class="sec-h"><span class="sec-t" id="mgrTitle">👥 По менеджерах</span></div>
   <div class="tw"><table>
-    <thead><tr><th>Менеджер</th><th>КПІ ✅</th><th>Сіра MOD</th><th>Біла LIVE</th><th>Dead</th><th>Живих зараз</th><th>Всього</th><th>Бан-рейт</th><th>Expenses</th><th>% КПІ</th></tr></thead>
-    <tbody id="mgrTb"><tr><td colspan="10"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
+    <thead><tr><th>Менеджер</th><th>КПІ ✅</th><th>Сіра MOD</th><th>Біла LIVE</th><th>Відхилені</th><th>Живих зараз</th><th>Взято</th><th>Expenses</th><th>% КПІ</th></tr></thead>
+    <tbody id="mgrTb"><tr><td colspan="9"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr></tbody>
   </table></div>
 </div>
 <div class="sec">
-  <div class="sec-h"><span class="sec-t" id="deadTitle">💀 Dead apps — деталі</span><span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bdd">0</span></div>
+  <div class="sec-h"><span class="sec-t" id="deadTitle">💀 Відхилені — деталі</span><span class="bdg" style="background:var(--Rb);color:var(--R);border:1px solid var(--Rbo)" id="bdd">0</span></div>
   <div class="tw"><table>
     <thead><tr>
       <th onclick="srtDead('name',this)">Назва</th><th>Менеджер</th>
@@ -807,7 +798,7 @@ function merge(){
       reviewDate,reviewRaw:(r2['App review']||'').trim(),
       liveDate,  liveRaw:  (r2['App live']||'').trim(),
       deadDate,  deadRaw:  (r2['App dead']||'').trim(),
-      expenses,paidWeeks,computedLife,comments,
+      expenses,paidWeeks,computedLife,lifeSet:lifetimeRaw!=='',comments,
       reviewWk:reviewDate?wkKey(reviewDate):null,
       liveWk:  liveDate  ?wkKey(liveDate)  :null,
       deadWk:  deadDate  ?wkKey(deadDate)  :null,
@@ -919,7 +910,7 @@ function selW(wk){
   renderPills();rAll();
 }
 // ── RENDER ALL ──
-function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rFunnel(wk);rTable(wk);rBan();rFin(wk);rMgr(wk);rDead();}
+function rAll(){var wk=selWk;rKPI(wk);rStats(wk);rTable(wk);rBan();rFin(wk);rMgr(wk);rDead();}
 function rKPI(wk){
   var tgt=parseInt(document.getElementById('kpiT').value)||15;
   var vt=Math.round(tgt*50/60),st=tgt-vt;
@@ -931,62 +922,34 @@ function rKPI(wk){
   Q('kn1',vl);Q('ko1','/ ~'+vt);document.getElementById('kp1').style.width=pct(vl,vt)+'%';Q('km1',pct(vl,vt)+'% · '+vl+'/'+tot+' КПІ');
   Q('kn2',sa);Q('ko2','/ ~'+st);document.getElementById('kp2').style.width=pct(sa,st)+'%';Q('km2',pct(sa,st)+'% · '+sa+'/'+tot+' КПІ');
 }
-function rStats(wk){
-  var ka=ALL.filter(function(r){return isKPI(r,wk);});
-  var wkApps;
-  if(wk==='all')wkApps=ALL;
-  else if(wk==='custom')wkApps=ALL.filter(function(r){var fd=r.liveDate||r.reviewDate;return fd&&inRange(fd);});
-  else wkApps=ALL.filter(function(r){return r.liveWk===wk;});
-  Q('s0',ka.length);Q('s1',ALL.filter(function(r){return r.isAlive;}).length);
-  Q('s2',wkApps.filter(function(r){return r.vers.t==='gm'&&r.appStatus!=='dead';}).length);
-  Q('s3',wkApps.filter(function(r){return r.vers.t==='wp'&&r.appStatus!=='dead';}).length);
-  Q('s4',wkApps.filter(function(r){return r.appStatus==='dead';}).length);
-  Q('s5',wkApps.length);
-  var bS=getWkBounds(wk);
-  var totEx=ALL.reduce(function(s,r){return s+getExpensesInPeriod(r,bS[0],bS[1]);},0);
-  // Середнє тільки по орендних КПІ (self не впливає на середнє)
-  var kaPaid=ka.filter(function(r){return!r.isSelf;}).length;
-  Q('s6','$'+(kaPaid>0?Math.round(totEx/kaPaid):0));
-  Q('s7',wkApps.filter(function(r){return!r.isSelf;}).length);
-  Q('s8',ka.filter(function(r){return!r.isSelf;}).length);
-  Q('s9',wkApps.filter(function(r){return r.isSelf;}).length);
-  Q('s10',ka.filter(function(r){return r.isSelf;}).length);
+function isRejectedApp(r){return !!(r.deadDate||(r.lifeSet&&r.computedLife>=1));}
+function isModApp(r){return !isRejectedApp(r)&&!r.liveDate&&(r.vers.t==='gm'||r.vers.t==='wm');}
+function isInStoreApp(r){return !!(r.liveDate&&!isRejectedApp(r));}
+function isCohortKpi(r){return isInStoreApp(r)&&r.isGrey&&(r.isAlive||r.computedLife>=1);}
+function cohortApps(wk){
+  return ALL.filter(function(r){
+    if(!r.reviewDate)return false;
+    if(wk==='all')return true;
+    if(wk==='custom')return !!(customRange&&r.reviewDate>=customRange.from&&r.reviewDate<=customRange.to);
+    return r.reviewWk===wk;
+  });
 }
-function rFunnel(wk){
-  var wa;
-  if(wk==='all')wa=ALL;
-  else if(wk==='custom')wa=ALL.filter(function(r){return (r.liveDate||r.reviewDate)&&inRange(r.liveDate||r.reviewDate);});
-  else wa=ALL.filter(function(r){return r.liveWk===wk;});
-  var s1;
-  if(wk==='all')s1=ALL.filter(function(r){return r.reviewDate;}).length;
-  else if(wk==='custom')s1=ALL.filter(function(r){return r.reviewDate&&inRange(r.reviewDate);}).length;
-  else s1=ALL.filter(function(r){return r.reviewWk===wk;}).length;
-  var s2=wa.filter(function(r){return r.vers.t==='wp'||r.vers.t==='gp'||(r.vers.n>3);}).length;
-  var s3=wa.filter(function(r){return r.isGrey;}).length;
-  var s4=wa.filter(function(r){return isKPI(r,wk);}).length;
-  var maxV=Math.max(s1,1);
-  var stages=[
-    {l:'🟢 1. Взято в роботу (App review)',v:s1,c:'#22c55e',sub:'є App review дата'},
-    {l:'🔵 2. Білі релізи (версія 1+ без ?)',v:s2,c:'#3b82f6',sub:'версія 1+ опублікована'},
-    {l:'🟡 3. Сірі релізи (KPI кандидати)',v:s3,c:'#eab308',sub:'3+ або 1–2 без ? з Offer+Text G+Graph G'},
-    {l:'⭐ 4. КПІ (сірі ≥1 день)',v:s4,c:'#f59e0b',sub:'сірі LIVE + lifetime ≥ 1 день'}
-  ];
-  var html=stages.map(function(st,i){
-    var pct=Math.round(st.v/maxV*100);
-    var conv=i>0?(stages[i-1].v>0?Math.round(st.v/stages[i-1].v*100):0):100;
-    var convStr=i>0?' <span style="color:var(--t3);font-size:11px;font-weight:500">→ '+conv+'% з попереднього</span>':'';
-    return'<div style="display:flex;align-items:center;gap:14px">'
-      +'<div style="min-width:280px;font-size:13px;color:var(--t1);font-weight:600">'+st.l+convStr+'</div>'
-      +'<div style="flex:1;height:32px;background:var(--c3);border-radius:8px;overflow:hidden;position:relative">'
-      +'<div style="width:'+pct+'%;height:100%;background:'+st.c+';transition:width .4s;border-radius:8px"></div>'
-      +'<div style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)">'+st.v+'</div>'
-      +'</div>'
-      +'<div style="min-width:130px;font-size:11px;color:var(--t3)">'+st.sub+'</div></div>';
-  }).join('');
-  document.getElementById('funnelBody').innerHTML=html;
-  document.getElementById('funnelBdg').textContent=s1+' → '+s4+' ('+Math.round(s4/Math.max(s1,1)*100)+'%)';
-  var ft=document.getElementById('funnelTitle');
-  if(ft)ft.textContent=wk==='all'?'🎯 Воронка релізу':wk==='custom'?'🎯 Воронка: '+(customRange?customRange.label:'діапазон'):'🎯 Воронка: '+wkLabel(wk);
+function splitCohort(apps){
+  var o={taken:apps.length,mod:0,rejected:0,store:0,kpi:0,self:0,rental:0};
+  apps.forEach(function(r){
+    if(r.isSelf)o.self++;else o.rental++;
+    if(isRejectedApp(r))o.rejected++;
+    else if(isModApp(r))o.mod++;
+    else if(isInStoreApp(r)){o.store++;if(isCohortKpi(r))o.kpi++;}
+  });
+  return o;
+}
+function rStats(wk){
+  var c=splitCohort(cohortApps(wk));
+  Q('cTaken',c.taken);Q('cMod',c.mod);Q('cRej',c.rejected);Q('cStore',c.store);Q('cKpi',c.kpi);
+  Q('cAlive',ALL.filter(function(r){return r.isAlive;}).length);
+  var sub=document.getElementById('cohortSub');
+  if(sub)sub.textContent='з узятих у роботу: self '+c.self+' · оренда '+c.rental;
 }
 // ── MAIN TABLE ──
 function getVis(wk){
@@ -1219,14 +1182,8 @@ function admBtn(){
 }
 // ── BAN ──
 function rBan(){
-  var wk=selWk;
-  var dead=ALL.filter(function(r){
-    if(r.appStatus!=='dead')return false;
-    if(wk==='all')return true;
-    if(wk==='custom')return (r.liveDate||r.reviewDate)&&inRange(r.liveDate||r.reviewDate);
-    return r.liveWk===wk;
-  });
-  document.getElementById('bban').textContent=dead.length+' dead';
+  var dead=cohortApps(selWk).filter(isRejectedApp);
+  document.getElementById('bban').textContent=dead.length;
   var cnt={};
   dead.forEach(function(r){
     if(!r.comments)return;
@@ -1286,15 +1243,9 @@ function rFin(wk){
   var alive=wa.filter(function(r){return r.isAlive&&r.computedLife>0;}).map(function(r){return r.computedLife;});
   var al=alive.length?Math.round(alive.reduce(function(a,b){return a+b;})/alive.length):0;
   var kaAll=wa.filter(function(r){return isKPI(r,wk);});
-  var ka=kaAll.length;
-  // Середнє expenses тільки по орендних КПІ (без self)
   var kaPaid=kaAll.filter(function(r){return!r.isSelf;}).length;
   var ae=kaPaid>0?Math.round(tot/kaPaid):0;
-  var dw=wa.filter(function(r){return r.appStatus==='dead';}).length;
-  var br=ka>0?Math.round(dw/ka*100):0;
   Q('f0','$'+tot);Q('f1','$'+vl);Q('f2','$'+sa);Q('f3',pw);Q('f4','$'+ae);Q('f5',al+' дн.');
-  var fe=document.getElementById('f6');fe.textContent=br+'%';
-  fe.style.color=br>30?'var(--R)':br>15?'var(--Y)':'var(--G)';
   document.getElementById('bfin').textContent='$'+tot;
 }
 // ── MANAGER ──
@@ -1312,13 +1263,12 @@ function rMgr(wk){
     if(wk==='all')apps=allMgrApps;
     else if(wk==='custom')apps=allMgrApps.filter(function(r){return (r.liveDate||r.reviewDate)&&inRange(r.liveDate||r.reviewDate);});
     else apps=allMgrApps.filter(function(r){return r.liveWk===wk;});
+    var taken=cohortApps(wk).filter(function(r){return r.manager===d.k;});
+    var rej=taken.filter(isRejectedApp).length;
     var ka=apps.filter(function(r){return isKPI(r,wk);}).length;
     var gm=apps.filter(function(r){return r.vers.t==='gm';}).length;
     var wp=apps.filter(function(r){return r.vers.t==='wp';}).length;
-    var dead=apps.filter(function(r){return r.appStatus==='dead';}).length;
     var alive=allMgrApps.filter(function(r){return r.isAlive;}).length;
-    var tot=apps.length;
-    var br=ka>0?Math.round(dead/ka*100):0;
     var b_=getWkBounds(wk);
     var ex=Math.round(allMgrApps.reduce(function(s,r){return s+getExpensesInPeriod(r,b_[0],b_[1]);},0));
     var ks=d.k==='vlad'?vt:d.k==='sanya'?st:0;
@@ -1328,14 +1278,13 @@ function rMgr(wk){
       +'<td><b style="font-size:15px;color:var(--G)">'+ka+'</b></td>'
       +'<td style="color:var(--Y);font-weight:600">'+gm+'</td>'
       +'<td style="color:var(--B);font-weight:600">'+wp+'</td>'
-      +'<td style="color:'+(dead>0?'var(--R)':'var(--t3)')+';font-weight:600">'+dead+'</td>'
+      +'<td style="color:'+(rej>0?'var(--R)':'var(--t3)')+';font-weight:600">'+rej+'</td>'
       +'<td style="color:var(--G);font-weight:600">'+alive+'</td>'
-      +'<td style="color:var(--t2)">'+tot+'</td>'
-      +'<td style="color:'+(br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')+';font-weight:600">'+br+'%</td>'
+      +'<td style="color:var(--t2)">'+taken.length+'</td>'
       +'<td style="color:'+(ex?'var(--Y)':'var(--t3)')+';font-weight:500">'+(ex?'$'+ex:'—')+'</td>'
       +'<td><b style="font-size:14px;color:'+pc+'">'+(ks?kp+'%':'—')+'</b></td></tr>';
   }).filter(Boolean).join('');
-  body.innerHTML=html||'<tr><td colspan="10"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';
+  body.innerHTML=html||'<tr><td colspan="9"><div class="empty" style="padding:28px">Завантаж дані</div></td></tr>';
 }
 // ── DEAD DETAIL ──
 var deadSortC='',deadSortD=1;
@@ -1348,13 +1297,8 @@ function srtDead(col,el){
 function rDead(){
   var wk=selWk;
   var dt=document.getElementById('deadTitle');
-  if(dt)dt.textContent=wk==='all'?'💀 Dead apps — деталі':wk==='custom'?'💀 Dead apps: '+(customRange?customRange.label:'діапазон'):'💀 Dead apps: '+wkLabel(wk);
-  var dead=ALL.filter(function(r){
-    if(r.appStatus!=='dead')return false;
-    if(wk==='all')return true;
-    if(wk==='custom')return (r.liveDate||r.reviewDate)&&inRange(r.liveDate||r.reviewDate);
-    return r.liveWk===wk;
-  }).sort(function(a,b){
+  if(dt)dt.textContent=wk==='all'?'💀 Відхилені — деталі':wk==='custom'?'💀 Відхилені: '+(customRange?customRange.label:'діапазон'):'💀 Відхилені: '+wkLabel(wk);
+  var dead=cohortApps(wk).filter(isRejectedApp).sort(function(a,b){
     if(deadSortC){
       var dateMapD={reviewRaw:'reviewDate',liveRaw:'liveDate',deadRaw:'deadDate'};
       var rc=dateMapD[deadSortC]||deadSortC;
@@ -1368,7 +1312,7 @@ function rDead(){
   });
   document.getElementById('bdd').textContent=dead.length;
   var body=document.getElementById('deadTb');
-  if(!dead.length){body.innerHTML='<tr><td colspan="10"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Dead немає</div></div></td></tr>';return;}
+  if(!dead.length){body.innerHTML='<tr><td colspan="10"><div class="empty" style="padding:28px"><div class="ei">✅</div><div class="et">Відхилених немає</div></div></td></tr>';return;}
   var VT2={gp:{cls:'vgp',ic:'✅'},gm:{cls:'vgm',ic:'⏳'},wp:{cls:'vwp',ic:'🟦'},wm:{cls:'vwm',ic:'🔶'},dr:{cls:'vdr',ic:'📝'},dash:{cls:'vdr',ic:''}};
   body.innerHTML=dead.map(function(r){
     var mgr=r.manager==='vlad'?'<span class="mg mv">🔥 Влад</span>':r.manager==='sanya'?'<span class="mg ms">💎 Саня</span>':'<span class="mg mo">—</span>';
@@ -1452,10 +1396,9 @@ function repDates(){
   return[f?new Date(f+'T00:00:00'):null,t?new Date(t+'T23:59:59'):null];
 }
 function repIsKPI(r,from,to){
-  if(!r.isGrey||!r.liveDate)return false;
-  if(!r.isAlive&&r.computedLife<1)return false;
-  if(from&&r.liveDate<from)return false;
-  if(to&&r.liveDate>to)return false;
+  if(!isCohortKpi(r)||!r.reviewDate)return false;
+  if(from&&r.reviewDate<from)return false;
+  if(to&&r.reviewDate>to)return false;
   return true;
 }
 function repRows(from,to){
@@ -1463,19 +1406,19 @@ function repRows(from,to){
   var cq=(document.getElementById('repCmtQ').value||'').trim().toLowerCase();
   var kpiOnly=!!document.querySelector('#repPage .chip[data-g="kpi"].on');
   return ALL.filter(function(r){
-    var fd=r.liveDate||r.reviewDate;
-    if(from&&(!fd||fd<from))return false;
-    if(to&&(!fd||fd>to))return false;
+    if(!r.reviewDate)return false;
+    if(from&&r.reviewDate<from)return false;
+    if(to&&r.reviewDate>to)return false;
     if(mgr._n&&!mgr[r.manager])return false;
     if(ver._n&&!ver[r.vers.t])return false;
     if(st._n&&!st[r.appStatus])return false;
     if(typ._n&&!typ[r.isSelf?'self':'rental'])return false;
-    if(kpiOnly&&!repIsKPI(r,from,to))return false;
+    if(kpiOnly&&!isCohortKpi(r))return false;
     if(tg._n){var a=TAGS.assignments[r.rowKey]||[];var hit=false;for(var id in tg){if(id!=='_n'&&a.indexOf(id)>=0){hit=true;break;}}if(!hit)return false;}
     if(cmt._n){var ps=cmtParts(r.comments);var hitC=false;for(var k in cmt){if(k!=='_n'&&ps.indexOf(k)>=0){hitC=true;break;}}if(!hitC)return false;}
     if(cq&&(!r.comments||r.comments.toLowerCase().indexOf(cq)<0))return false;
     return true;
-  }).sort(function(a,b){return(b.liveDate||b.reviewDate||0)-(a.liveDate||a.reviewDate||0);});
+  }).sort(function(a,b){return(b.reviewDate||0)-(a.reviewDate||0);});
 }
 function repPills(r){
   var p=(TAGS.assignments[r.rowKey]||[]).map(function(id){var t=tagById(id);return t?'<span class="rtag" style="--tc:'+t.color+'" title="'+e(t.desc||'')+'">'+e(t.name)+'</span>':'';}).join('');
@@ -1486,31 +1429,19 @@ function repRender(){
   if(!ALL.length){out.innerHTML='<div class="sec"><div class="empty"><div class="ei">📊</div><div class="et">Немає даних — завантаж їх на дашборді</div></div></div>';return;}
   var d=repDates(),from=d[0],to=d[1];
   var rows=repRows(from,to);
-  var kpiN=rows.filter(function(r){return repIsKPI(r,from,to);}).length;
-  var alive=rows.filter(function(r){return r.isAlive;}).length;
-  var dead=rows.filter(function(r){return r.appStatus==='dead';}).length;
-  var vl=rows.filter(function(r){return r.manager==='vlad';}).length;
-  var sa=rows.filter(function(r){return r.manager==='sanya';}).length;
-  var selfN=rows.filter(function(r){return r.isSelf;}).length;
+  var c=splitCohort(rows);
   var ex=Math.round(rows.reduce(function(s,r){return s+getExpensesInPeriod(r,from,to);},0));
-  var lts=rows.filter(function(r){return r.computedLife>0;}).map(function(r){return r.computedLife;});
-  var al=lts.length?Math.round(lts.reduce(function(a,b){return a+b;})/lts.length):0;
-  var br=kpiN?Math.round(dead/kpiN*100):0;
   var lf=function(x){return x?x.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):null;};
   var plbl=(from||to)?((lf(from)||'…')+' – '+(lf(to)||'…')):'весь період';
-  var tile=function(l,v,c){return'<div class="sb"><div class="sb-l">'+l+'</div><div class="sb-v" style="color:'+c+'">'+v+'</div></div>';};
-  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Підсумок · '+plbl+'</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">'+rows.length+' записів</span></div></div>';
+  var tile=function(l,v,c,tip){return'<div class="sb" title="'+e(tip)+'"><div class="sb-l">'+l+'</div><div class="sb-v" style="color:'+c+'">'+v+'</div></div>';};
+  var html='<div class="sec"><div class="sec-h"><span class="sec-t">📋 Підсумок · '+plbl+'</span><span class="bdg" style="background:var(--Gb);color:var(--G);border:1px solid var(--Gbo)">'+c.taken+' взято · self '+c.self+' · оренда '+c.rental+'</span></div></div>';
   html+='<div class="sr">'
-    +tile('📊 Всього',rows.length,'var(--t2)')
-    +tile('⭐ КПІ',kpiN,'var(--G)')
-    +tile('🟢 Живих',alive,'var(--G)')
-    +tile('💀 Dead',dead,'var(--R)')
-    +tile('🔥 Влад',vl,'var(--O)')
-    +tile('💎 Саня',sa,'var(--B)')
-    +tile('🏠 Self',selfN,'var(--C)')
-    +tile('💵 Expenses','$'+ex,'var(--Y)')
-    +tile('📉 Бан-рейт',br+'%',br>30?'var(--R)':br>15?'var(--Y)':'var(--G)')
-    +tile('⏱ Сер. lifetime',al+' дн.','var(--t2)')
+    +tile('Взято в роботу',c.taken,'var(--t2)','Додатки з App review у цьому періоді. Ті самі правила, що на дашборді.')
+    +tile('На модерації',c.mod,'var(--Y)','Версія з ?, немає App dead, Lifetime порожній, App live ще немає.')
+    +tile('Відхилені',c.rejected,'var(--R)','Є дата App dead або Lifetime від 1 дня.')
+    +tile('У сторі',c.store,'var(--B)','Є App live, немає App dead, Lifetime порожній.')
+    +tile('КПІ з взятих',c.kpi,'var(--G)','З тих, що у сторі: сіра версія і прожила ≥ 1 день.')
+    +tile('💵 Витрати','$'+ex,'var(--Y)','Оренда за цей період. Self не входить.')
     +'</div>';
   html+='<div class="sec"><div class="tw"><table><thead><tr><th style="width:38px">#</th><th>Назва</th><th>Версія</th><th>КПІ?</th><th>Статус</th><th>Менеджер</th><th>Акаунт</th><th>App Review</th><th>App Live</th><th>App Dead</th><th>Lifetime</th><th>Expenses</th><th>Comments</th></tr></thead><tbody>';
   if(!rows.length)html+='<tr><td colspan="13"><div class="empty"><div class="ei">🔍</div><div class="et">Нічого не підходить під критерії</div></div></td></tr>';
